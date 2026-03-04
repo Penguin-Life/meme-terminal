@@ -149,6 +149,27 @@ function App() {
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </main>
+
+          {/* Footer */}
+          <footer
+            className="flex items-center justify-between px-6 py-2 border-t flex-shrink-0 text-xs"
+            style={{ background: '#0d0e14', borderColor: '#1e2030', color: '#4b5563' }}
+          >
+            <span>🐧 Meme Terminal v1.0.0 — AI-Powered Memecoin Trading</span>
+            <span>
+              <a
+                href="https://github.com/Penguin-Life/meme-terminal"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#6b7280' }}
+                className="hover:text-white transition-colors"
+              >
+                GitHub ↗
+              </a>
+              <span className="mx-2">·</span>
+              <span>Data: DexScreener · Pump.fun · GeckoTerminal</span>
+            </span>
+          </footer>
         </div>
       </div>
     </BrowserRouter>

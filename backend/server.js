@@ -1,7 +1,13 @@
+/**
+ * Meme Terminal — Backend API Server
+ * Aggregates DexScreener, Pump.fun, GeckoTerminal data for the trading terminal.
+ */
+
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
 
 const tokenRoutes   = require('./routes/token');
 const walletRoutes  = require('./routes/wallet');
@@ -9,37 +15,59 @@ const alertRoutes   = require('./routes/alert');
 const notifyRoutes  = require('./routes/notify');
 const analyzeRoutes = require('./routes/analyze');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const {
+  searchLimiter,
+  analysisLimiter,
+  alertsLimiter,
+  notifyLimiter,
+  globalLimiter
+} = require('./middleware/rateLimiter');
+const cache = require('./services/cache');
+const logger = require('./utils/logger');
 
 const app = express();
 const PORT = process.env.PORT || 3902;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
+// ─── Security Headers ─────────────────────────────────────────────────────────
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'none'; script-src 'none'; connect-src 'self'"
+  );
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  next();
+});
+
+// ─── CORS ─────────────────────────────────────────────────────────────────────
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:5173', 'http://localhost:3000'];
 
 app.use(cors({
-  origin: '*',
+  origin: (origin, cb) => {
+    // Allow requests with no origin (server-to-server, curl, etc.)
+    if (!origin || NODE_ENV === 'development') return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin "${origin}" not allowed`));
+  },
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
-// Request logger
+// Request logger (to console + file)
 app.use(morgan('[:date[iso]] :method :url :status :res[content-length] - :response-time ms'));
 
-// Global rate limiter: 100 req/min per IP
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    error: 'Too many requests, please try again in a minute.',
-    code: 'RATE_LIMIT_EXCEEDED'
-  }
-});
-app.use('/api', limiter);
+// ─── Global rate limiter ──────────────────────────────────────────────────────
+app.use('/api', globalLimiter);
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 
@@ -50,18 +78,27 @@ app.get('/api/health', (req, res) => {
     version: '1.0.0',
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    uptime: Math.round(process.uptime()),
+    environment: NODE_ENV
   });
 });
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
+// ─── Cache Stats ──────────────────────────────────────────────────────────────
 
-app.use('/api/token',   tokenRoutes);
-app.use('/api/wallet',  walletRoutes);
-app.use('/api/alerts',  alertRoutes);
-app.use('/api/notify',  notifyRoutes);
-app.use('/api/analyze', analyzeRoutes);
+app.get('/api/cache/stats', (req, res) => {
+  res.json({
+    success: true,
+    cache: cache.stats()
+  });
+});
+
+// ─── Routes (with tiered rate limiting) ──────────────────────────────────────
+
+app.use('/api/token',   searchLimiter,   tokenRoutes);
+app.use('/api/wallet',  searchLimiter,   walletRoutes);
+app.use('/api/alerts',  alertsLimiter,   alertRoutes);
+app.use('/api/notify',  notifyLimiter,   notifyRoutes);
+app.use('/api/analyze', analysisLimiter, analyzeRoutes);
 
 // ─── Error Handling ───────────────────────────────────────────────────────────
 
@@ -70,12 +107,21 @@ app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 
+const BANNER = `
+╔═══════════════════════════════════════════════╗
+║  🐧  Meme Terminal Backend  v1.0.0            ║
+║      AI-Powered Memecoin Trading Terminal     ║
+╠═══════════════════════════════════════════════╣
+║  Data: DexScreener · Pump.fun · GeckoTerminal ║
+╚═══════════════════════════════════════════════╝`;
+
 app.listen(PORT, () => {
-  console.log(`🐧 Meme Terminal backend running on port ${PORT}`);
-  console.log(`   Health:   http://localhost:${PORT}/api/health`);
-  console.log(`   Analyze:  POST http://localhost:${PORT}/api/analyze/token|wallet|market`);
-  console.log(`   Notify:   http://localhost:${PORT}/api/notify/status`);
-  console.log(`   Env:      ${process.env.NODE_ENV || 'development'}`);
+  console.log(BANNER);
+  logger.info(`Server started on port ${PORT}`, { env: NODE_ENV });
+  console.log(`\n  🌐  http://localhost:${PORT}/api/health`);
+  console.log(`  📊  http://localhost:${PORT}/api/cache/stats`);
+  console.log(`  🔥  http://localhost:${PORT}/api/token/trending`);
+  console.log(`  📡  Environment: ${NODE_ENV}\n`);
 });
 
 module.exports = app;

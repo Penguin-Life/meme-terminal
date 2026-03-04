@@ -1,0 +1,15 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "type": "price_above",
+    "target": "So11111111111111111111111111111111111111112",
+    "chain": "solana",
+    "threshold": 0.001,
+    "label": "Token price alert",
+    "enabled": true,
+    "notifyOnTrigger": true,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "lastTriggeredAt": null,
+    "lastTriggerDetails": null
+  }
+]

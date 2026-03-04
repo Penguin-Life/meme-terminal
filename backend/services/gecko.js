@@ -6,6 +6,7 @@
 
 const axios = require('axios');
 const cache = require('./cache');
+const { withRetry } = require('../utils/retry');
 
 const BASE_URL = 'https://api.geckoterminal.com/api/v2';
 const TTL = {
@@ -23,12 +24,19 @@ const client = axios.create({
 });
 
 /**
+ * Internal: resilient GET with retry
+ */
+async function get(url, config = {}) {
+  return withRetry(() => client.get(url, config), { attempts: 3, baseMs: 300 });
+}
+
+/**
  * Get trending pools on a network
  */
 async function getTrendingPools(network = 'solana', page = 1) {
   const key = `gecko:trending:${network}:${page}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/networks/${network}/trending_pools`, { params: { page } });
+    const { data } = await get(`/networks/${network}/trending_pools`, { params: { page } });
     return data.data || [];
   }, TTL.TRENDING);
 }
@@ -39,7 +47,7 @@ async function getTrendingPools(network = 'solana', page = 1) {
 async function getNewPools(network = 'solana', page = 1) {
   const key = `gecko:new_pools:${network}:${page}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/networks/${network}/new_pools`, { params: { page } });
+    const { data } = await get(`/networks/${network}/new_pools`, { params: { page } });
     return data.data || [];
   }, TTL.NEW_POOLS);
 }
@@ -50,7 +58,7 @@ async function getNewPools(network = 'solana', page = 1) {
 async function getTokenInfo(network, address) {
   const key = `gecko:token:${network}:${address.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/networks/${network}/tokens/${address}`, {
+    const { data } = await get(`/networks/${network}/tokens/${address}`, {
       params: { include: 'top_pools' }
     });
     return data;
@@ -63,7 +71,7 @@ async function getTokenInfo(network, address) {
 async function getPoolInfo(network, poolAddress) {
   const key = `gecko:pool:${network}:${poolAddress.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/networks/${network}/pools/${poolAddress}`);
+    const { data } = await get(`/networks/${network}/pools/${poolAddress}`);
     return data.data || null;
   }, TTL.POOL_INFO);
 }
@@ -76,7 +84,7 @@ async function search(query, network = null) {
   return cache.getOrSet(key, async () => {
     const params = { query };
     if (network) params.network = network;
-    const { data } = await client.get('/search/pools', { params });
+    const { data } = await get('/search/pools', { params });
     return data.data || [];
   }, TTL.SEARCH);
 }

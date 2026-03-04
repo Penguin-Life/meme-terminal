@@ -6,6 +6,7 @@
 
 const axios = require('axios');
 const cache = require('./cache');
+const { withRetry } = require('../utils/retry');
 
 const BASE_URL = 'https://frontend-api-v3.pump.fun';
 const TTL = {
@@ -25,12 +26,19 @@ const client = axios.create({
 });
 
 /**
+ * Internal: resilient GET with retry
+ */
+async function get(url, config = {}) {
+  return withRetry(() => client.get(url, config), { attempts: 3, baseMs: 400 });
+}
+
+/**
  * Get new coin launches, sorted by creation time
  */
 async function getNewCoins({ limit = 20, offset = 0, sort = 'created_timestamp', order = 'DESC' } = {}) {
   const key = `pf:new:${limit}:${offset}:${sort}:${order}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get('/coins', {
+    const { data } = await get('/coins', {
       params: { offset, limit, sort, order, includeNsfw: false }
     });
     return Array.isArray(data) ? data : [];
@@ -43,7 +51,7 @@ async function getNewCoins({ limit = 20, offset = 0, sort = 'created_timestamp',
 async function getCoinInfo(mint) {
   const key = `pf:coin:${mint}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/coins/${mint}`);
+    const { data } = await get(`/coins/${mint}`);
     return data;
   }, TTL.COIN_INFO);
 }
@@ -54,7 +62,7 @@ async function getCoinInfo(mint) {
 async function getKingOfTheHill() {
   const key = 'pf:king';
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get('/coins/king-of-the-hill', {
+    const { data } = await get('/coins/king-of-the-hill', {
       params: { includeNsfw: false }
     });
     return data;
@@ -67,7 +75,7 @@ async function getKingOfTheHill() {
 async function getTrades(mint, { limit = 50 } = {}) {
   const key = `pf:trades:${mint}:${limit}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/trades/${mint}`, {
+    const { data } = await get(`/trades/${mint}`, {
       params: { limit }
     });
     return Array.isArray(data) ? data : [];

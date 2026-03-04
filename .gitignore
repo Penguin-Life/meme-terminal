@@ -1,10 +1,52 @@
+# ─── Dependencies ─────────────────────────────────────────────────────────────
 node_modules/
+.pnp
+.pnp.js
+
+# ─── Build output ─────────────────────────────────────────────────────────────
 dist/
+build/
+.vite/
+
+# ─── Environment & secrets ────────────────────────────────────────────────────
 .env
 .env.local
+.env.*.local
+backend/.env
+backend/.env.local
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+backend/logs/
+
+# ─── Data files (runtime — use examples instead) ──────────────────────────────
+backend/data/watchlist.json
+backend/data/alerts.json
+# Keep example files:
+!backend/data/watchlist.example.json
+!backend/data/alerts.example.json
+
+# ─── OS & editor ─────────────────────────────────────────────────────────────
 .DS_Store
-frontend/node_modules/
-frontend/dist/
-backend/node_modules/
-backend/data/*.json
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ─── Testing ─────────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.pid
+*.seed
+*.pid.lock

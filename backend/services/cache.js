@@ -1,11 +1,20 @@
 /**
  * Simple in-memory cache with TTL (time-to-live).
  * Lightweight alternative to Redis for single-process use.
+ *
+ * Recommended TTLs:
+ *   DexScreener searches  : 60s
+ *   Token analysis         : 120s
+ *   Trending               : 30s
+ *   Wallet portfolio       : 60s
  */
 
 class Cache {
   constructor() {
     this.store = new Map();
+    this._hits = 0;
+    this._misses = 0;
+    this._sets = 0;
     // Sweep expired entries every 60 seconds
     this._sweepInterval = setInterval(() => this._sweep(), 60_000);
     this._sweepInterval.unref(); // don't block process exit
@@ -17,8 +26,10 @@ class Cache {
   set(key, value, ttlMs = 30_000) {
     this.store.set(key, {
       value,
-      expiresAt: Date.now() + ttlMs
+      expiresAt: Date.now() + ttlMs,
+      createdAt: Date.now()
     });
+    this._sets++;
   }
 
   /**
@@ -26,11 +37,16 @@ class Cache {
    */
   get(key) {
     const entry = this.store.get(key);
-    if (!entry) return null;
-    if (Date.now() > entry.expiresAt) {
-      this.store.delete(key);
+    if (!entry) {
+      this._misses++;
       return null;
     }
+    if (Date.now() > entry.expiresAt) {
+      this.store.delete(key);
+      this._misses++;
+      return null;
+    }
+    this._hits++;
     return entry.value;
   }
 
@@ -79,10 +95,33 @@ class Cache {
     }
   }
 
+  /**
+   * Return cache statistics
+   */
   stats() {
+    const now = Date.now();
+    let expiredCount = 0;
+    const entries = [];
+    for (const [key, entry] of this.store) {
+      const expired = now > entry.expiresAt;
+      if (expired) expiredCount++;
+      entries.push({
+        key,
+        expired,
+        ttlRemaining: Math.max(0, entry.expiresAt - now),
+        ageMs: now - entry.createdAt
+      });
+    }
+    const total = this._hits + this._misses;
     return {
       size: this.store.size,
-      keys: Array.from(this.store.keys())
+      activeEntries: this.store.size - expiredCount,
+      expiredEntries: expiredCount,
+      hits: this._hits,
+      misses: this._misses,
+      sets: this._sets,
+      hitRate: total > 0 ? ((this._hits / total) * 100).toFixed(1) + '%' : 'N/A',
+      entries
     };
   }
 }
