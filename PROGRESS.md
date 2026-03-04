@@ -13,10 +13,10 @@
 | R7 | Token analysis API | ✅ | - |
 | R8 | Wallet watchlist API | ✅ | - |
 | R9 | Alert engine | ✅ | - |
-| R10 | Frontend setup | ⏳ | - |
-| R11 | Token scanner page | ⏳ | - |
-| R12 | Wallet tracker page | ⏳ | - |
-| R13 | Alert center page | ⏳ | - |
+| R10 | Frontend setup | ✅ | - |
+| R11 | Token scanner page | ✅ | - |
+| R12 | Wallet tracker page | ✅ | - |
+| R13 | Alert center page | ✅ | - |
 | R14 | OpenClaw workflow | ⏳ | - |
 | R15 | Telegram notifications | ⏳ | - |
 | R16 | One-command analysis | ⏳ | - |
