@@ -27,6 +27,7 @@ const client = axios.create({
 
 /**
  * Internal: make a resilient GET request with retry
+ * Returns null on failure instead of throwing (R23 graceful degradation)
  */
 async function get(url, params) {
   return withRetry(
@@ -36,13 +37,25 @@ async function get(url, params) {
 }
 
 /**
+ * Internal: safe GET — returns null on any error (for graceful degradation)
+ */
+async function safeGet(url, params) {
+  try {
+    return await get(url, params);
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
  * Search tokens/pairs by keyword or contract address
  */
 async function search(query) {
   const key = `dex:search:${query.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/latest/dex/search?q=${encodeURIComponent(query)}`);
-    return data.pairs || [];
+    const res = await get(`/latest/dex/search?q=${encodeURIComponent(query)}`);
+    if (!res) return [];
+    return res.data?.pairs || [];
   }, TTL.SEARCH);
 }
 
@@ -52,8 +65,9 @@ async function search(query) {
 async function getTokenPairs(chain, address) {
   const key = `dex:pairs:${chain}:${address.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/tokens/v1/${chain}/${address}`);
-    return Array.isArray(data) ? data : [];
+    const res = await get(`/tokens/v1/${chain}/${address}`);
+    if (!res) return [];
+    return Array.isArray(res.data) ? res.data : [];
   }, TTL.TOKEN_PAIRS);
 }
 
@@ -63,8 +77,9 @@ async function getTokenPairs(chain, address) {
 async function getPair(chain, pairAddress) {
   const key = `dex:pair:${chain}:${pairAddress.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/latest/dex/pairs/${chain}/${pairAddress}`);
-    return data.pairs?.[0] || null;
+    const res = await get(`/latest/dex/pairs/${chain}/${pairAddress}`);
+    if (!res) return null;
+    return res.data?.pairs?.[0] || null;
   }, TTL.TOKEN_PAIRS);
 }
 
@@ -74,8 +89,9 @@ async function getPair(chain, pairAddress) {
 async function getBoostedTokens() {
   const key = 'dex:boosted';
   return cache.getOrSet(key, async () => {
-    const { data } = await get('/token-boosts/latest/v1');
-    return Array.isArray(data) ? data : [];
+    const res = await get('/token-boosts/latest/v1');
+    if (!res) return [];
+    return Array.isArray(res.data) ? res.data : [];
   }, TTL.BOOSTED);
 }
 
@@ -85,8 +101,9 @@ async function getBoostedTokens() {
 async function getTopBoosted() {
   const key = 'dex:top_boosted';
   return cache.getOrSet(key, async () => {
-    const { data } = await get('/token-boosts/top/v1');
-    return Array.isArray(data) ? data : [];
+    const res = await get('/token-boosts/top/v1');
+    if (!res) return [];
+    return Array.isArray(res.data) ? res.data : [];
   }, TTL.BOOSTED);
 }
 

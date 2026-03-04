@@ -22,9 +22,13 @@ function errorHandler(err, req, res, next) {
     error: {
       message,
       code,
+      status: statusCode,
       ...(process.env.NODE_ENV !== 'production' && err.stack && statusCode >= 500 && {
         stack: err.stack
       })
+    },
+    meta: {
+      timestamp: new Date().toISOString()
     }
   });
 }
@@ -34,7 +38,11 @@ function notFoundHandler(req, res) {
     success: false,
     error: {
       message: `Route not found: ${req.method} ${req.path}`,
-      code: 'NOT_FOUND'
+      code: 'NOT_FOUND',
+      status: 404
+    },
+    meta: {
+      timestamp: new Date().toISOString()
     }
   });
 }

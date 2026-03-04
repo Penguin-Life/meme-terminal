@@ -334,21 +334,21 @@ async function analyzeMarket() {
     errors:       []
   };
 
-  // ── Trending ──────────────────────────────────────────────────────────────
+  // ── Trending via DexScreener (boosted tokens) ─────────────────────────────
   try {
-    const trendingPairs = await dex.search('');
-    if (Array.isArray(trendingPairs)) {
-      report.trending = trendingPairs.slice(0, 10).map(p => ({
-        symbol:     p.baseToken?.symbol,
-        chainId:    p.chainId,
-        priceUsd:   p.priceUsd,
-        change24h:  p.priceChange?.h24,
-        volume24h:  p.volume?.h24,
-        liquidity:  p.liquidity?.usd
+    const boostedTokens = await dex.getBoostedTokens();
+    if (Array.isArray(boostedTokens)) {
+      report.trending = boostedTokens.slice(0, 10).map(t => ({
+        symbol:    t.tokenAddress?.slice(0, 8) + '...',
+        chainId:   t.chainId,
+        priceUsd:  null,
+        change24h: null,
+        volume24h: null,
+        liquidity: null
       }));
     }
   } catch (err) {
-    report.errors.push(`Trending fetch failed: ${err.message}`);
+    report.errors.push(`DexScreener boosted fetch failed: ${err.message}`);
   }
 
   // ── Trending via GeckoTerminal ─────────────────────────────────────────────

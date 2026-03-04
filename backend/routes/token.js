@@ -36,6 +36,8 @@ router.get('/search', async (req, res, next) => {
       throw createError('Query parameter "q" is required', 400, 'BAD_REQUEST');
     }
 
+    const warnings = [];
+
     // Run DexScreener search and GeckoTerminal search in parallel
     const [dexPairs, geckoPools] = await Promise.allSettled([
       dex.search(q),
@@ -49,6 +51,8 @@ router.get('/search', async (req, res, next) => {
         const normalized = dex.normalizePair(pair);
         if (normalized) results.push(normalized);
       });
+    } else {
+      warnings.push(`DexScreener search unavailable: ${dexPairs.reason?.message}`);
     }
 
     // Merge GeckoTerminal results (avoid duplicates by pair address)
@@ -60,14 +64,22 @@ router.get('/search', async (req, res, next) => {
           results.push(normalized);
         }
       });
+    } else {
+      warnings.push(`GeckoTerminal search unavailable: ${geckoPools.reason?.message}`);
     }
 
-    res.json({
+    const response = {
       success: true,
       query: q,
       count: results.length,
-      results
-    });
+      results,
+      meta: {
+        sources: ['dexscreener', 'geckoterminal'],
+        timestamp: new Date().toISOString()
+      }
+    };
+    if (warnings.length > 0) response.warnings = warnings;
+    res.json(response);
   } catch (err) {
     next(err);
   }
@@ -79,6 +91,7 @@ router.get('/trending', async (req, res, next) => {
   try {
     const { chain = 'solana' } = req.query;
     const geckoChain = toGeckoChain(chain);
+    const warnings = [];
 
     const [dexBoosted, geckoTrending] = await Promise.allSettled([
       dex.getBoostedTokens(),
@@ -93,6 +106,8 @@ router.get('/trending', async (req, res, next) => {
         const normalized = gecko.normalizePool(pool, 'geckoterminal');
         if (normalized) results.push({ ...normalized, _rank: 'trending' });
       });
+    } else {
+      warnings.push(`GeckoTerminal trending unavailable: ${geckoTrending.reason?.message}`);
     }
 
     // DexScreener boosted tokens (active marketing signal)
@@ -107,14 +122,22 @@ router.get('/trending', async (req, res, next) => {
           }
         } catch (e) { /* skip */ }
       }
+    } else {
+      warnings.push(`DexScreener boosted tokens unavailable: ${dexBoosted.reason?.message}`);
     }
 
-    res.json({
+    const response = {
       success: true,
       chain,
       count: results.length,
-      results
-    });
+      results,
+      meta: {
+        sources: ['geckoterminal', 'dexscreener'],
+        timestamp: new Date().toISOString()
+      }
+    };
+    if (warnings.length > 0) response.warnings = warnings;
+    res.json(response);
   } catch (err) {
     next(err);
   }
@@ -126,6 +149,7 @@ router.get('/new', async (req, res, next) => {
   try {
     const { chain = 'solana', limit = 20 } = req.query;
     const geckoChain = toGeckoChain(chain);
+    const warnings = [];
 
     const [pfCoins, geckoNew] = await Promise.allSettled([
       chain === 'solana' ? pumpfun.getNewCoins({ limit: parseInt(limit) }) : Promise.resolve([]),
@@ -140,6 +164,8 @@ router.get('/new', async (req, res, next) => {
         const normalized = pumpfun.normalizeCoin(coin, 'pumpfun');
         if (normalized) results.push(normalized);
       });
+    } else {
+      warnings.push(`Pump.fun unavailable: ${pfCoins.reason?.message}`);
     }
 
     // GeckoTerminal new pools
@@ -148,14 +174,22 @@ router.get('/new', async (req, res, next) => {
         gecko.normalizePool(pool, 'geckoterminal')
       ).filter(Boolean);
       results.push(...geckoResults);
+    } else {
+      warnings.push(`GeckoTerminal new pools unavailable: ${geckoNew.reason?.message}`);
     }
 
-    res.json({
+    const response = {
       success: true,
       chain,
-      count: results.length,
-      results: results.slice(0, parseInt(limit))
-    });
+      count: results.slice(0, parseInt(limit)).length,
+      results: results.slice(0, parseInt(limit)),
+      meta: {
+        sources: chain === 'solana' ? ['pumpfun', 'geckoterminal'] : ['geckoterminal'],
+        timestamp: new Date().toISOString()
+      }
+    };
+    if (warnings.length > 0) response.warnings = warnings;
+    res.json(response);
   } catch (err) {
     next(err);
   }
@@ -168,6 +202,7 @@ router.get('/:chain/:address', async (req, res, next) => {
     const { chain, address } = req.params;
     const geckoChain = toGeckoChain(chain);
     const isSolana = chain.toLowerCase() === 'solana';
+    const warnings = [];
 
     // Fetch data from all sources in parallel
     const [dexPairs, geckoToken, pfInfo] = await Promise.allSettled([
@@ -176,21 +211,32 @@ router.get('/:chain/:address', async (req, res, next) => {
       isSolana ? pumpfun.getCoinInfo(address) : Promise.resolve(null)
     ]);
 
+    if (dexPairs.status === 'rejected') {
+      warnings.push(`DexScreener unavailable: ${dexPairs.reason?.message}`);
+    }
+    if (geckoToken.status === 'rejected') {
+      warnings.push(`GeckoTerminal unavailable: ${geckoToken.reason?.message}`);
+    }
+
     // Start with DexScreener as primary source
     let result = null;
+    const sources = [];
+
     if (dexPairs.status === 'fulfilled' && dexPairs.value.length > 0) {
       // Pick the most liquid pair
       const bestPair = dexPairs.value.sort((a, b) =>
         (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
       )[0];
       result = dex.normalizePair(bestPair, 'dexscreener');
+      sources.push('dexscreener');
     }
 
     // Merge GeckoTerminal data
     if (geckoToken.status === 'fulfilled' && geckoToken.value?.data) {
       const gData = geckoToken.value.data;
       const attrs = gData.attributes || {};
-      
+      sources.push('geckoterminal');
+
       if (!result) {
         // Build from GeckoTerminal if DexScreener failed
         result = {
@@ -229,6 +275,7 @@ router.get('/:chain/:address', async (req, res, next) => {
     // Merge Pump.fun data (Solana only)
     if (isSolana && pfInfo.status === 'fulfilled' && pfInfo.value) {
       const pf = pfInfo.value;
+      sources.push('pumpfun');
       if (!result) {
         result = pumpfun.normalizeCoin(pf, 'pumpfun');
       } else {
@@ -237,7 +284,7 @@ router.get('/:chain/:address', async (req, res, next) => {
         result.meta.graduated = !!pf.complete;
         result.meta.kingOfTheHill = !!pf.king_of_the_hill_timestamp;
         result.meta.replies = pf.reply_count || 0;
-        result.meta.source = result.meta.source + '+pumpfun';
+        result.meta.source = sources.join('+');
         if (!result.social.twitter && pf.twitter) result.social.twitter = pf.twitter;
         if (!result.social.telegram && pf.telegram) result.social.telegram = pf.telegram;
         if (!result.token.image && pf.image_uri) result.token.image = pf.image_uri;
@@ -248,12 +295,18 @@ router.get('/:chain/:address', async (req, res, next) => {
       throw createError(`Token not found: ${chain}/${address}`, 404, 'TOKEN_NOT_FOUND');
     }
 
-    res.json({
+    const response = {
       success: true,
       chain,
       address,
-      data: result
-    });
+      data: result,
+      meta: {
+        sources,
+        timestamp: new Date().toISOString()
+      }
+    };
+    if (warnings.length > 0) response.warnings = warnings;
+    res.json(response);
   } catch (err) {
     next(err);
   }
