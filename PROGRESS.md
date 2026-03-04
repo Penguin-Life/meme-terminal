@@ -4,11 +4,11 @@
 
 | Round | Description | Status | Commit |
 |-------|-------------|--------|--------|
-| R1 | DexScreener Skill | ⏳ | - |
-| R2 | Pump.fun Skill | ⏳ | - |
-| R3 | GeckoTerminal Skill | ⏳ | - |
-| R4 | Smart Wallet Skill | ⏳ | - |
-| R5 | Meme Radar Skill | ⏳ | - |
+| R1 | DexScreener Skill | ✅ | 8a56e82 |
+| R2 | Pump.fun Skill | ✅ | 8a56e82 |
+| R3 | GeckoTerminal Skill | ✅ | 8a56e82 |
+| R4 | Smart Wallet Skill | ✅ | 8a56e82 |
+| R5 | Meme Radar Skill | ✅ | 8a56e82 |
 | R6 | Backend skeleton | ⏳ | - |
 | R7 | Token analysis API | ⏳ | - |
 | R8 | Wallet watchlist API | ⏳ | - |
