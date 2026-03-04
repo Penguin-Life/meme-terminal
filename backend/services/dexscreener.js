@@ -1,19 +1,22 @@
 /**
- * DexScreener API wrapper with caching.
+ * DexScreener API wrapper with caching + retry.
  * Docs: https://docs.dexscreener.com/api/reference
  * Free API — no key required. Rate limit: ~30 req/min.
  */
 
 const axios = require('axios');
 const cache = require('./cache');
+const { withRetry } = require('../utils/retry');
 
 const BASE_URL = 'https://api.dexscreener.com';
+
+// Recommended TTLs
 const TTL = {
-  SEARCH: 30_000,        // 30s
-  TOKEN_PAIRS: 20_000,   // 20s
-  TRENDING: 60_000,      // 60s
-  NEW: 15_000,           // 15s
-  BOOSTED: 120_000       // 2m
+  SEARCH: 60_000,       // 60s — search results change slowly
+  TOKEN_PAIRS: 30_000,  // 30s
+  TRENDING: 30_000,     // 30s
+  NEW: 15_000,          // 15s
+  BOOSTED: 120_000      // 2m — boost status changes slowly
 };
 
 const client = axios.create({
@@ -23,12 +26,22 @@ const client = axios.create({
 });
 
 /**
+ * Internal: make a resilient GET request with retry
+ */
+async function get(url, params) {
+  return withRetry(
+    () => client.get(url, params ? { params } : undefined),
+    { attempts: 3, baseMs: 300 }
+  );
+}
+
+/**
  * Search tokens/pairs by keyword or contract address
  */
 async function search(query) {
   const key = `dex:search:${query.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/latest/dex/search?q=${encodeURIComponent(query)}`);
+    const { data } = await get(`/latest/dex/search?q=${encodeURIComponent(query)}`);
     return data.pairs || [];
   }, TTL.SEARCH);
 }
@@ -39,7 +52,7 @@ async function search(query) {
 async function getTokenPairs(chain, address) {
   const key = `dex:pairs:${chain}:${address.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/tokens/v1/${chain}/${address}`);
+    const { data } = await get(`/tokens/v1/${chain}/${address}`);
     return Array.isArray(data) ? data : [];
   }, TTL.TOKEN_PAIRS);
 }
@@ -50,7 +63,7 @@ async function getTokenPairs(chain, address) {
 async function getPair(chain, pairAddress) {
   const key = `dex:pair:${chain}:${pairAddress.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get(`/latest/dex/pairs/${chain}/${pairAddress}`);
+    const { data } = await get(`/latest/dex/pairs/${chain}/${pairAddress}`);
     return data.pairs?.[0] || null;
   }, TTL.TOKEN_PAIRS);
 }
@@ -61,7 +74,7 @@ async function getPair(chain, pairAddress) {
 async function getBoostedTokens() {
   const key = 'dex:boosted';
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get('/token-boosts/latest/v1');
+    const { data } = await get('/token-boosts/latest/v1');
     return Array.isArray(data) ? data : [];
   }, TTL.BOOSTED);
 }
@@ -72,7 +85,7 @@ async function getBoostedTokens() {
 async function getTopBoosted() {
   const key = 'dex:top_boosted';
   return cache.getOrSet(key, async () => {
-    const { data } = await client.get('/token-boosts/top/v1');
+    const { data } = await get('/token-boosts/top/v1');
     return Array.isArray(data) ? data : [];
   }, TTL.BOOSTED);
 }
