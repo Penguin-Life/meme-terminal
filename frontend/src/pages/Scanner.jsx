@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { RefreshCw, TrendingUp, Sparkles, Search as SearchIcon } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { RefreshCw } from 'lucide-react'
 import SearchBar from '../components/SearchBar.jsx'
 import TokenCard from '../components/TokenCard.jsx'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'
+import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
 
 const TABS = [
@@ -14,6 +16,9 @@ const TABS = [
 const CHAINS = ['solana', 'ethereum', 'bsc', 'base', 'arbitrum']
 
 export default function Scanner() {
+  const navigate = useNavigate()
+  const toast = useToast()
+
   const [tab, setTab] = useState('trending')
   const [chain, setChain] = useState('solana')
   const [searchQuery, setSearchQuery] = useState('')
@@ -72,7 +77,7 @@ export default function Scanner() {
   useEffect(() => {
     fetchTrending(chain)
     fetchNew(chain)
-  }, [chain])
+  }, [chain]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-refresh trending every 30s
   useEffect(() => {
@@ -99,7 +104,7 @@ export default function Scanner() {
     try {
       const data = await api.get(`/token/${tokenItem.token.chain}/${id}`)
       setExpandedDetail(data.data)
-    } catch (e) {
+    } catch {
       // fallback to card data
       setExpandedDetail(tokenItem)
     } finally {
@@ -113,6 +118,22 @@ export default function Scanner() {
     setExpandedDetail(null)
   }
 
+  const handleTrackWallet = (token) => {
+    toast.info(`Navigate to Wallets to track ${token?.symbol || 'token'} wallets`)
+    navigate('/wallets')
+  }
+
+  const handleSetAlert = (token) => {
+    toast.info(`Navigate to Alerts to set alert for ${token?.symbol || 'token'}`)
+    navigate('/alerts')
+  }
+
+  const handleRetry = () => {
+    if (tab === 'trending') fetchTrending()
+    else if (tab === 'new') fetchNew()
+    else if (tab === 'search' && searchQuery) fetchSearch(searchQuery)
+  }
+
   const currentTokens = tokens[tab] || []
   const currentLoading = loading[tab]
   const currentError = errors[tab]
@@ -122,7 +143,7 @@ export default function Scanner() {
     : null
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -133,7 +154,7 @@ export default function Scanner() {
         </div>
         <div className="flex items-center gap-2">
           {lastRefresh && (
-            <span className="text-xs" style={{ color: '#6b7280' }}>
+            <span className="hidden sm:inline text-xs" style={{ color: '#6b7280' }}>
               Refreshed {timeSinceRefresh}s ago
             </span>
           )}
@@ -186,7 +207,7 @@ export default function Scanner() {
           <button
             key={id}
             onClick={() => setTab(id)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            className="flex items-center gap-1.5 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all"
             style={{
               background: tab === id ? '#1a1b25' : 'transparent',
               color: tab === id ? '#fff' : '#9ca3af',
@@ -194,7 +215,7 @@ export default function Scanner() {
             }}
           >
             <span>{icon}</span>
-            <span>{label}</span>
+            <span className="hidden sm:inline">{label}</span>
             {tokens[id]?.length > 0 && (
               <span
                 className="text-xs px-1.5 py-0.5 rounded-full"
@@ -210,10 +231,19 @@ export default function Scanner() {
       {/* Error */}
       {currentError && (
         <div
-          className="mb-4 p-3 rounded-lg text-sm"
+          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
           style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
         >
-          ⚠️ {currentError}
+          <span className="text-sm">⚠️ {currentError}</span>
+          <button
+            onClick={handleRetry}
+            disabled={currentLoading}
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
+          >
+            <RefreshCw size={10} className={currentLoading ? 'animate-spin' : ''} />
+            Retry
+          </button>
         </div>
       )}
 
@@ -221,7 +251,7 @@ export default function Scanner() {
       {currentLoading && currentTokens.length === 0 ? (
         <LoadingSkeleton count={6} />
       ) : currentTokens.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
+        <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
           <div className="text-4xl">
             {tab === 'search' ? '🔍' : tab === 'trending' ? '🔥' : '✨'}
           </div>
@@ -232,7 +262,7 @@ export default function Scanner() {
           </div>
           {tab === 'search' && (
             <div className="text-xs" style={{ color: '#6b7280' }}>
-              Try searching "bonk", "pepe", "wif", or paste a contract address
+              Try searching &quot;bonk&quot;, &quot;pepe&quot;, &quot;wif&quot;, or paste a contract address
             </div>
           )}
         </div>
@@ -242,16 +272,18 @@ export default function Scanner() {
             const id = tokenItem.token?.address || i
             const isExpanded = expandedId === id
             const displayData = isExpanded && expandedDetail ? expandedDetail : tokenItem
+            const staggerClass = i < 6 ? `stagger-${i + 1}` : ''
 
             return (
-              <TokenCard
-                key={`${id}-${i}`}
-                token={displayData}
-                expanded={isExpanded}
-                onExpand={() => handleExpand(tokenItem)}
-                onTrackWallet={(t) => console.log('Track wallet for', t)}
-                onSetAlert={(t) => console.log('Set alert for', t)}
-              />
+              <div key={`${id}-${i}`} className={`animate-fade-in-up ${staggerClass}`}>
+                <TokenCard
+                  token={displayData}
+                  expanded={isExpanded}
+                  onExpand={() => handleExpand(tokenItem)}
+                  onTrackWallet={handleTrackWallet}
+                  onSetAlert={handleSetAlert}
+                />
+              </div>
             )
           })}
         </div>
@@ -259,8 +291,8 @@ export default function Scanner() {
 
       {/* Detail loading overlay */}
       {detailLoading && (
-        <div className="fixed bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
-          style={{ background: '#12131a', border: '1px solid #1e2030', color: '#9ca3af' }}
+        <div className="fixed bottom-20 md:bottom-4 right-4 flex items-center gap-2 px-3 py-2 rounded-lg text-xs animate-slide-in-right"
+          style={{ background: '#12131a', border: '1px solid #1e2030', color: '#9ca3af', zIndex: 100 }}
         >
           <div className="w-3 h-3 border-2 rounded-full animate-spin" style={{ borderColor: '#1e2030', borderTopColor: '#00ff88' }} />
           Loading details...

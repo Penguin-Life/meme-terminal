@@ -21,7 +21,7 @@ export default function WalletCard({ wallet, onRemove }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const { address, chain, label, addedAt } = wallet
+  const { address, chain, label } = wallet
 
   const loadPortfolio = async () => {
     setLoading(true)
@@ -44,11 +44,11 @@ export default function WalletCard({ wallet, onRemove }) {
   const totalValue = portfolio?.tokens?.reduce((sum, t) => sum + (t.usdValue || 0), 0)
 
   const explorerUrl = () => {
-    const addrs = address
-    if (chain === 'solana') return `https://solscan.io/account/${addrs}`
-    if (chain === 'eth' || chain === 'ethereum') return `https://etherscan.io/address/${addrs}`
-    if (chain === 'bsc') return `https://bscscan.com/address/${addrs}`
-    if (chain === 'base') return `https://basescan.org/address/${addrs}`
+    if (chain === 'solana') return `https://solscan.io/account/${address}`
+    if (chain === 'eth' || chain === 'ethereum') return `https://etherscan.io/address/${address}`
+    if (chain === 'bsc') return `https://bscscan.com/address/${address}`
+    if (chain === 'base') return `https://basescan.org/address/${address}`
+    if (chain === 'arbitrum') return `https://arbiscan.io/address/${address}`
     return '#'
   }
 
@@ -73,7 +73,7 @@ export default function WalletCard({ wallet, onRemove }) {
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-white">{label}</span>
+            <span className="text-sm font-semibold text-white">{label || shortAddr(address)}</span>
             <ChainBadge chain={chain} size="xs" />
           </div>
           <div className="flex items-center gap-1.5 mt-0.5">
@@ -97,7 +97,9 @@ export default function WalletCard({ wallet, onRemove }) {
         {portfolio && totalValue !== undefined && (
           <div className="text-right flex-shrink-0">
             <div className="text-sm font-bold text-white">{fmt(totalValue)}</div>
-            <div className="text-xs" style={{ color: '#6b7280' }}>{portfolio.tokenCount || portfolio.tokens?.length || 0} tokens</div>
+            <div className="text-xs" style={{ color: '#6b7280' }}>
+              {portfolio.tokenCount || portfolio.tokens?.length || 0} tokens
+            </div>
           </div>
         )}
 
@@ -115,6 +117,7 @@ export default function WalletCard({ wallet, onRemove }) {
             onClick={() => onRemove && onRemove(wallet)}
             className="p-1.5 rounded-lg transition-all hover:opacity-80"
             style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.15)' }}
+            title="Remove wallet"
           >
             <Trash2 size={12} />
           </button>
@@ -124,7 +127,7 @@ export default function WalletCard({ wallet, onRemove }) {
       {/* Expanded: portfolio */}
       {expanded && (
         <div
-          className="border-t px-4 pb-4"
+          className="border-t px-4 pb-4 animate-fade-in"
           style={{ borderColor: '#1e2030' }}
         >
           {loading && (
@@ -136,11 +139,11 @@ export default function WalletCard({ wallet, onRemove }) {
 
           {error && (
             <div className="py-3 flex items-center justify-between">
-              <span className="text-xs" style={{ color: '#ff4444' }}>{error}</span>
+              <span className="text-xs" style={{ color: '#ff4444' }}>⚠️ {error}</span>
               <button
                 onClick={loadPortfolio}
-                className="flex items-center gap-1 text-xs px-2 py-1 rounded"
-                style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}
+                className="flex items-center gap-1 text-xs px-2 py-1 rounded transition-all hover:opacity-80"
+                style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.2)' }}
               >
                 <RefreshCw size={10} /> Retry
               </button>

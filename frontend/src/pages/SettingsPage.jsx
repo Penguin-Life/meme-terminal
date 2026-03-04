@@ -40,7 +40,7 @@ export default function SettingsPage() {
             <span style={{ color: '#9ca3af' }}>Health Check</span>
             <div className="flex items-center gap-2">
               {health && !health.error && (
-                <span style={{ color: '#00ff88' }} className="text-xs">✅ {health.status}</span>
+                <span style={{ color: '#00ff88' }} className="text-xs">✅ {health.data?.status || 'healthy'}</span>
               )}
               {health?.error && (
                 <span style={{ color: '#ff4444' }} className="text-xs">❌ {health.error}</span>
@@ -60,11 +60,15 @@ export default function SettingsPage() {
             <>
               <div className="flex items-center justify-between text-xs" style={{ color: '#6b7280' }}>
                 <span>Uptime</span>
-                <span>{Math.floor(health.uptime / 60)}m {Math.floor(health.uptime % 60)}s</span>
+                <span>
+                  {health.data?.uptime != null
+                    ? `${Math.floor(health.data.uptime / 60)}m ${Math.floor(health.data.uptime % 60)}s`
+                    : '—'}
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs" style={{ color: '#6b7280' }}>
                 <span>Version</span>
-                <span>{health.version}</span>
+                <span>{health.data?.version || '1.0.0'}</span>
               </div>
             </>
           )}
