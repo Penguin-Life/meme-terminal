@@ -12,6 +12,22 @@ const { checkAlerts, readAlerts, writeAlerts } = require('../services/alertEngin
 const VALID_TYPES = ['price_above', 'price_below', 'new_buy', 'large_tx', 'new_listing'];
 const VALID_CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'];
 
+// ─── GET /api/alerts/check — manually trigger alert check ─────────────────────
+// NOTE: Must be defined BEFORE /:id to avoid conflict
+
+router.get('/check', async (req, res, next) => {
+  try {
+    const result = await checkAlerts();
+    res.json({
+      success: true,
+      data: result,
+      meta: { timestamp: new Date().toISOString() }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── GET /api/alerts ──────────────────────────────────────────────────────────
 
 router.get('/', (req, res) => {
@@ -19,7 +35,8 @@ router.get('/', (req, res) => {
   res.json({
     success: true,
     count: alerts.length,
-    alerts
+    alerts,
+    meta: { timestamp: new Date().toISOString() }
   });
 });
 
@@ -63,7 +80,8 @@ router.post('/', (req, res, next) => {
     res.status(201).json({
       success: true,
       message: 'Alert created',
-      alert
+      alert,
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);
@@ -103,7 +121,8 @@ router.patch('/:id', (req, res, next) => {
     res.json({
       success: true,
       message: 'Alert updated',
-      alert: alerts[idx]
+      alert: alerts[idx],
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);
@@ -124,20 +143,10 @@ router.delete('/:id', (req, res, next) => {
     }
 
     writeAlerts(alerts);
-    res.json({ success: true, message: 'Alert deleted' });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// ─── GET /api/alerts/check — manually trigger alert check ─────────────────────
-
-router.get('/check', async (req, res, next) => {
-  try {
-    const result = await checkAlerts();
     res.json({
       success: true,
-      ...result
+      message: 'Alert deleted',
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);

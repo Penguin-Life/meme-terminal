@@ -50,3 +50,5 @@ coverage/
 *.pid
 *.seed
 *.pid.lock
+backend/data/*.corrupt*
+backend/data/*.corrupt_test

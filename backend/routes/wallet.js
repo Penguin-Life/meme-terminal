@@ -5,28 +5,23 @@
 
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 const path = require('path');
 
 const solana = require('../services/solana');
 const dex = require('../services/dexscreener');
 const { createError } = require('../middleware/errorHandler');
+const { readJson, writeJson } = require('../utils/dataStore');
 
 const WATCHLIST_FILE = path.join(__dirname, '../data/watchlist.json');
 
 // ─── Watchlist helpers ────────────────────────────────────────────────────────
 
 function readWatchlist() {
-  try {
-    const raw = fs.readFileSync(WATCHLIST_FILE, 'utf8');
-    return JSON.parse(raw);
-  } catch (e) {
-    return [];
-  }
+  return readJson(WATCHLIST_FILE, []);
 }
 
 function writeWatchlist(data) {
-  fs.writeFileSync(WATCHLIST_FILE, JSON.stringify(data, null, 2), 'utf8');
+  writeJson(WATCHLIST_FILE, data);
 }
 
 // ─── GET /api/wallet/watchlist ────────────────────────────────────────────────
@@ -36,7 +31,8 @@ router.get('/watchlist', (req, res) => {
   res.json({
     success: true,
     count: watchlist.length,
-    wallets: watchlist
+    wallets: watchlist,
+    meta: { timestamp: new Date().toISOString() }
   });
 });
 
@@ -71,7 +67,8 @@ router.post('/watchlist', (req, res, next) => {
     res.status(201).json({
       success: true,
       message: 'Wallet added to watchlist',
-      wallet: entry
+      wallet: entry,
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);
@@ -100,7 +97,11 @@ router.delete('/watchlist/:address', (req, res, next) => {
     }
 
     writeWatchlist(watchlist);
-    res.json({ success: true, message: 'Wallet removed from watchlist' });
+    res.json({
+      success: true,
+      message: 'Wallet removed from watchlist',
+      meta: { timestamp: new Date().toISOString() }
+    });
   } catch (err) {
     next(err);
   }
@@ -114,32 +115,47 @@ router.get('/:chain/:address', async (req, res, next) => {
 
     if (chain.toLowerCase() === 'solana') {
       // Solana portfolio via RPC
-      const portfolio = await solana.getPortfolio(address, async (mint) => {
-        // Try to get price from DexScreener
-        try {
-          const pairs = await dex.getTokenPairs('solana', mint);
-          if (pairs.length > 0 && pairs[0].priceUsd) {
-            return parseFloat(pairs[0].priceUsd);
-          }
-        } catch (e) { /* best effort */ }
-        return null;
-      });
+      const warnings = [];
+      let portfolio;
+      try {
+        portfolio = await solana.getPortfolio(address, async (mint) => {
+          // Try to get price from DexScreener
+          try {
+            const pairs = await dex.getTokenPairs('solana', mint);
+            if (pairs.length > 0 && pairs[0].priceUsd) {
+              return parseFloat(pairs[0].priceUsd);
+            }
+          } catch (e) { /* best effort */ }
+          return null;
+        });
+      } catch (err) {
+        warnings.push(`Solana RPC error: ${err.message}`);
+        portfolio = {
+          address,
+          chain: 'solana',
+          nativeBalance: null,
+          tokens: [],
+          tokenCount: 0,
+          updatedAt: new Date().toISOString()
+        };
+      }
 
-      res.json({
+      const response = {
         success: true,
         chain,
         address,
-        portfolio
-      });
+        data: portfolio,
+        meta: { source: 'solana-rpc', timestamp: new Date().toISOString() }
+      };
+      if (warnings.length > 0) response.warnings = warnings;
+      res.json(response);
+
     } else if (['ethereum', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'].includes(chain.toLowerCase())) {
-      // EVM portfolio — use DexScreener for recent activity
-      // For now, return a placeholder with instructions
-      // Production: use Etherscan/BSCscan/BaseScan API or Moralis
       res.json({
         success: true,
         chain,
         address,
-        portfolio: {
+        data: {
           address,
           chain,
           note: 'EVM portfolio requires block explorer API key (Etherscan/BSCscan). Configure in environment.',
@@ -147,7 +163,8 @@ router.get('/:chain/:address', async (req, res, next) => {
           tokens: [],
           tokenCount: 0,
           updatedAt: new Date().toISOString()
-        }
+        },
+        meta: { source: 'placeholder', timestamp: new Date().toISOString() }
       });
     } else {
       throw createError(`Unsupported chain: ${chain}`, 400, 'UNSUPPORTED_CHAIN');
@@ -163,31 +180,44 @@ router.get('/:chain/:address/trades', async (req, res, next) => {
   try {
     const { chain, address } = req.params;
     const { limit = 20 } = req.query;
+    const warnings = [];
 
     if (chain.toLowerCase() === 'solana') {
-      const txs = await solana.getRecentTransactions(address, parseInt(limit));
-      res.json({
+      let txs = [];
+      try {
+        txs = await solana.getRecentTransactions(address, parseInt(limit));
+      } catch (err) {
+        warnings.push(`Could not fetch transactions: ${err.message}`);
+      }
+
+      const response = {
         success: true,
         chain,
         address,
         count: txs.length,
-        trades: txs.map(tx => ({
-          signature: tx.signature,
-          timestamp: tx.timestamp,
-          blockTime: tx.blockTime,
-          status: tx.err ? 'failed' : 'success',
-          memo: tx.memo,
-          slot: tx.slot
-        }))
-      });
+        data: {
+          trades: txs.map(tx => ({
+            signature: tx.signature,
+            timestamp: tx.timestamp,
+            blockTime: tx.blockTime,
+            status: tx.err ? 'failed' : 'success',
+            memo: tx.memo,
+            slot: tx.slot
+          }))
+        },
+        meta: { source: 'solana-rpc', timestamp: new Date().toISOString() }
+      };
+      if (warnings.length > 0) response.warnings = warnings;
+      res.json(response);
     } else {
       res.json({
         success: true,
         chain,
         address,
         count: 0,
-        note: 'EVM trade history requires block explorer API integration',
-        trades: []
+        data: { trades: [] },
+        warnings: ['EVM trade history requires block explorer API integration'],
+        meta: { source: 'placeholder', timestamp: new Date().toISOString() }
       });
     }
   } catch (err) {

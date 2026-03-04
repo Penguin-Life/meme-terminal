@@ -6,8 +6,8 @@
 
 const dex = require('./dexscreener');
 const pumpfun = require('./pumpfun');
-const fs = require('fs');
 const path = require('path');
+const { readJson, writeJson } = require('../utils/dataStore');
 
 // Lazy-load notifier to avoid circular deps
 let _notifier = null;
@@ -19,15 +19,11 @@ function getNotifier() {
 const ALERTS_FILE = path.join(__dirname, '../data/alerts.json');
 
 function readAlerts() {
-  try {
-    return JSON.parse(fs.readFileSync(ALERTS_FILE, 'utf8'));
-  } catch (e) {
-    return [];
-  }
+  return readJson(ALERTS_FILE, []);
 }
 
 function writeAlerts(alerts) {
-  fs.writeFileSync(ALERTS_FILE, JSON.stringify(alerts, null, 2), 'utf8');
+  writeJson(ALERTS_FILE, alerts);
 }
 
 /**

@@ -36,8 +36,12 @@ async function get(url, config = {}) {
 async function getTrendingPools(network = 'solana', page = 1) {
   const key = `gecko:trending:${network}:${page}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/networks/${network}/trending_pools`, { params: { page } });
-    return data.data || [];
+    try {
+      const { data } = await get(`/networks/${network}/trending_pools`, { params: { page } });
+      return data?.data || [];
+    } catch (err) {
+      return [];
+    }
   }, TTL.TRENDING);
 }
 
@@ -47,8 +51,12 @@ async function getTrendingPools(network = 'solana', page = 1) {
 async function getNewPools(network = 'solana', page = 1) {
   const key = `gecko:new_pools:${network}:${page}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/networks/${network}/new_pools`, { params: { page } });
-    return data.data || [];
+    try {
+      const { data } = await get(`/networks/${network}/new_pools`, { params: { page } });
+      return data?.data || [];
+    } catch (err) {
+      return [];
+    }
   }, TTL.NEW_POOLS);
 }
 
@@ -58,10 +66,14 @@ async function getNewPools(network = 'solana', page = 1) {
 async function getTokenInfo(network, address) {
   const key = `gecko:token:${network}:${address.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/networks/${network}/tokens/${address}`, {
-      params: { include: 'top_pools' }
-    });
-    return data;
+    try {
+      const { data } = await get(`/networks/${network}/tokens/${address}`, {
+        params: { include: 'top_pools' }
+      });
+      return data;
+    } catch (err) {
+      return null;
+    }
   }, TTL.TOKEN_INFO);
 }
 
@@ -71,8 +83,12 @@ async function getTokenInfo(network, address) {
 async function getPoolInfo(network, poolAddress) {
   const key = `gecko:pool:${network}:${poolAddress.toLowerCase()}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/networks/${network}/pools/${poolAddress}`);
-    return data.data || null;
+    try {
+      const { data } = await get(`/networks/${network}/pools/${poolAddress}`);
+      return data?.data || null;
+    } catch (err) {
+      return null;
+    }
   }, TTL.POOL_INFO);
 }
 
@@ -82,10 +98,14 @@ async function getPoolInfo(network, poolAddress) {
 async function search(query, network = null) {
   const key = `gecko:search:${query.toLowerCase()}:${network || 'all'}`;
   return cache.getOrSet(key, async () => {
-    const params = { query };
-    if (network) params.network = network;
-    const { data } = await get('/search/pools', { params });
-    return data.data || [];
+    try {
+      const params = { query };
+      if (network) params.network = network;
+      const { data } = await get('/search/pools', { params });
+      return data?.data || [];
+    } catch (err) {
+      return [];
+    }
   }, TTL.SEARCH);
 }
 

@@ -24,10 +24,28 @@ const {
 } = require('./middleware/rateLimiter');
 const cache = require('./services/cache');
 const logger = require('./utils/logger');
+// Ensure data directory exists on startup (R24)
+const { ensureDataDir } = require('./utils/dataStore');
 
 const app = express();
 const PORT = process.env.PORT || 3902;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// ─── Startup: Ensure data directory exists ────────────────────────────────────
+ensureDataDir();
+
+// ─── Unhandled Error Safety Net ───────────────────────────────────────────────
+process.on('uncaughtException', (err) => {
+  logger.error(`Uncaught Exception: ${err.message}`, { stack: err.stack });
+  // Don't exit — keep server running
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error(`Unhandled Rejection at: ${promise}`, {
+    reason: reason instanceof Error ? reason.message : String(reason)
+  });
+  // Don't exit — keep server running
+});
 
 // ─── Security Headers ─────────────────────────────────────────────────────────
 
@@ -74,12 +92,16 @@ app.use('/api', globalLimiter);
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    service: 'meme-terminal-backend',
-    version: '1.0.0',
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    uptime: Math.round(process.uptime()),
-    environment: NODE_ENV
+    data: {
+      service: 'meme-terminal-backend',
+      version: '1.0.0',
+      status: 'healthy',
+      uptime: Math.round(process.uptime()),
+      environment: NODE_ENV
+    },
+    meta: {
+      timestamp: new Date().toISOString()
+    }
   });
 });
 
@@ -88,7 +110,12 @@ app.get('/api/health', (req, res) => {
 app.get('/api/cache/stats', (req, res) => {
   res.json({
     success: true,
-    cache: cache.stats()
+    data: {
+      cache: cache.stats()
+    },
+    meta: {
+      timestamp: new Date().toISOString()
+    }
   });
 });
 

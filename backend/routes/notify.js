@@ -14,8 +14,11 @@ router.get('/status', (req, res) => {
   const status = notifier.getStatus();
   res.json({
     success: true,
-    notification: status,
-    anyConfigured: status.telegram.configured || status.webhook.configured
+    data: {
+      notification: status,
+      anyConfigured: status.telegram.configured || status.webhook.configured
+    },
+    meta: { timestamp: new Date().toISOString() }
   });
 });
 
@@ -49,7 +52,8 @@ router.post('/test', async (req, res, next) => {
     res.json({
       success: true,
       message: 'Test notification sent',
-      result
+      data: { result },
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);
@@ -80,8 +84,8 @@ router.post('/token-report', async (req, res, next) => {
     res.json({
       success: true,
       message: 'Token report sent',
-      formatted: text,
-      result
+      data: { formatted: text, result },
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);
@@ -112,8 +116,8 @@ router.post('/alert', async (req, res, next) => {
     res.json({
       success: true,
       message: 'Alert notification sent',
-      formatted: text,
-      result
+      data: { formatted: text, result },
+      meta: { timestamp: new Date().toISOString() }
     });
   } catch (err) {
     next(err);

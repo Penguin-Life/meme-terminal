@@ -38,10 +38,14 @@ async function get(url, config = {}) {
 async function getNewCoins({ limit = 20, offset = 0, sort = 'created_timestamp', order = 'DESC' } = {}) {
   const key = `pf:new:${limit}:${offset}:${sort}:${order}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get('/coins', {
-      params: { offset, limit, sort, order, includeNsfw: false }
-    });
-    return Array.isArray(data) ? data : [];
+    try {
+      const { data } = await get('/coins', {
+        params: { offset, limit, sort, order, includeNsfw: false }
+      });
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      return [];
+    }
   }, TTL.NEW_COINS);
 }
 
@@ -51,8 +55,12 @@ async function getNewCoins({ limit = 20, offset = 0, sort = 'created_timestamp',
 async function getCoinInfo(mint) {
   const key = `pf:coin:${mint}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/coins/${mint}`);
-    return data;
+    try {
+      const { data } = await get(`/coins/${mint}`);
+      return data || null;
+    } catch (err) {
+      return null;
+    }
   }, TTL.COIN_INFO);
 }
 
@@ -62,10 +70,14 @@ async function getCoinInfo(mint) {
 async function getKingOfTheHill() {
   const key = 'pf:king';
   return cache.getOrSet(key, async () => {
-    const { data } = await get('/coins/king-of-the-hill', {
-      params: { includeNsfw: false }
-    });
-    return data;
+    try {
+      const { data } = await get('/coins/king-of-the-hill', {
+        params: { includeNsfw: false }
+      });
+      return data || null;
+    } catch (err) {
+      return null;
+    }
   }, TTL.KING);
 }
 
@@ -75,10 +87,14 @@ async function getKingOfTheHill() {
 async function getTrades(mint, { limit = 50 } = {}) {
   const key = `pf:trades:${mint}:${limit}`;
   return cache.getOrSet(key, async () => {
-    const { data } = await get(`/trades/${mint}`, {
-      params: { limit }
-    });
-    return Array.isArray(data) ? data : [];
+    try {
+      const { data } = await get(`/trades/${mint}`, {
+        params: { limit }
+      });
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      return [];
+    }
   }, TTL.TRADES);
 }
 

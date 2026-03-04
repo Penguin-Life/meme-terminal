@@ -28,7 +28,11 @@ router.post('/token', async (req, res, next) => {
 
     res.json({
       success: true,
-      report
+      data: { report },
+      meta: {
+        source: 'multi',
+        timestamp: new Date().toISOString()
+      }
     });
   } catch (err) {
     next(err);
@@ -53,7 +57,11 @@ router.post('/wallet', async (req, res, next) => {
 
     res.json({
       success: true,
-      report
+      data: { report },
+      meta: {
+        source: 'multi',
+        timestamp: new Date().toISOString()
+      }
     });
   } catch (err) {
     next(err);
@@ -66,10 +74,21 @@ router.post('/market', async (req, res, next) => {
   try {
     const report = await analyzeMarket();
 
-    res.json({
+    const response = {
       success: true,
-      report
-    });
+      data: { report },
+      meta: {
+        source: 'multi',
+        timestamp: new Date().toISOString()
+      }
+    };
+
+    // Surface any internal errors as warnings (not failures — report still has data)
+    if (report.errors && report.errors.length > 0) {
+      response.warnings = report.errors;
+    }
+
+    res.json(response);
   } catch (err) {
     next(err);
   }
