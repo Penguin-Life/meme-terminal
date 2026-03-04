@@ -3,9 +3,11 @@ const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-const tokenRoutes = require('./routes/token');
-const walletRoutes = require('./routes/wallet');
-const alertRoutes = require('./routes/alert');
+const tokenRoutes   = require('./routes/token');
+const walletRoutes  = require('./routes/wallet');
+const alertRoutes   = require('./routes/alert');
+const notifyRoutes  = require('./routes/notify');
+const analyzeRoutes = require('./routes/analyze');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -55,9 +57,11 @@ app.get('/api/health', (req, res) => {
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
-app.use('/api/token', tokenRoutes);
-app.use('/api/wallet', walletRoutes);
-app.use('/api/alerts', alertRoutes);
+app.use('/api/token',   tokenRoutes);
+app.use('/api/wallet',  walletRoutes);
+app.use('/api/alerts',  alertRoutes);
+app.use('/api/notify',  notifyRoutes);
+app.use('/api/analyze', analyzeRoutes);
 
 // ─── Error Handling ───────────────────────────────────────────────────────────
 
@@ -68,8 +72,10 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`🐧 Meme Terminal backend running on port ${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/api/health`);
-  console.log(`   Env:    ${process.env.NODE_ENV || 'development'}`);
+  console.log(`   Health:   http://localhost:${PORT}/api/health`);
+  console.log(`   Analyze:  POST http://localhost:${PORT}/api/analyze/token|wallet|market`);
+  console.log(`   Notify:   http://localhost:${PORT}/api/notify/status`);
+  console.log(`   Env:      ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;

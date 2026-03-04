@@ -17,9 +17,9 @@
 | R11 | Token scanner page | ✅ | - |
 | R12 | Wallet tracker page | ✅ | - |
 | R13 | Alert center page | ✅ | - |
-| R14 | OpenClaw workflow | ⏳ | - |
-| R15 | Telegram notifications | ⏳ | - |
-| R16 | One-command analysis | ⏳ | - |
+| R14 | OpenClaw workflow | ✅ | - |
+| R15 | Telegram notifications | ✅ | - |
+| R16 | One-command analysis | ✅ | - |
 | R17 | Error handling & caching | ⏳ | - |
 | R18 | Security audit | ⏳ | - |
 | R19 | Docs & README | ⏳ | - |
