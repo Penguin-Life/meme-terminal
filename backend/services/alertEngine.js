@@ -9,6 +9,13 @@ const pumpfun = require('./pumpfun');
 const fs = require('fs');
 const path = require('path');
 
+// Lazy-load notifier to avoid circular deps
+let _notifier = null;
+function getNotifier() {
+  if (!_notifier) _notifier = require('./notifier');
+  return _notifier;
+}
+
 const ALERTS_FILE = path.join(__dirname, '../data/alerts.json');
 
 function readAlerts() {
@@ -165,6 +172,25 @@ async function checkAlerts() {
       return a;
     });
     writeAlerts(updatedAlerts);
+
+    // Send Telegram notifications for alerts with notifyOnTrigger: true
+    const notifier = getNotifier();
+    if (notifier.isTelegramConfigured() || notifier.isWebhookConfigured()) {
+      for (const r of triggered) {
+        const alertRule = alerts.find(a => a.id === r.alert.id);
+        if (alertRule?.notifyOnTrigger !== false) {
+          // Fire-and-forget — don't block the response
+          const notifyPayload = {
+            ...r.alert,
+            currentValue: r.currentValue,
+            details: r.details,
+            tokenInfo: r.tokenInfo || null
+          };
+          notifier.send(notifier.formatAlertMessage(notifyPayload), { type: 'alert_trigger', alert: notifyPayload })
+            .catch(err => console.error(`[alertEngine] Notification error for alert ${r.alert.id}:`, err.message));
+        }
+      }
+    }
   }
 
   return {

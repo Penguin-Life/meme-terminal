@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res, next) => {
   try {
-    const { type, target, chain, threshold, label, enabled = true } = req.body;
+    const { type, target, chain, threshold, label, enabled = true, notifyOnTrigger = true } = req.body;
 
     if (!type || !target || !chain) {
       throw createError('Fields "type", "target", and "chain" are required', 400, 'BAD_REQUEST');
@@ -51,6 +51,7 @@ router.post('/', (req, res, next) => {
       threshold: threshold !== undefined ? parseFloat(threshold) : null,
       label: label || `${type} on ${target.slice(0, 8)}...`,
       enabled: Boolean(enabled),
+      notifyOnTrigger: Boolean(notifyOnTrigger),
       createdAt: new Date().toISOString(),
       lastTriggeredAt: null,
       lastTriggerDetails: null
