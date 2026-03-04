@@ -9,10 +9,10 @@
 | R3 | GeckoTerminal Skill | ✅ | 8a56e82 |
 | R4 | Smart Wallet Skill | ✅ | 8a56e82 |
 | R5 | Meme Radar Skill | ✅ | 8a56e82 |
-| R6 | Backend skeleton | ⏳ | - |
-| R7 | Token analysis API | ⏳ | - |
-| R8 | Wallet watchlist API | ⏳ | - |
-| R9 | Alert engine | ⏳ | - |
+| R6 | Backend skeleton | ✅ | - |
+| R7 | Token analysis API | ✅ | - |
+| R8 | Wallet watchlist API | ✅ | - |
+| R9 | Alert engine | ✅ | - |
 | R10 | Frontend setup | ⏳ | - |
 | R11 | Token scanner page | ⏳ | - |
 | R12 | Wallet tracker page | ⏳ | - |
