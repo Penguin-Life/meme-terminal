@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Plus, Wallet, RefreshCw } from 'lucide-react'
 import WalletCard from '../components/WalletCard.jsx'
-import ChainBadge from '../components/ChainBadge.jsx'
 import { WalletCardSkeleton } from '../components/LoadingSkeleton.jsx'
+import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
 
 const CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum']
 
 export default function Wallets() {
+  const toast = useToast()
   const [watchlist, setWatchlist] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -43,8 +44,10 @@ export default function Wallets() {
       setWatchlist(w => [...w, data.wallet])
       setForm({ address: '', chain: 'solana', label: '', notes: '' })
       setShowAddForm(false)
+      toast.success(`Wallet "${data.wallet?.label || form.address.slice(0, 8) + '...'}" added to watchlist`)
     } catch (e) {
       setAddError(e.message)
+      toast.error('Failed to add wallet: ' + e.message)
     } finally {
       setAddLoading(false)
     }
@@ -55,13 +58,14 @@ export default function Wallets() {
     try {
       await api.delete(`/wallet/watchlist/${wallet.address}?chain=${wallet.chain}`)
       setWatchlist(w => w.filter(x => !(x.address === wallet.address && x.chain === wallet.chain)))
+      toast.success(`Wallet "${wallet.label}" removed`)
     } catch (e) {
-      alert('Failed to remove: ' + e.message)
+      toast.error('Failed to remove: ' + e.message)
     }
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -76,6 +80,7 @@ export default function Wallets() {
             disabled={loading}
             className="p-2 rounded-lg transition-all hover:opacity-80"
             style={{ background: '#12131a', border: '1px solid #1e2030', color: '#9ca3af' }}
+            title="Refresh"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           </button>
@@ -98,7 +103,7 @@ export default function Wallets() {
       {showAddForm && (
         <form
           onSubmit={handleAdd}
-          className="rounded-xl p-5 mb-6 border"
+          className="rounded-xl p-5 mb-6 border animate-fade-in-up"
           style={{ background: '#12131a', borderColor: 'rgba(0,255,136,0.2)' }}
         >
           <div className="text-sm font-semibold mb-4 text-white">Add Wallet to Watchlist</div>
@@ -188,16 +193,25 @@ export default function Wallets() {
       {/* Error */}
       {error && (
         <div
-          className="mb-4 p-3 rounded-lg text-sm"
+          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
           style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
         >
-          ⚠️ {error}
+          <span className="text-sm">⚠️ {error}</span>
+          <button
+            onClick={fetchWatchlist}
+            disabled={loading}
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
+          >
+            <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
+            Retry
+          </button>
         </div>
       )}
 
       {/* Stats */}
       {!loading && watchlist.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in-up">
           {[
             { label: 'Wallets Tracked', value: watchlist.length, color: '#00ff88' },
             { label: 'Chains', value: [...new Set(watchlist.map(w => w.chain))].length, color: '#3b82f6' },
@@ -217,13 +231,13 @@ export default function Wallets() {
           {Array.from({ length: 3 }).map((_, i) => <WalletCardSkeleton key={i} />)}
         </div>
       ) : watchlist.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
+        <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
           <Wallet size={48} style={{ color: '#1e2030' }} />
           <div className="text-sm" style={{ color: '#9ca3af' }}>No wallets tracked yet</div>
           <div className="text-xs" style={{ color: '#6b7280' }}>Add a wallet address to start monitoring</div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium"
+            className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
             style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}
           >
             <Plus size={14} /> Add First Wallet
@@ -231,12 +245,13 @@ export default function Wallets() {
         </div>
       ) : (
         <div className="space-y-3">
-          {watchlist.map((wallet) => (
-            <WalletCard
-              key={`${wallet.address}-${wallet.chain}`}
-              wallet={wallet}
-              onRemove={handleRemove}
-            />
+          {watchlist.map((wallet, i) => (
+            <div key={`${wallet.address}-${wallet.chain}`} className={`animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}>
+              <WalletCard
+                wallet={wallet}
+                onRemove={handleRemove}
+              />
+            </div>
           ))}
         </div>
       )}

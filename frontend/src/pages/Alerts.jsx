@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Plus, Bell, BellOff, Trash2, RefreshCw, Play, AlertCircle, TrendingUp, TrendingDown, Zap, ArrowUpRight } from 'lucide-react'
+import { Plus, Bell, BellOff, Trash2, RefreshCw, Play, Zap } from 'lucide-react'
 import ChainBadge from '../components/ChainBadge.jsx'
+import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
 
 const ALERT_TYPES = [
   { value: 'price_above', label: 'Price Above', icon: '📈', color: '#00ff88' },
   { value: 'price_below', label: 'Price Below', icon: '📉', color: '#ff4444' },
-  { value: 'new_buy', label: 'New Buy', icon: '💰', color: '#f59e0b' },
-  { value: 'large_tx', label: 'Large TX', icon: '🐋', color: '#8b5cf6' },
-  { value: 'new_listing', label: 'New Listing', icon: '🆕', color: '#3b82f6' },
+  { value: 'new_buy',     label: 'New Buy',     icon: '💰', color: '#f59e0b' },
+  { value: 'large_tx',   label: 'Large TX',    icon: '🐋', color: '#8b5cf6' },
+  { value: 'new_listing',label: 'New Listing', icon: '🆕', color: '#3b82f6' },
 ]
 
 const CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon']
@@ -21,17 +22,11 @@ function shortAddr(addr) {
 
 function fmtTime(iso) {
   if (!iso) return '—'
-  const d = new Date(iso)
-  return d.toLocaleString()
-}
-
-function AlertTypeIcon({ type }) {
-  const cfg = ALERT_TYPES.find(t => t.value === type)
-  if (!cfg) return <span>❓</span>
-  return <span>{cfg.icon}</span>
+  return new Date(iso).toLocaleString()
 }
 
 export default function Alerts() {
+  const toast = useToast()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -84,19 +79,22 @@ export default function Alerts() {
       setAlerts(a => [...a, data.alert])
       setForm({ type: 'price_above', target: '', chain: 'solana', threshold: '', label: '' })
       setShowForm(false)
+      toast.success(`Alert "${data.alert?.label || form.type}" created`)
     } catch (e) {
       setAddError(e.message)
+      toast.error('Failed to create alert: ' + e.message)
     } finally {
       setAddLoading(false)
     }
   }
 
-  const handleToggle = async (alert) => {
+  const handleToggle = async (alertItem) => {
     try {
-      const data = await api.patch(`/alerts/${alert.id}`, { enabled: !alert.enabled })
-      setAlerts(a => a.map(x => x.id === alert.id ? data.alert : x))
+      const data = await api.patch(`/alerts/${alertItem.id}`, { enabled: !alertItem.enabled })
+      setAlerts(a => a.map(x => x.id === alertItem.id ? data.alert : x))
+      toast.info(data.alert?.enabled ? 'Alert enabled' : 'Alert paused')
     } catch (e) {
-      alert('Failed: ' + e.message)
+      toast.error('Failed to update alert: ' + e.message)
     }
   }
 
@@ -105,8 +103,9 @@ export default function Alerts() {
     try {
       await api.delete(`/alerts/${alertItem.id}`)
       setAlerts(a => a.filter(x => x.id !== alertItem.id))
+      toast.success(`Alert "${alertItem.label}" deleted`)
     } catch (e) {
-      alert('Failed: ' + e.message)
+      toast.error('Failed to delete: ' + e.message)
     }
   }
 
@@ -115,23 +114,31 @@ export default function Alerts() {
     setCheckError(null)
     setCheckResults(null)
     try {
-      const data = await api.get('/alerts/check')
-      setCheckResults(data)
-      // Refresh alerts list to get updated lastTriggeredAt
+      const resp = await api.get('/alerts/check')
+      // Backend wraps result in resp.data
+      const checkData = resp.data || resp
+      setCheckResults(checkData)
+      const triggeredCount = Array.isArray(checkData.triggered) ? checkData.triggered.length : (checkData.triggered || 0)
+      if (triggeredCount > 0) {
+        toast.warning(`${triggeredCount} alert${triggeredCount > 1 ? 's' : ''} triggered!`)
+      } else {
+        toast.info(`Checked ${checkData.total || 0} alerts — no triggers`)
+      }
       await fetchAlerts()
     } catch (e) {
       setCheckError(e.message)
+      toast.error('Check failed: ' + e.message)
     } finally {
       setCheckLoading(false)
     }
   }
 
-  const enabledAlerts = alerts.filter(a => a.enabled)
+  const enabledAlerts  = alerts.filter(a => a.enabled)
   const disabledAlerts = alerts.filter(a => !a.enabled)
   const triggeredAlerts = alerts.filter(a => a.lastTriggeredAt)
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-4 md:p-6 max-w-4xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -152,7 +159,7 @@ export default function Alerts() {
             ) : (
               <Play size={12} />
             )}
-            Check Now
+            <span className="hidden sm:inline">Check Now</span>
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
@@ -172,36 +179,36 @@ export default function Alerts() {
       {/* Check Results */}
       {checkResults && (
         <div
-          className="mb-5 p-4 rounded-xl border"
+          className="mb-5 p-4 rounded-xl border animate-fade-in-up"
           style={{ background: '#12131a', borderColor: 'rgba(245,158,11,0.25)' }}
         >
           <div className="flex items-center gap-2 mb-3">
             <Zap size={14} style={{ color: '#f59e0b' }} />
             <span className="text-sm font-semibold text-white">Check Results</span>
             <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(245,158,11,0.15)', color: '#f59e0b' }}>
-              {checkResults.triggered || 0} triggered
+              {Array.isArray(checkResults.triggered) ? checkResults.triggered.length : (checkResults.triggered || 0)} triggered
             </span>
           </div>
-          {checkResults.results?.length > 0 ? (
+          {Array.isArray(checkResults.triggered) && checkResults.triggered.length > 0 ? (
             <div className="space-y-2">
-              {checkResults.results.map((r, i) => (
+              {checkResults.triggered.map((r, i) => (
                 <div key={i} className="flex items-start gap-2 text-xs p-2 rounded-lg" style={{ background: '#1a1b25' }}>
-                  <span className="mt-0.5">{r.triggered ? '🔔' : '💤'}</span>
+                  <span className="mt-0.5">🔔</span>
                   <div className="flex-1">
-                    <div className="text-white font-medium">{r.label}</div>
-                    <div style={{ color: '#6b7280' }}>{r.reason || (r.triggered ? 'Alert triggered!' : 'No match')}</div>
+                    <div className="text-white font-medium">{r.label || r.id || 'Alert'}</div>
+                    <div style={{ color: '#6b7280' }}>{r.reason || 'Alert triggered!'}</div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-xs" style={{ color: '#6b7280' }}>
-              Checked {checkResults.checked || 0} alerts — no triggers
+              Checked {checkResults.total || 0} alerts — no triggers
             </div>
           )}
           <button
             onClick={() => setCheckResults(null)}
-            className="mt-2 text-xs"
+            className="mt-2 text-xs hover:opacity-70 transition-opacity"
             style={{ color: '#6b7280' }}
           >
             Dismiss
@@ -210,8 +217,20 @@ export default function Alerts() {
       )}
 
       {checkError && (
-        <div className="mb-4 p-3 rounded-lg text-sm" style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}>
-          ⚠️ {checkError}
+        <div
+          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
+          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
+        >
+          <span className="text-sm">⚠️ {checkError}</span>
+          <button
+            onClick={handleCheckNow}
+            disabled={checkLoading}
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
+          >
+            <RefreshCw size={10} />
+            Retry
+          </button>
         </div>
       )}
 
@@ -219,7 +238,7 @@ export default function Alerts() {
       {showForm && (
         <form
           onSubmit={handleAdd}
-          className="rounded-xl p-5 mb-6 border"
+          className="rounded-xl p-5 mb-6 border animate-fade-in-up"
           style={{ background: '#12131a', borderColor: 'rgba(0,255,136,0.2)' }}
         >
           <div className="text-sm font-semibold mb-4 text-white">Create New Alert</div>
@@ -227,7 +246,7 @@ export default function Alerts() {
           {/* Alert type selector */}
           <div className="mb-4">
             <label className="block text-xs mb-2" style={{ color: '#9ca3af' }}>Alert Type *</label>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
               {ALERT_TYPES.map(({ value, label, icon, color }) => (
                 <button
                   key={value}
@@ -330,14 +349,26 @@ export default function Alerts() {
 
       {/* Error */}
       {error && (
-        <div className="mb-4 p-3 rounded-lg text-sm" style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}>
-          ⚠️ {error}
+        <div
+          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
+          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
+        >
+          <span className="text-sm">⚠️ {error}</span>
+          <button
+            onClick={fetchAlerts}
+            disabled={loading}
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
+            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
+          >
+            <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
+            Retry
+          </button>
         </div>
       )}
 
       {/* Stats */}
       {!loading && alerts.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in-up">
           {[
             { label: 'Active Alerts', value: enabledAlerts.length, color: '#00ff88' },
             { label: 'Paused', value: disabledAlerts.length, color: '#9ca3af' },
@@ -358,13 +389,13 @@ export default function Alerts() {
           <span className="text-sm" style={{ color: '#6b7280' }}>Loading alerts...</span>
         </div>
       ) : alerts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
+        <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
           <Bell size={48} style={{ color: '#1e2030' }} />
           <div className="text-sm" style={{ color: '#9ca3af' }}>No alerts configured</div>
           <div className="text-xs" style={{ color: '#6b7280' }}>Create an alert to get notified of market moves</div>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium"
+            className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
             style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}
           >
             <Plus size={14} /> Create First Alert
@@ -380,13 +411,14 @@ export default function Alerts() {
                 ACTIVE ALERTS ({enabledAlerts.length})
               </div>
               <div className="space-y-2">
-                {enabledAlerts.map(alert => (
-                  <AlertRow
-                    key={alert.id}
-                    alert={alert}
-                    onToggle={handleToggle}
-                    onDelete={handleDelete}
-                  />
+                {enabledAlerts.map((alertItem, i) => (
+                  <div key={alertItem.id} className={`animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}>
+                    <AlertRow
+                      alert={alertItem}
+                      onToggle={handleToggle}
+                      onDelete={handleDelete}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -399,10 +431,10 @@ export default function Alerts() {
                 PAUSED ({disabledAlerts.length})
               </div>
               <div className="space-y-2">
-                {disabledAlerts.map(alert => (
+                {disabledAlerts.map((alertItem) => (
                   <AlertRow
-                    key={alert.id}
-                    alert={alert}
+                    key={alertItem.id}
+                    alert={alertItem}
                     onToggle={handleToggle}
                     onDelete={handleDelete}
                   />
@@ -423,20 +455,20 @@ export default function Alerts() {
               >
                 {triggeredAlerts
                   .sort((a, b) => new Date(b.lastTriggeredAt) - new Date(a.lastTriggeredAt))
-                  .map((alert) => (
-                    <div key={alert.id} className="flex items-start gap-3 text-xs">
+                  .map((alertItem) => (
+                    <div key={alertItem.id} className="flex items-start gap-3 text-xs">
                       <span className="text-base mt-0.5">
-                        {ALERT_TYPES.find(t => t.value === alert.type)?.icon || '🔔'}
+                        {ALERT_TYPES.find(t => t.value === alertItem.type)?.icon || '🔔'}
                       </span>
                       <div className="flex-1">
-                        <div className="text-white font-medium">{alert.label}</div>
+                        <div className="text-white font-medium">{alertItem.label}</div>
                         <div style={{ color: '#6b7280' }}>
-                          {shortAddr(alert.target)} · {alert.chain?.toUpperCase()}
-                          {alert.threshold && ` · $${alert.threshold}`}
+                          {shortAddr(alertItem.target)} · {alertItem.chain?.toUpperCase()}
+                          {alertItem.threshold && ` · $${alertItem.threshold}`}
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0" style={{ color: '#6b7280' }}>
-                        {fmtTime(alert.lastTriggeredAt)}
+                        {fmtTime(alertItem.lastTriggeredAt)}
                       </div>
                     </div>
                   ))}
