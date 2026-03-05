@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] — 2026-03-05
+
+### 🔍 Deep Audit, Gap Filling & Final Polish (R41-R49)
+
+#### Phase 10 — Deep Bug Audit (R41-R43)
+
+- **R41** — Full backend edge-case audit: every endpoint returns correct HTTP codes and error bodies on invalid input, missing params, and external API failures
+- **R42** — Frontend quality pass: zero build warnings, all components verified to have error/loading/empty states
+- **R43** — Integration audit: Docker multi-stage build verified, setup/start scripts made executable, `.env.example` files completed with all required variables
+- **R43** — Fixed `WalletCard.jsx`: `setPortfolio(data.portfolio)` → `setPortfolio(data.data)` (API nests response under `.data`)
+- **R43** — Fixed `server.js`: production SPA catch-all now calls `next()` for `/api` routes (previously hung with no response)
+- **R43** — Fixed `.github/workflows/ci.yml`: removed duplicate `VITE_API_URL` in frontend CI step
+- **R43** — Added `backend/.env.example` entry for `WEBHOOK_URL` used by the notifier service
+- **R43** — Created `backend/data/README.md` explaining the data directory structure
+
+#### Phase 11 — Comprehensive Documentation (R44-R46)
+
+- **R44** — `docs/ENV-VARS.md`: full environment variable reference (backend + frontend, required vs optional)
+- **R45** — Root-level `.env.example`: quick-start template combining all commonly needed variables
+- **R46** — Docs cross-linking: internal links verified across README, API.md, ARCHITECTURE.md, SKILLS-GUIDE.md
+
+#### Phase 12 — Final Polish (R47-R49)
+
+- **R47** — Code style consistency pass: JSDoc added to all exported functions across backend services
+  - `alertEngine.js`: `readAlerts`, `writeAlerts`, `getNotifier` documented
+  - `notifier.js`: `isTelegramConfigured`, `isWebhookConfigured`, `getStatus` documented
+  - `server.js`: `formatUptime` documented
+- **R47** — Frontend import ordering verified consistent across all components (React → libs → local)
+- **R48** — README: added `## 📸 Screenshots` section with placeholder image references
+- **R48** — `docs/screenshots/README.md`: guide explaining how to capture and add screenshots
+- **R48** — GitHub repo description and topics set via `gh repo edit`
+- **R49** — Frontend production build verified clean (`npm run build`)
+- **R49** — Backend startup verified: server starts cleanly, `/api/health` returns `200 OK`
+- **R49** — Tagged `v1.1.0`: deep audit, gap filling, final polish
+
+### Changed
+
+- Version bump: `v1.0.0` → `v1.1.0`
+
+---
+
 ## [1.0.0] — 2026-03-05
 
 ### 🎉 Initial Release — Full-Stack Memecoin Trading Terminal
@@ -154,4 +195,5 @@ This release represents the complete v1.0 build across 32 development rounds.
 
 ---
 
+[1.1.0]: https://github.com/Penguin-Life/meme-terminal/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Penguin-Life/meme-terminal/releases/tag/v1.0.0

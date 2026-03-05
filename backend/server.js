@@ -159,6 +159,11 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+/**
+ * Format process uptime (seconds) into a human-readable string.
+ * @param {number} seconds - Uptime in seconds
+ * @returns {string} e.g. "2d 3h 15m" or "45m 22s"
+ */
 function formatUptime(seconds) {
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
