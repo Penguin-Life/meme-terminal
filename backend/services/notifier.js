@@ -16,10 +16,12 @@ const WEBHOOK_URL        = process.env.WEBHOOK_URL         || '';
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
+/** @returns {boolean} True if Telegram bot token and chat ID are both set */
 function isTelegramConfigured() {
   return Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
 }
 
+/** @returns {boolean} True if a webhook URL is configured */
 function isWebhookConfigured() {
   return Boolean(WEBHOOK_URL);
 }
@@ -209,6 +211,10 @@ async function send(text, rawData = {}) {
 
 // ─── Status ───────────────────────────────────────────────────────────────────
 
+/**
+ * Get current notification channel configuration status.
+ * @returns {{ telegram: Object, webhook: Object }} Status for each channel
+ */
 function getStatus() {
   return {
     telegram: {

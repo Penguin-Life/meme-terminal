@@ -132,6 +132,32 @@ graph TB
 
 ---
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/scanner.png" alt="Token Scanner" width="800">
+  <br><em>Real-time token scanner with trending detection</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/alerts.png" alt="Alert Engine" width="800">
+  <br><em>Custom alert engine with multi-condition rules</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/wallets.png" alt="Wallet Tracker" width="800">
+  <br><em>Smart wallet tracker — follow whale moves in real time</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/settings.png" alt="Settings" width="800">
+  <br><em>Settings & API health dashboard</em>
+</p>
+
+> 📷 Add your own screenshots — see [`docs/screenshots/README.md`](docs/screenshots/README.md)
+
+---
+
 ## ⚡ Quick Start
 
 ```bash

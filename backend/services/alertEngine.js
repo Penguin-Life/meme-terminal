@@ -11,6 +11,7 @@ const { readJson, writeJson } = require('../utils/dataStore');
 
 // Lazy-load notifier to avoid circular deps
 let _notifier = null;
+/** Lazy-load notifier to avoid circular dependency issues */
 function getNotifier() {
   if (!_notifier) _notifier = require('./notifier');
   return _notifier;
@@ -18,10 +19,18 @@ function getNotifier() {
 
 const ALERTS_FILE = path.join(__dirname, '../data/alerts.json');
 
+/**
+ * Read all alert rules from persistent JSON storage.
+ * @returns {Array} Array of alert rule objects
+ */
 function readAlerts() {
   return readJson(ALERTS_FILE, []);
 }
 
+/**
+ * Persist alert rules to JSON storage.
+ * @param {Array} alerts - Array of alert rule objects to save
+ */
 function writeAlerts(alerts) {
   writeJson(ALERTS_FILE, alerts);
 }
