@@ -32,6 +32,7 @@ const { ensureDataDir } = require('./utils/dataStore');
 const app = express();
 const PORT = process.env.PORT || 3902;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 // ─── Startup: Ensure data directory exists ────────────────────────────────────
 ensureDataDir();
@@ -102,13 +103,72 @@ app.get('/api/health', (req, res) => {
       version: '1.0.0',
       status: 'healthy',
       uptime: Math.round(process.uptime()),
-      environment: NODE_ENV
+      environment: NODE_ENV,
+      demoMode: DEMO_MODE
     },
     meta: {
       timestamp: new Date().toISOString()
     }
   });
 });
+
+// ─── Dashboard Status ─────────────────────────────────────────────────────────
+
+app.get('/api/status', (req, res) => {
+  const { readJson } = require('./utils/dataStore');
+  const path = require('path');
+
+  let alertsCount = 0;
+  let watchlistCount = 0;
+  try {
+    const alerts = readJson(path.join(__dirname, 'data/alerts.json'), []);
+    const activeAlerts = Array.isArray(alerts) ? alerts.filter(a => a.enabled) : [];
+    alertsCount = activeAlerts.length;
+  } catch (e) { /* ignore */ }
+
+  try {
+    const watchlist = readJson(path.join(__dirname, 'data/watchlist.json'), []);
+    watchlistCount = Array.isArray(watchlist) ? watchlist.length : 0;
+  } catch (e) { /* ignore */ }
+
+  const cacheStats = cache.stats();
+
+  res.json({
+    success: true,
+    data: {
+      service: 'meme-terminal-backend',
+      version: '1.0.0',
+      status: 'healthy',
+      uptime: Math.round(process.uptime()),
+      uptimeHuman: formatUptime(process.uptime()),
+      environment: NODE_ENV,
+      demoMode: DEMO_MODE,
+      activeAlerts: alertsCount,
+      watchlistCount,
+      cache: {
+        size: cacheStats.size,
+        hitRate: cacheStats.hitRate,
+        hits: cacheStats.hits,
+        misses: cacheStats.misses
+      },
+      dataSources: ['dexscreener', 'geckoterminal', 'pumpfun', 'solana-rpc']
+    },
+    meta: {
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+function formatUptime(seconds) {
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (d > 0) return `${d}d ${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
 
 // ─── Cache Stats ──────────────────────────────────────────────────────────────
 
@@ -137,10 +197,11 @@ app.use('/api/analyze', analysisLimiter, analyzeRoutes);
 if (process.env.NODE_ENV === 'production') {
   const publicDir = path.join(__dirname, 'public');
   app.use(express.static(publicDir));
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(publicDir, 'index.html'));
-    }
+  // SPA fallback: serve index.html for all non-API routes
+  // Must call next() for /api routes so 404 handler can respond properly
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(publicDir, 'index.html'));
   });
 }
 
@@ -150,8 +211,6 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
-
-const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 const BANNER = `
 ╔═══════════════════════════════════════════════╗
@@ -165,7 +224,8 @@ app.listen(PORT, () => {
   console.log(BANNER);
   logger.info(`Server started on port ${PORT}`, { env: NODE_ENV, demoMode: DEMO_MODE });
   console.log(`\n  🌐  http://localhost:${PORT}/api/health`);
-  console.log(`  📊  http://localhost:${PORT}/api/cache/stats`);
+  console.log(`  📊  http://localhost:${PORT}/api/status`);
+  console.log(`  📈  http://localhost:${PORT}/api/cache/stats`);
   console.log(`  🔥  http://localhost:${PORT}/api/token/trending`);
   console.log(`  📡  Environment: ${NODE_ENV}`);
   if (DEMO_MODE) {
