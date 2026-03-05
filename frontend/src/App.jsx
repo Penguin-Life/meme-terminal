@@ -1,12 +1,26 @@
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Flame, Wallet, Bell, Settings, Activity, Zap } from 'lucide-react'
-import Scanner from './pages/Scanner.jsx'
-import Wallets from './pages/Wallets.jsx'
-import Alerts from './pages/Alerts.jsx'
-import SettingsPage from './pages/SettingsPage.jsx'
 import { ToastProvider } from './components/Toast.jsx'
 import api from './utils/api.js'
+
+// Lazy-load pages for better initial bundle performance
+const Scanner = lazy(() => import('./pages/Scanner.jsx'))
+const Wallets = lazy(() => import('./pages/Wallets.jsx'))
+const Alerts = lazy(() => import('./pages/Alerts.jsx'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage.jsx'))
+
+// Page loading fallback
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center h-full" style={{ color: '#00ff88' }}>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm" style={{ color: '#6b7280' }}>Loading…</span>
+      </div>
+    </div>
+  )
+}
 
 const navItems = [
   { to: '/scanner', icon: Flame, label: 'Scanner', emoji: '🔥' },
@@ -150,13 +164,15 @@ function App() {
 
             {/* Page content */}
             <main className="flex-1 overflow-auto main-content-mobile">
-              <Routes>
-                <Route path="/" element={<Navigate to="/scanner" replace />} />
-                <Route path="/scanner" element={<Scanner />} />
-                <Route path="/wallets" element={<Wallets />} />
-                <Route path="/alerts" element={<Alerts />} />
-                <Route path="/settings" element={<SettingsPage />} />
-              </Routes>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/scanner" replace />} />
+                  <Route path="/scanner" element={<Scanner />} />
+                  <Route path="/wallets" element={<Wallets />} />
+                  <Route path="/alerts" element={<Alerts />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                </Routes>
+              </Suspense>
             </main>
 
             {/* Footer — desktop only */}

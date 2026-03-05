@@ -124,9 +124,30 @@ This release represents the complete v1.0 build across 32 development rounds.
 
 ---
 
+#### Phase 8 — Competition Edge (R33-R36)
+
+- **R33** — Demo mode: `DEMO_MODE=true` env flag enables rich mock data across all endpoints (no live API needed)
+- **R33** — Mock data service (`services/mockData.js`) — realistic token, wallet, alert, and analysis fixtures
+- **R34** — Setup script (`scripts/setup.sh`) — one-command install for backend + frontend dependencies
+- **R34** — Start script (`scripts/start.sh`) — launches backend + frontend with proper wait and PID tracking
+- **R35** — `Dockerfile` — multi-stage backend Docker image
+- **R35** — `docker-compose.yml` — single-command `docker compose up` deployment with env config
+- **R36** — `docs/BINANCE-SKILLS.md` — comprehensive showcase of all 7 Binance skills with real example outputs
+
+#### Phase 9 — Final Ship (R37-R40)
+
+- **R37** — End-to-end testing: all API endpoints verified with curl (health, search, trending, new, watchlist CRUD, alerts CRUD, alert-check, token analysis, market analysis, cache stats)
+- **R37** — Demo mode verification: all mocked endpoints return correct data structure
+- **R38** — Frontend lazy loading: `React.lazy` + `Suspense` for all 4 page components — main bundle split from 275KB → 220KB JS
+- **R38** — Backend gzip compression via `express compression` middleware — ~60% bandwidth reduction
+- **R39** — README final pass: fixed `GET /alerts/check` method, added `DELETE /wallet/watchlist/:address` to API table
+- **R40** — Git cleanup: verified no secrets in history, comprehensive `.gitignore`, tagged `v1.0.0`
+
+---
+
 ### Technical Stack
 
-- **Backend:** Node.js 22, Express 4.x, Axios, UUID, Morgan, express-rate-limit, Helmet, dotenv
+- **Backend:** Node.js 22, Express 4.x, Axios, UUID, Morgan, compression, express-rate-limit, Helmet, dotenv
 - **Frontend:** React 18, Vite 6, Tailwind CSS 4, React Router 6, Recharts, Lucide React, Axios
 - **AI Layer:** OpenClaw skills (Claude-compatible), 6 custom + 7 Binance skills
 - **Data Sources:** DexScreener, GeckoTerminal, Pump.fun, Helius, Solana RPC, Binance Web3 APIs

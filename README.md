@@ -260,13 +260,14 @@ Base URL: `http://localhost:3902/api`
 | Tokens | `GET /token/:chain/:address` | Token details by address |
 | Wallets | `GET /wallet/watchlist` | Get watchlist |
 | Wallets | `POST /wallet/watchlist` | Add wallet to watchlist |
+| Wallets | `DELETE /wallet/watchlist/:address` | Remove wallet from watchlist |
 | Wallets | `GET /wallet/:chain/:address` | Wallet balances + positions |
 | Wallets | `GET /wallet/:chain/:address/trades` | Recent trade history |
 | Alerts | `GET /alerts` | List all alerts |
 | Alerts | `POST /alerts` | Create alert |
 | Alerts | `PATCH /alerts/:id` | Update alert |
 | Alerts | `DELETE /alerts/:id` | Remove alert |
-| Alerts | `POST /alerts/check` | Manually trigger alert check |
+| Alerts | `GET /alerts/check` | Manually trigger alert check |
 | Analysis | `POST /analyze/token` | AI token analysis |
 | Analysis | `POST /analyze/wallet` | AI wallet analysis |
 | Analysis | `POST /analyze/market` | AI market overview |
