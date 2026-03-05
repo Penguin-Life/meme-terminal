@@ -9,6 +9,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const compression = require('compression');
 
 const tokenRoutes   = require('./routes/token');
 const walletRoutes  = require('./routes/wallet');
@@ -78,6 +79,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Compression (gzip) for all responses
+app.use(compression());
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
