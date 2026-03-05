@@ -8,6 +8,7 @@ const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const { createError } = require('../middleware/errorHandler');
 const { checkAlerts, readAlerts, writeAlerts } = require('../services/alertEngine');
+const { DEMO_MODE, MOCK_ALERT_CHECK } = require('../services/mockData');
 
 const VALID_TYPES = ['price_above', 'price_below', 'new_buy', 'large_tx', 'new_listing'];
 const VALID_CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'];
@@ -17,6 +18,9 @@ const VALID_CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'];
 
 router.get('/check', async (req, res, next) => {
   try {
+    // Demo mode: return mock alert check results
+    if (DEMO_MODE) return res.json(MOCK_ALERT_CHECK);
+
     const result = await checkAlerts();
     res.json({
       success: true,

@@ -8,6 +8,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 
 const tokenRoutes   = require('./routes/token');
 const walletRoutes  = require('./routes/wallet');
@@ -127,12 +128,26 @@ app.use('/api/alerts',  alertsLimiter,   alertRoutes);
 app.use('/api/notify',  notifyLimiter,   notifyRoutes);
 app.use('/api/analyze', analysisLimiter, analyzeRoutes);
 
+// ─── Production: Serve Frontend Static Files ──────────────────────────────────
+
+if (process.env.NODE_ENV === 'production') {
+  const publicDir = path.join(__dirname, 'public');
+  app.use(express.static(publicDir));
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(publicDir, 'index.html'));
+    }
+  });
+}
+
 // ─── Error Handling ───────────────────────────────────────────────────────────
 
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
+
+const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 const BANNER = `
 ╔═══════════════════════════════════════════════╗
@@ -144,11 +159,15 @@ const BANNER = `
 
 app.listen(PORT, () => {
   console.log(BANNER);
-  logger.info(`Server started on port ${PORT}`, { env: NODE_ENV });
+  logger.info(`Server started on port ${PORT}`, { env: NODE_ENV, demoMode: DEMO_MODE });
   console.log(`\n  🌐  http://localhost:${PORT}/api/health`);
   console.log(`  📊  http://localhost:${PORT}/api/cache/stats`);
   console.log(`  🔥  http://localhost:${PORT}/api/token/trending`);
-  console.log(`  📡  Environment: ${NODE_ENV}\n`);
+  console.log(`  📡  Environment: ${NODE_ENV}`);
+  if (DEMO_MODE) {
+    console.log(`  🎭  DEMO MODE: ON — all endpoints return mock data`);
+  }
+  console.log('');
 });
 
 module.exports = app;

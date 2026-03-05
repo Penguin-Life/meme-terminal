@@ -1,0 +1,43 @@
+# ─── Node Modules ─────────────────────────────────────────────────────────────
+node_modules
+*/node_modules
+backend/node_modules
+frontend/node_modules
+
+# ─── Frontend Build Artifacts ─────────────────────────────────────────────────
+frontend/dist
+backend/public
+
+# ─── Environment & Secrets ────────────────────────────────────────────────────
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+# ─── Git ──────────────────────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+backend/logs
+*.log
+npm-debug.log*
+
+# ─── Data Files (will use volumes) ────────────────────────────────────────────
+backend/data/*.json
+!backend/data/*.example.json
+
+# ─── Development Files ────────────────────────────────────────────────────────
+*.md
+docs/
+config/
+scripts/
+skills/
+PLAN*.md
+PROGRESS.md
+
+# ─── OS Files ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

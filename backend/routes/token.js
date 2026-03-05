@@ -10,6 +10,7 @@ const dex = require('../services/dexscreener');
 const gecko = require('../services/gecko');
 const pumpfun = require('../services/pumpfun');
 const { createError } = require('../middleware/errorHandler');
+const { DEMO_MODE, MOCK_TRENDING, MOCK_NEW_LISTINGS, MOCK_TOKEN_SEARCH, MOCK_TOKEN_ANALYSIS } = require('../services/mockData');
 
 // ─── Chain normalization helpers ──────────────────────────────────────────────
 
@@ -35,6 +36,9 @@ router.get('/search', async (req, res, next) => {
     if (!q || q.trim().length < 1) {
       throw createError('Query parameter "q" is required', 400, 'BAD_REQUEST');
     }
+
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_TOKEN_SEARCH(q));
 
     const warnings = [];
 
@@ -90,6 +94,10 @@ router.get('/search', async (req, res, next) => {
 router.get('/trending', async (req, res, next) => {
   try {
     const { chain = 'solana' } = req.query;
+
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_TRENDING);
+
     const geckoChain = toGeckoChain(chain);
     const warnings = [];
 
@@ -148,6 +156,10 @@ router.get('/trending', async (req, res, next) => {
 router.get('/new', async (req, res, next) => {
   try {
     const { chain = 'solana', limit = 20 } = req.query;
+
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_NEW_LISTINGS);
+
     const geckoChain = toGeckoChain(chain);
     const warnings = [];
 
@@ -200,6 +212,19 @@ router.get('/new', async (req, res, next) => {
 router.get('/:chain/:address', async (req, res, next) => {
   try {
     const { chain, address } = req.params;
+
+    // Demo mode: return first trending token as mock
+    if (DEMO_MODE) {
+      const mockToken = MOCK_TRENDING.results[0];
+      return res.json({
+        success: true,
+        chain,
+        address,
+        data: mockToken,
+        meta: { sources: ['demo'], timestamp: new Date().toISOString(), demo: true }
+      });
+    }
+
     const geckoChain = toGeckoChain(chain);
     const isSolana = chain.toLowerCase() === 'solana';
     const warnings = [];

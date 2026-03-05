@@ -1,0 +1,45 @@
+version: '3.8'
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Meme Terminal — Docker Compose
+#  One command to rule them all: docker compose up
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  meme-terminal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meme-terminal:latest
+    container_name: meme-terminal
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3902}:3902"
+    environment:
+      - NODE_ENV=production
+      - PORT=3902
+      # Toggle demo mode (no API keys needed for demo)
+      - DEMO_MODE=${DEMO_MODE:-false}
+      # Optional: configure these for full functionality
+      - SOLANA_RPC_URL=${SOLANA_RPC_URL:-https://api.mainnet-beta.solana.com}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
+      # Notification settings (optional)
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+    volumes:
+      # Persist watchlist and alerts data
+      - meme-terminal-data:/app/data
+      # Persist logs
+      - meme-terminal-logs:/app/logs
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3902/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  meme-terminal-data:
+    driver: local
+  meme-terminal-logs:
+    driver: local
