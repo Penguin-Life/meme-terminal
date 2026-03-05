@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import { useState, useEffect, lazy, Suspense } from 'react'
-import { Flame, Wallet, Bell, Settings, Activity, Zap } from 'lucide-react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
+import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff } from 'lucide-react'
 import { ToastProvider } from './components/Toast.jsx'
 import api from './utils/api.js'
 
@@ -31,16 +31,39 @@ const navItems = [
 
 function App() {
   const [connected, setConnected] = useState(null) // null=checking, true=ok, false=error
+  const [demoMode, setDemoMode] = useState(false)
+  const [showOfflineBanner, setShowOfflineBanner] = useState(false)
+  const offlineTimerRef = useRef(null)
 
   useEffect(() => {
     const check = () => {
       api.get('/health')
-        .then(() => setConnected(true))
-        .catch(() => setConnected(false))
+        .then((data) => {
+          setConnected(true)
+          setShowOfflineBanner(false)
+          if (offlineTimerRef.current) {
+            clearTimeout(offlineTimerRef.current)
+            offlineTimerRef.current = null
+          }
+          // Read demo mode from health response
+          if (data?.data?.demoMode !== undefined) {
+            setDemoMode(data.data.demoMode)
+          }
+        })
+        .catch(() => {
+          setConnected(false)
+          // Show offline banner after 5s of being offline
+          if (!offlineTimerRef.current) {
+            offlineTimerRef.current = setTimeout(() => setShowOfflineBanner(true), 5000)
+          }
+        })
     }
     check()
     const interval = setInterval(check, 30000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (offlineTimerRef.current) clearTimeout(offlineTimerRef.current)
+    }
   }, [])
 
   return (
@@ -125,6 +148,26 @@ function App() {
 
           {/* Main content */}
           <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+            {/* Connection lost banner */}
+            {showOfflineBanner && (
+              <div
+                className="flex items-center justify-between gap-3 px-4 py-2 text-sm flex-shrink-0"
+                style={{ background: 'rgba(255,68,68,0.15)', borderBottom: '1px solid rgba(255,68,68,0.3)', color: '#ff4444' }}
+              >
+                <div className="flex items-center gap-2">
+                  <WifiOff size={14} />
+                  <span>Backend unreachable — check that the API server is running on port 3902</span>
+                </div>
+                <button
+                  onClick={() => setShowOfflineBanner(false)}
+                  className="flex-shrink-0 text-xs px-2 py-0.5 rounded transition-opacity hover:opacity-70"
+                  style={{ background: 'rgba(255,68,68,0.2)', color: '#ff4444' }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {/* Header */}
             <header
               className="flex items-center justify-between px-4 md:px-6 py-3 border-b flex-shrink-0"
@@ -145,6 +188,17 @@ function App() {
                 </span>
               </div>
               <div className="flex items-center gap-3">
+                {/* Mode badge: LIVE or DEMO */}
+                <div
+                  className="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-bold tracking-wide"
+                  style={{
+                    background: demoMode ? 'rgba(245,158,11,0.15)' : 'rgba(59,130,246,0.1)',
+                    color: demoMode ? '#f59e0b' : '#3b82f6',
+                    border: `1px solid ${demoMode ? 'rgba(245,158,11,0.3)' : 'rgba(59,130,246,0.2)'}`
+                  }}
+                >
+                  {demoMode ? '🎭 DEMO' : '📡 LIVE'}
+                </div>
                 <div
                   className="flex items-center gap-1.5 px-2 py-1 rounded text-xs"
                   style={{
@@ -157,7 +211,7 @@ function App() {
                     className="w-1.5 h-1.5 rounded-full"
                     style={{ background: connected ? '#00ff88' : '#ff4444' }}
                   />
-                  {connected === null ? 'Checking...' : connected ? 'Live' : 'Offline'}
+                  {connected === null ? 'Checking...' : connected ? 'API' : 'Offline'}
                 </div>
               </div>
             </header>

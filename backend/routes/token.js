@@ -11,6 +11,7 @@ const gecko = require('../services/gecko');
 const pumpfun = require('../services/pumpfun');
 const { createError } = require('../middleware/errorHandler');
 const { DEMO_MODE, MOCK_TRENDING, MOCK_NEW_LISTINGS, MOCK_TOKEN_SEARCH, MOCK_TOKEN_ANALYSIS } = require('../services/mockData');
+const { validateChain, validateAddress, sanitizeQuery } = require('../middleware/validate');
 
 // ─── Chain normalization helpers ──────────────────────────────────────────────
 
@@ -32,10 +33,9 @@ function toGeckoChain(chain) {
 
 router.get('/search', async (req, res, next) => {
   try {
-    const { q } = req.query;
-    if (!q || q.trim().length < 1) {
-      throw createError('Query parameter "q" is required', 400, 'BAD_REQUEST');
-    }
+    let { q } = req.query;
+    // Validate and sanitize query
+    q = sanitizeQuery(q);
 
     // Demo mode: return mock data immediately
     if (DEMO_MODE) return res.json(MOCK_TOKEN_SEARCH(q));
@@ -93,7 +93,8 @@ router.get('/search', async (req, res, next) => {
 
 router.get('/trending', async (req, res, next) => {
   try {
-    const { chain = 'solana' } = req.query;
+    let { chain = 'solana' } = req.query;
+    chain = validateChain(chain);
 
     // Demo mode: return mock data immediately
     if (DEMO_MODE) return res.json(MOCK_TRENDING);
@@ -155,7 +156,9 @@ router.get('/trending', async (req, res, next) => {
 
 router.get('/new', async (req, res, next) => {
   try {
-    const { chain = 'solana', limit = 20 } = req.query;
+    let { chain = 'solana', limit = 20 } = req.query;
+    chain = validateChain(chain);
+    const parsedLimit = Math.min(Math.max(parseInt(limit) || 20, 1), 100);
 
     // Demo mode: return mock data immediately
     if (DEMO_MODE) return res.json(MOCK_NEW_LISTINGS);
@@ -164,7 +167,7 @@ router.get('/new', async (req, res, next) => {
     const warnings = [];
 
     const [pfCoins, geckoNew] = await Promise.allSettled([
-      chain === 'solana' ? pumpfun.getNewCoins({ limit: parseInt(limit) }) : Promise.resolve([]),
+      chain === 'solana' ? pumpfun.getNewCoins({ limit: parsedLimit }) : Promise.resolve([]),
       gecko.getNewPools(geckoChain)
     ]);
 
@@ -193,10 +196,81 @@ router.get('/new', async (req, res, next) => {
     const response = {
       success: true,
       chain,
-      count: results.slice(0, parseInt(limit)).length,
-      results: results.slice(0, parseInt(limit)),
+      count: results.slice(0, parsedLimit).length,
+      results: results.slice(0, parsedLimit),
       meta: {
         sources: chain === 'solana' ? ['pumpfun', 'geckoterminal'] : ['geckoterminal'],
+        timestamp: new Date().toISOString()
+      }
+    };
+    if (warnings.length > 0) response.warnings = warnings;
+    res.json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ─── GET /api/token/trending/:chain — filter trending by chain (path param) ──
+// Must appear BEFORE /:chain/:address to avoid conflict
+
+router.get('/trending/:chain', async (req, res, next) => {
+  try {
+    const { chain } = req.params;
+    const VALID_CHAINS = ['solana', 'ethereum', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'];
+    if (!VALID_CHAINS.includes(chain.toLowerCase())) {
+      throw createError(
+        `Invalid chain "${chain}". Must be one of: ${VALID_CHAINS.join(', ')}`,
+        400, 'INVALID_CHAIN'
+      );
+    }
+
+    // Delegate to same logic as /trending?chain=...
+    req.query.chain = chain.toLowerCase();
+
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json({ ...MOCK_TRENDING, chain: chain.toLowerCase() });
+
+    const geckoChain = toGeckoChain(chain);
+    const warnings = [];
+
+    const [dexBoosted, geckoTrending] = await Promise.allSettled([
+      dex.getBoostedTokens(),
+      gecko.getTrendingPools(geckoChain)
+    ]);
+
+    const results = [];
+
+    if (geckoTrending.status === 'fulfilled') {
+      geckoTrending.value.slice(0, 20).forEach(pool => {
+        const normalized = gecko.normalizePool(pool, 'geckoterminal');
+        if (normalized) results.push({ ...normalized, _rank: 'trending' });
+      });
+    } else {
+      warnings.push(`GeckoTerminal trending unavailable: ${geckoTrending.reason?.message}`);
+    }
+
+    if (dexBoosted.status === 'fulfilled') {
+      const boostedOnChain = dexBoosted.value.filter(t => t.chainId === chain.toLowerCase()).slice(0, 10);
+      for (const boosted of boostedOnChain) {
+        try {
+          const pairs = await dex.getTokenPairs(chain.toLowerCase(), boosted.tokenAddress);
+          if (pairs.length > 0) {
+            const normalized = dex.normalizePair(pairs[0], 'dexscreener-boosted');
+            if (normalized) results.push({ ...normalized, _rank: 'boosted' });
+          }
+        } catch (e) { /* skip */ }
+      }
+    } else {
+      warnings.push(`DexScreener boosted tokens unavailable: ${dexBoosted.reason?.message}`);
+    }
+
+    const response = {
+      success: true,
+      chain: chain.toLowerCase(),
+      count: results.length,
+      results,
+      meta: {
+        sources: ['geckoterminal', 'dexscreener'],
         timestamp: new Date().toISOString()
       }
     };
@@ -211,7 +285,9 @@ router.get('/new', async (req, res, next) => {
 
 router.get('/:chain/:address', async (req, res, next) => {
   try {
-    const { chain, address } = req.params;
+    let { chain, address } = req.params;
+    chain = validateChain(chain);
+    address = validateAddress(address, chain);
 
     // Demo mode: return first trending token as mock
     if (DEMO_MODE) {

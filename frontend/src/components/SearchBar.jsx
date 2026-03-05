@@ -1,15 +1,24 @@
-import { useState, useRef } from 'react'
+import { useRef, forwardRef, useImperativeHandle } from 'react'
 import { Search, X } from 'lucide-react'
 
-export default function SearchBar({
-  value,
-  onChange,
-  onSubmit,
-  placeholder = 'Search tokens...',
-  loading = false,
-  className = '',
-}) {
+const SearchBar = forwardRef(function SearchBar(
+  {
+    value,
+    onChange,
+    onSubmit,
+    placeholder = 'Search tokens...',
+    loading = false,
+    className = '',
+  },
+  ref
+) {
   const inputRef = useRef(null)
+
+  // Expose focus() to parent via ref
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus(),
+    blur: () => inputRef.current?.blur(),
+  }))
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && onSubmit) onSubmit(value)
@@ -35,7 +44,7 @@ export default function SearchBar({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="w-full bg-transparent pl-9 pr-9 py-2.5 text-sm outline-none"
-        style={{ color: '#e5e7eb', '::placeholder': { color: '#6b7280' } }}
+        style={{ color: '#e5e7eb' }}
       />
       {loading && (
         <div
@@ -54,4 +63,6 @@ export default function SearchBar({
       )}
     </div>
   )
-}
+})
+
+export default SearchBar

@@ -28,7 +28,7 @@ export default function WalletCard({ wallet, onRemove }) {
     setError(null)
     try {
       const data = await api.get(`/wallet/${chain}/${address}`)
-      setPortfolio(data.portfolio)
+      setPortfolio(data.data)
     } catch (e) {
       setError(e.message)
     } finally {

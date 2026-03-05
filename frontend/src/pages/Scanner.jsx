@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, Keyboard } from 'lucide-react'
 import SearchBar from '../components/SearchBar.jsx'
 import TokenCard from '../components/TokenCard.jsx'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'
@@ -30,6 +30,7 @@ export default function Scanner() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [lastRefresh, setLastRefresh] = useState(null)
   const autoRefreshRef = useRef(null)
+  const searchBarRef = useRef(null)
 
   const fetchTrending = useCallback(async (selectedChain = chain) => {
     setLoading(l => ({ ...l, trending: true }))
@@ -86,6 +87,26 @@ export default function Scanner() {
     }, 30000)
     return () => clearInterval(autoRefreshRef.current)
   }, [tab, chain, fetchTrending])
+
+  // Keyboard shortcut: Ctrl+K or / to focus search
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't trigger if already in an input/textarea
+      const tag = document.activeElement?.tagName?.toLowerCase()
+      if (tag === 'input' || tag === 'textarea') {
+        // Allow Escape to blur
+        if (e.key === 'Escape') document.activeElement.blur()
+        return
+      }
+      if ((e.ctrlKey && e.key === 'k') || e.key === '/') {
+        e.preventDefault()
+        searchBarRef.current?.focus()
+        setTab('search')
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   const handleExpand = async (tokenItem) => {
     const id = tokenItem.token?.address
@@ -172,14 +193,25 @@ export default function Scanner() {
 
       {/* Search bar */}
       <div className="mb-4">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          onSubmit={fetchSearch}
-          placeholder="Search by name, symbol or address... (Press Enter)"
-          loading={loading.search}
-          className="w-full"
-        />
+        <div className="relative">
+          <SearchBar
+            ref={searchBarRef}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSubmit={fetchSearch}
+            placeholder="Search by name, symbol or address... (Press Enter)"
+            loading={loading.search}
+            className="w-full"
+          />
+          {/* Keyboard shortcut hint */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none"
+            style={{ opacity: searchQuery ? 0 : 0.4 }}>
+            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-xs"
+              style={{ background: '#1e2030', color: '#6b7280', border: '1px solid #2a2d3e', fontFamily: 'monospace' }}>
+              /
+            </kbd>
+          </div>
+        </div>
       </div>
 
       {/* Chain filter */}

@@ -6,11 +6,12 @@
     "chain": "solana",
     "threshold": 1.5,
     "label": "USDC above 1.5",
-    "enabled": true,
+    "enabled": false,
     "notifyOnTrigger": true,
     "createdAt": "2026-03-04T20:52:07.372Z",
     "lastTriggeredAt": null,
-    "lastTriggerDetails": null
+    "lastTriggerDetails": null,
+    "updatedAt": "2026-03-04T22:39:56.318Z"
   },
   {
     "id": "972d892d-9854-4acf-aae9-2fa67d4cd96f",
@@ -50,5 +51,19 @@
     "createdAt": "2026-03-04T22:39:56.277Z",
     "lastTriggeredAt": null,
     "lastTriggerDetails": null
+  },
+  {
+    "id": "1f1fdcb4-d155-482e-a266-a03881ed1dd2",
+    "type": "price_above",
+    "target": "0xtest",
+    "chain": "eth",
+    "threshold": 0.01,
+    "label": "Updated Alert",
+    "enabled": false,
+    "notifyOnTrigger": true,
+    "createdAt": "2026-03-05T04:52:16.154Z",
+    "lastTriggeredAt": null,
+    "lastTriggerDetails": null,
+    "updatedAt": "2026-03-05T04:52:20.631Z"
   }
 ]
