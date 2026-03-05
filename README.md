@@ -1,114 +1,196 @@
+<div align="center">
+
 # 🚀 Meme Terminal
 
-> **AI-Powered Memecoin Trading Terminal — One person = one quant team.**
+### *One person = One quant team*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-≥18-brightgreen)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
-[![OpenClaw](https://img.shields.io/badge/OpenClaw-Skills-purple)](https://openclaw.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-22%2B-68a063?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](https://reactjs.org/)
+[![Binance Skills](https://img.shields.io/badge/Binance_Skills-Integrated-f0b90b?logo=binance&logoColor=white)](docs/SKILLS-GUIDE.md)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-a855f7?logo=openai&logoColor=white)](https://openclaw.dev)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-Meme Terminal is a full-stack trading intelligence platform that aggregates real-time on-chain data from DexScreener, Pump.fun, GeckoTerminal, and Helius — surfaced through a beautiful dark dashboard and an AI-powered OpenClaw skill layer accessible via Telegram.
+**AI-powered memecoin intelligence. Real-time scanning. Natural-language trading queries via Telegram.**
+
+[Quick Start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [API Docs](docs/API.md) · [Skills Guide](docs/SKILLS-GUIDE.md)
+
+</div>
+
+---
+
+## 🎯 What Is Meme Terminal?
+
+Meme Terminal gives a solo trader the analytical firepower of an entire quant team. It aggregates real-time on-chain data from **DexScreener**, **Pump.fun**, **GeckoTerminal**, **Helius**, and **Binance on-chain signals** — surfaced through a beautiful dark-mode dashboard and a natural-language AI layer accessible directly from Telegram.
+
+No Bloomberg terminal subscription. No team of analysts. Just one terminal, a Telegram message, and instant alpha.
+
+---
+
+## ⚡ Why Meme Terminal?
+
+| Feature | **Meme Terminal** | GMGN | DEXScreener | Birdeye |
+|---------|:-----------------:|:----:|:-----------:|:-------:|
+| Real-time token scanner | ✅ | ✅ | ✅ | ✅ |
+| Pump.fun bonding curve tracking | ✅ | ✅ | ❌ | ❌ |
+| Wallet / smart money tracking | ✅ | ✅ | ❌ | ✅ |
+| Telegram push alerts | ✅ | ✅ | ❌ | ⚠️ paid |
+| **Natural-language Telegram queries** | ✅ | ❌ | ❌ | ❌ |
+| **Binance on-chain smart money signals** | ✅ | ❌ | ❌ | ❌ |
+| **AI-powered token analysis** | ✅ | ❌ | ❌ | ❌ |
+| Multi-chain (SOL/ETH/BSC/Base/ARB) | ✅ | ⚠️ SOL only | ✅ | ✅ |
+| Self-hosted / open source | ✅ | ❌ | ❌ | ❌ |
+| **Cost** | **Free** | Freemium | Free | Freemium |
 
 ---
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| 🔥 **Token Scanner** | Real-time search + trending + new pairs across all major chains |
-| 💊 **Pump.fun Monitor** | Track new launches, bonding curve progress, King of the Hill |
-| 👛 **Wallet Tracker** | Watch smart wallets, detect buys/sells, portfolio snapshot |
-| 🔔 **Alert Engine** | Price alerts, large tx detection, new listings — push to Telegram |
-| 🤖 **AI Skills Layer** | 5 OpenClaw skills for natural-language trading queries via Telegram |
-| 📊 **Multi-Chain** | Solana, Ethereum, BSC, Base, Arbitrum support |
-| ⚡ **Real-Time Caching** | Smart TTL caching + exponential backoff retry for all external APIs |
-| 🛡️ **Security-First** | Input validation, rate limiting, security headers, CORS configuration |
+### 🔍 Token Intelligence
+- 🔥 **Live Token Scanner** — Real-time search, trending pairs, and new listings across all major chains
+- 💊 **Pump.fun Monitor** — Track launches by stage: new / finalizing / migrated; bonding curve progress; King of the Hill
+- 📈 **Price & Volume Tracking** — 24h change, volume, liquidity, FDV via DexScreener + GeckoTerminal
+- 🧪 **AI Token Analysis** — Natural-language analysis combining on-chain data + Binance signals
+
+### 👛 Wallet Intelligence
+- 🐋 **Smart Wallet Tracker** — Watch whale wallets, detect buy/sell moves in real time
+- 📊 **Portfolio Snapshot** — Token balances + positions for any wallet across chains
+- 🔗 **Trade History** — Recent transactions with profit/loss context
+- 🧠 **Smart Money Signals** — Binance on-chain smart money inflow rankings
+
+### 🔔 Alert Engine
+- ⚡ **Price Alerts** — Trigger above/below custom thresholds
+- 🐳 **Large Tx Detection** — Whale buys/sells notification
+- 🆕 **New Listing Alerts** — First to know when new pairs appear
+- 📲 **Telegram Push** — Instant delivery, never miss a move
+
+### 🤖 AI Skills Layer (OpenClaw)
+- 💬 **Natural Language** — Ask in plain text: "查一下 BONK 现在涨了多少"
+- 🔗 **7 Binance Skills** — Token info, market rank, meme rush, trading signals, wallet audit, security scan
+- 📡 **6 Custom Skills** — DexScreener, Pump.fun, GeckoTerminal, Smart Wallet, Meme Radar, Terminal
+
+### 🛡️ Production-Grade Infrastructure
+- ⚡ **Smart TTL Caching** — Adaptive cache with hit/miss analytics, minimizes API quota burn
+- 🔄 **Exponential Backoff** — Graceful retry on all external API calls
+- 🛡️ **Security Hardened** — Helmet headers, CORS, express-rate-limit, input validation
+- 📝 **Structured Logging** — Daily rotating logs, request tracing
+- 💾 **Resilient Data Store** — Auto-create, corruption detection, backup/restore for watchlist + alerts
 
 ---
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                       User Interfaces                           │
-│   📱 Telegram Bot (via OpenClaw)    🌐 Web Dashboard (React)    │
-└─────────────┬────────────────────────────────┬──────────────────┘
-              │                                │
-              ▼                                ▼
-┌─────────────────────────┐      ┌─────────────────────────────┐
-│   OpenClaw AI Brain     │      │  Express.js Backend API     │
-│   (Skills Layer)        │      │  localhost:3902             │
-│                         │      │                             │
-│  • dexscreener skill    │─────▶│  /api/token/search          │
-│  • pump-fun skill       │      │  /api/token/trending        │
-│  • gecko-terminal skill │      │  /api/wallet/:chain/:addr   │
-│  • smart-wallet skill   │      │  /api/alerts (CRUD)         │
-│  • meme-radar skill     │      │  /api/analyze/token         │
-│  • meme-terminal skill  │      │  /api/notify/telegram       │
-└─────────────────────────┘      └──────────────┬──────────────┘
-                                                 │
-              ┌──────────────────────────────────┘
-              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     Data Sources (Free APIs)                    │
-│  🦎 DexScreener   🐸 GeckoTerminal   💊 Pump.fun   ⚡ Helius   │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph UI["User Interfaces"]
+        TG["📱 Telegram<br/>(via OpenClaw)"]
+        WEB["🌐 React Dashboard<br/>localhost:5173"]
+    end
+
+    subgraph BRAIN["OpenClaw AI Brain"]
+        direction LR
+        SK1["dexscreener skill"]
+        SK2["pump-fun skill"]
+        SK3["gecko-terminal skill"]
+        SK4["smart-wallet skill"]
+        SK5["meme-radar skill"]
+        SK6["meme-terminal skill"]
+        BK1["binance: token-info"]
+        BK2["binance: market-rank"]
+        BK3["binance: meme-rush"]
+        BK4["binance: trading-signal"]
+        BK5["binance: token-audit"]
+    end
+
+    subgraph BACKEND["Express.js API  •  :3902"]
+        direction LR
+        RT1["/token/*"]
+        RT2["/wallet/*"]
+        RT3["/alerts/*"]
+        RT4["/analyze/*"]
+        RT5["/notify/*"]
+        CACHE["Smart Cache"]
+        AE["Alert Engine<br/>(cron every 60s)"]
+    end
+
+    subgraph DATA["Data Sources"]
+        DS["🦎 DexScreener"]
+        GK["🐸 GeckoTerminal"]
+        PF["💊 Pump.fun"]
+        HL["⚡ Helius (Solana)"]
+        BN["🟡 Binance On-Chain"]
+    end
+
+    TG --> BRAIN
+    WEB --> BACKEND
+    BRAIN --> BACKEND
+    BACKEND --> CACHE
+    CACHE --> DATA
+    AE --> RT3
+    AE --> RT5
 ```
 
 ---
 
-## 📸 Screenshots
-
-> *Coming soon — dashboard previews*
-
-| Scanner | Wallet Tracker | Alert Center |
-|---------|---------------|--------------|
-| ![Scanner](docs/screenshots/scanner.png) | ![Wallets](docs/screenshots/wallets.png) | ![Alerts](docs/screenshots/alerts.png) |
-
----
-
-## ⚡ Quick Start (3 steps)
+## ⚡ Quick Start
 
 ```bash
 # 1. Clone
-git clone https://github.com/Penguin-Life/meme-terminal.git
-cd meme-terminal
+git clone https://github.com/Penguin-Life/meme-terminal.git && cd meme-terminal
 
-# 2. Install & configure
-cd backend && npm install && cp .env.example .env
-cd ../frontend && npm install && cp .env.example .env
+# 2. Setup backend
+cd backend && npm install && cp .env.example .env && npm start &
 
-# 3. Run
-# Terminal 1:
-cd backend && npm start
-# Terminal 2:
-cd frontend && npm run dev
+# 3. Setup frontend
+cd ../frontend && npm install && npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) — done! 🎉
+Open **http://localhost:5173** — you're live. 🎉
 
 ---
 
-## 📦 Full Installation Guide
+## 📦 Full Setup Guide
 
 ### Prerequisites
 
-- Node.js ≥ 18.0.0
-- npm ≥ 9.0.0
-- (Optional) OpenClaw for AI skills layer
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Node.js | ≥ 22.0.0 | Use `nvm install 22` |
+| npm | ≥ 10.0.0 | Comes with Node 22 |
+| OpenClaw | latest | For AI skills layer |
 
-### Backend Setup
+### Backend
 
 ```bash
 cd backend
 
-# Install dependencies
+# Install
 npm install
 
-# Configure environment
+# Configure
 cp .env.example .env
-# Edit .env — set TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID for alerts
+```
 
+Edit `.env`:
+
+```env
+PORT=3902
+NODE_ENV=development
+ALLOWED_ORIGINS=http://localhost:5173
+
+# For Telegram alerts (optional but recommended)
+TELEGRAM_BOT_TOKEN=your_token_from_botfather
+TELEGRAM_CHAT_ID=your_chat_id
+
+# For enhanced Solana data (optional)
+HELIUS_API_KEY=your_helius_key
+```
+
+**Get Telegram credentials:**
+1. Message [@BotFather](https://t.me/BotFather) → `/newbot` → copy token
+2. Message [@userinfobot](https://t.me/userinfobot) → copy your ID
+
+```bash
 # Development (auto-reload)
 npm run dev
 
@@ -116,34 +198,35 @@ npm run dev
 npm start
 ```
 
-Backend starts on `http://localhost:3902`
+Backend runs at **http://localhost:3902**
 
-### Frontend Setup
+### Frontend
 
 ```bash
 cd frontend
 
-# Install dependencies
+# Install
 npm install
 
-# Configure environment
+# Configure (optional)
 cp .env.example .env
-# VITE_API_URL=http://localhost:3902/api  (default — change for prod)
+# VITE_API_URL=http://localhost:3902/api
 
 # Development
 npm run dev
 
 # Production build
 npm run build
-# Output: frontend/dist/
+# → Output: frontend/dist/
 ```
 
-Frontend dev server on `http://localhost:5173`
+Frontend runs at **http://localhost:5173**
 
-### OpenClaw Skills Installation
+### OpenClaw Skills
+
+Install all 6 custom skills:
 
 ```bash
-# Install each skill to your OpenClaw skills directory:
 cp -r skills/dexscreener ~/openclaw/skills/
 cp -r skills/pump-fun ~/openclaw/skills/
 cp -r skills/gecko-terminal ~/openclaw/skills/
@@ -152,31 +235,14 @@ cp -r skills/meme-radar ~/openclaw/skills/
 cp -r skills/meme-terminal ~/openclaw/skills/
 ```
 
-See [docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md) for detailed usage examples.
+Then reload OpenClaw and try in Telegram:
+```
+查 BONK
+新的 pump.fun 热门项目
+帮我追踪钱包 5YNmS...
+```
 
----
-
-## ⚙️ Configuration
-
-### Backend Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3902` | Server port |
-| `NODE_ENV` | `development` | `development` or `production` |
-| `ALLOWED_ORIGINS` | `http://localhost:5173` | Comma-separated CORS origins |
-| `TELEGRAM_BOT_TOKEN` | — | BotFather token for alerts |
-| `TELEGRAM_CHAT_ID` | — | Target chat/user ID for alerts |
-| `HELIUS_API_KEY` | — | Optional: Helius RPC for Solana |
-| `SOLANA_RPC_URL` | mainnet-beta | Custom Solana RPC endpoint |
-
-### Telegram Bot Setup
-
-1. Open [@BotFather](https://t.me/BotFather) on Telegram
-2. Send `/newbot`, follow prompts
-3. Copy the token → `TELEGRAM_BOT_TOKEN=<token>`
-4. Open [@userinfobot](https://t.me/userinfobot) to get your chat ID
-5. Set `TELEGRAM_CHAT_ID=<your-id>`
+See [docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md) for complete usage guide.
 
 ---
 
@@ -184,111 +250,137 @@ See [docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md) for detailed usage examples.
 
 Base URL: `http://localhost:3902/api`
 
-### Health
-```
-GET /api/health
-→ { success, service, version, uptime, environment }
+| Category | Endpoint | Description |
+|----------|----------|-------------|
+| Health | `GET /health` | Service status, uptime, version |
+| Cache | `GET /cache/stats` | Cache hit rate, entry count |
+| Tokens | `GET /token/search?q=` | Search tokens by name/symbol |
+| Tokens | `GET /token/trending` | Top trending pairs |
+| Tokens | `GET /token/new` | Latest listed pairs |
+| Tokens | `GET /token/:chain/:address` | Token details by address |
+| Wallets | `GET /wallet/watchlist` | Get watchlist |
+| Wallets | `POST /wallet/watchlist` | Add wallet to watchlist |
+| Wallets | `GET /wallet/:chain/:address` | Wallet balances + positions |
+| Wallets | `GET /wallet/:chain/:address/trades` | Recent trade history |
+| Alerts | `GET /alerts` | List all alerts |
+| Alerts | `POST /alerts` | Create alert |
+| Alerts | `PATCH /alerts/:id` | Update alert |
+| Alerts | `DELETE /alerts/:id` | Remove alert |
+| Alerts | `POST /alerts/check` | Manually trigger alert check |
+| Analysis | `POST /analyze/token` | AI token analysis |
+| Analysis | `POST /analyze/wallet` | AI wallet analysis |
+| Analysis | `POST /analyze/market` | AI market overview |
+| Notify | `POST /notify/telegram` | Send Telegram message |
+| Notify | `POST /notify/test` | Test notification setup |
 
-GET /api/cache/stats
-→ { success, cache: { hits, misses, hitRate, size, entries } }
-```
+**Rate limits:** 60 req/min (search), 20 req/min (analysis), 10 req/min (notify)
 
-### Token Endpoints
-```
-GET /api/token/search?q=<query>
-GET /api/token/trending?chain=solana
-GET /api/token/new?chain=solana&limit=20
-GET /api/token/:chain/:address
-```
-
-### Wallet Endpoints
-```
-GET  /api/wallet/watchlist
-POST /api/wallet/watchlist
-DELETE /api/wallet/watchlist/:address?chain=solana
-GET  /api/wallet/:chain/:address
-GET  /api/wallet/:chain/:address/trades
-```
-
-### Alert Endpoints
-```
-GET    /api/alerts
-POST   /api/alerts
-PATCH  /api/alerts/:id
-DELETE /api/alerts/:id
-POST   /api/alerts/check
-```
-
-### Analysis Endpoints
-```
-POST /api/analyze/token  { query, chain }
-POST /api/analyze/wallet { address, chain }
-POST /api/analyze/market
-```
-
-### Notify Endpoints
-```
-GET  /api/notify/status
-POST /api/notify/telegram  { message }
-POST /api/notify/test
-```
-
-**Rate Limits:**
-
-| Endpoint Group | Limit |
-|----------------|-------|
-| Search / Trending | 60 req/min |
-| Analysis (heavy) | 20 req/min |
-| Alerts CRUD | 30 req/min |
-| Notify | 10 req/min |
-
-See [docs/API.md](docs/API.md) for full API reference with request/response examples.
+→ Full request/response schema: **[docs/API.md](docs/API.md)**
 
 ---
 
 ## 🤖 OpenClaw Skills
 
-This project ships with 6 skills for OpenClaw (AI assistant):
+Meme Terminal ships with **13 skills** total — 6 custom + 7 Binance:
 
-| Skill | Purpose |
-|-------|---------|
-| `dexscreener` | Search tokens, get prices, view trending |
-| `pump-fun` | Monitor new launches and bonding curves |
-| `gecko-terminal` | Multi-chain DEX data and pool analysis |
-| `smart-wallet` | Track whale wallets and detect signals |
-| `meme-radar` | Unified meme scanner across all sources |
-| `meme-terminal` | Full analysis pipeline ("查 $TOKEN") |
+| Skill | Type | Capability |
+|-------|------|-----------|
+| `meme-terminal` | Custom | Full pipeline: search → analyze → signal |
+| `dexscreener` | Custom | Token search, prices, trending pairs |
+| `pump-fun` | Custom | New launches, bonding curve, KOTH |
+| `gecko-terminal` | Custom | Multi-chain DEX pools and OHLCV |
+| `smart-wallet` | Custom | Whale tracking, wallet analysis |
+| `meme-radar` | Custom | Unified scanner across all sources |
+| `query-token-info` | Binance | Token metadata, price, K-line charts |
+| `crypto-market-rank` | Binance | Trending, social hype, smart money |
+| `meme-rush` | Binance | Launchpad tokens, topic rush |
+| `trading-signal` | Binance | Smart money buy/sell signals |
+| `query-address-info` | Binance | Wallet token balances on-chain |
+| `query-token-audit` | Binance | Scam/honeypot security scan |
+| `spot` | Binance | Spot market data |
 
-**Example usage in Telegram:**
+**Example conversations:**
 ```
-查一下 BONK
-新上的 pump.fun 有啥热门的
-帮我追踪这个钱包 5YNmS...
-PEPE 目前价格多少
+You: 查一下 BONK
+Terminal: 📊 BONK — $0.0000142 | +12.4% 24h | Vol $48M...
+
+You: pump.fun 现在什么最热
+Terminal: 🔥 Top 5 launches: 1. PEPE2 (87% bonded)...
+
+You: 这个地址安全吗？ 0xABC...
+Terminal: 🛡️ 安全审计: 合约已验证 ✅ | 无蜜罐 ✅ | 流动性锁仓 ✅
 ```
 
-See [docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md) for more.
+→ Full examples: **[docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md)**
 
 ---
 
-## 🚀 Deployment
+## 🔧 Tech Stack
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for:
-- PM2 process management setup
-- Nginx reverse proxy configuration  
-- SSL/HTTPS setup
-- Frontend CDN deployment
-- Environment hardening
+| Layer | Technology |
+|-------|-----------|
+| **Runtime** | ![Node.js](https://img.shields.io/badge/Node.js-22-68a063?logo=node.js&logoColor=white) |
+| **Backend** | ![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white) |
+| **Frontend** | ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white) |
+| **Styling** | ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06b6d4?logo=tailwindcss&logoColor=white) |
+| **Charts** | ![Recharts](https://img.shields.io/badge/Recharts-2-22d3ee) |
+| **Icons** | ![Lucide](https://img.shields.io/badge/Lucide_React-latest-f97316) |
+| **AI Layer** | ![OpenClaw](https://img.shields.io/badge/OpenClaw-Skills-a855f7) |
+| **Routing** | ![React Router](https://img.shields.io/badge/React_Router-6-ca4245?logo=reactrouter&logoColor=white) |
+| **HTTP** | ![Axios](https://img.shields.io/badge/Axios-1.x-5a29e4) |
+
+---
+
+## 🗺️ Roadmap
+
+### v1.0.0 — Current ✅
+- Real-time token scanner (multi-chain)
+- Pump.fun monitor with bonding curve
+- Smart wallet tracker
+- Alert engine + Telegram push
+- AI skills layer (6 custom + 7 Binance)
+- Production-grade backend (caching, retry, security)
+- Responsive dark-mode React dashboard
+
+### v1.1.0 — In Progress 🔨
+- [ ] Demo mode with rich mock data for offline usage
+- [ ] One-click `scripts/setup.sh` installer
+- [ ] Docker + docker-compose for deployment
+- [ ] Binance integration showcase page
+
+### v1.2.0 — Planned 📋
+- [ ] Portfolio P&L tracking with historical snapshots
+- [ ] Rug-pull risk scoring (contract analysis)
+- [ ] WebSocket streaming for live price ticks
+- [ ] Copy-trade signal detection
+
+### v2.0.0 — Vision 🔭
+- [ ] DEX aggregator swap integration
+- [ ] Backtesting engine for alert strategies
+- [ ] Social sentiment analysis (Twitter/X + Telegram)
+- [ ] Mobile app (React Native)
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feat/amazing-feature`
-3. Commit: `git commit -m 'feat: add amazing feature'`
-4. Push: `git push origin feat/amazing-feature`
-5. Open a Pull Request
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+```bash
+# Fork → clone → branch
+git checkout -b feat/your-amazing-feature
+
+# Make changes, then:
+git commit -m "feat: add amazing feature"
+git push origin feat/your-amazing-feature
+# → Open a Pull Request
+```
+
+---
+
+## 🔒 Security
+
+Found a vulnerability? Please **do not** open a public issue. See [SECURITY.md](SECURITY.md) for responsible disclosure guidelines.
 
 ---
 
@@ -298,21 +390,25 @@ MIT — see [LICENSE](LICENSE)
 
 ---
 
-## 🙏 Credits
+## 🙏 Acknowledgments
 
-- [DexScreener](https://dexscreener.com) — free DEX pair API
-- [GeckoTerminal](https://geckoterminal.com) — multi-chain pool data
-- [Pump.fun](https://pump.fun) — Solana meme launches
-- [Helius](https://helius.dev) — Solana RPC infrastructure
-- [Binance Skills Hub](https://github.com/binance/binance-skills-hub) — on-chain signal skills
+Built on the shoulders of giants:
+
+- [DexScreener](https://dexscreener.com) — Free DEX pair API
+- [GeckoTerminal](https://geckoterminal.com) — Multi-chain pool data
+- [Pump.fun](https://pump.fun) — Solana meme launch platform
+- [Helius](https://helius.dev) — Solana RPC & indexer
+- [Binance Web3](https://github.com/binance) — On-chain skill signals
 - [OpenClaw](https://openclaw.dev) — AI agent framework
 
 ---
 
 <div align="center">
 
-**Built with 🐧 by [Penguin-Life](https://github.com/Penguin-Life)**
+**Built with 🐧 love by [Penguin-Life](https://github.com/Penguin-Life)**
 
 *One person. One terminal. One quant team.*
+
+⭐ If this helps your trading, star the repo!
 
 </div>

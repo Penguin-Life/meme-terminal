@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { analyzeToken, analyzeWallet, analyzeMarket } = require('../services/analyzer');
 const { createError } = require('../middleware/errorHandler');
+const { DEMO_MODE, MOCK_TOKEN_ANALYSIS } = require('../services/mockData');
 
 const VALID_CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'];
 
@@ -18,6 +19,16 @@ router.post('/token', async (req, res, next) => {
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       throw createError('Request body must include "query" (token symbol, name, or address)', 400, 'BAD_REQUEST');
+    }
+
+    // Demo mode: return mock analysis
+    if (DEMO_MODE) {
+      return res.json({
+        ...MOCK_TOKEN_ANALYSIS,
+        data: {
+          report: { ...MOCK_TOKEN_ANALYSIS.data.report, query: query.trim(), chain }
+        }
+      });
     }
 
     if (chain && !VALID_CHAINS.includes(chain) && chain !== 'all') {

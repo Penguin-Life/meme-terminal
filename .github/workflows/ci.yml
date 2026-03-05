@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Backend ───────────────────────────────────────────────────────────────
+  backend:
+    name: Backend — Install & Lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Create .env for CI
+        working-directory: backend
+        run: |
+          cp .env.example .env
+          echo "PORT=3902" >> .env
+          echo "NODE_ENV=test" >> .env
+
+      - name: Check backend starts (smoke test)
+        working-directory: backend
+        run: |
+          node server.js &
+          SERVER_PID=$!
+          sleep 3
+          curl --fail http://localhost:3902/api/health || (kill $SERVER_PID && exit 1)
+          kill $SERVER_PID
+        env:
+          PORT: 3902
+          NODE_ENV: test
+
+  # ─── Frontend ──────────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend — Build & Lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Create .env for CI
+        working-directory: frontend
+        run: |
+          cp .env.example .env
+          echo "VITE_API_URL=http://localhost:3902/api" >> .env
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7
+
+  # ─── Summary ───────────────────────────────────────────────────────────────
+  ci-pass:
+    name: CI Pass
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - name: All checks passed
+        run: echo "✅ Backend + Frontend CI passed!"

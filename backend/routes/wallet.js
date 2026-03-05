@@ -11,6 +11,7 @@ const solana = require('../services/solana');
 const dex = require('../services/dexscreener');
 const { createError } = require('../middleware/errorHandler');
 const { readJson, writeJson } = require('../utils/dataStore');
+const { DEMO_MODE, MOCK_WALLET_PORTFOLIO } = require('../services/mockData');
 
 const WATCHLIST_FILE = path.join(__dirname, '../data/watchlist.json');
 
@@ -112,6 +113,16 @@ router.delete('/watchlist/:address', (req, res, next) => {
 router.get('/:chain/:address', async (req, res, next) => {
   try {
     const { chain, address } = req.params;
+
+    // Demo mode: return mock portfolio
+    if (DEMO_MODE) {
+      return res.json({
+        ...MOCK_WALLET_PORTFOLIO,
+        chain,
+        address,
+        data: { ...MOCK_WALLET_PORTFOLIO.data, address, chain }
+      });
+    }
 
     if (chain.toLowerCase() === 'solana') {
       // Solana portfolio via RPC
