@@ -452,12 +452,22 @@ Meme Terminal ships with **13 skills** total — 6 custom + 7 Binance:
 - 🏗️ README restructured with Binance-first positioning
 - 📝 New arbitrage and alpha discovery workflows in docs
 
-### v1.3.0 — Planned 📋 Binance Ecosystem Expansion
+### v1.3.0 — Shipped ✅
+- 🔐 Spot Trading integration (buy/sell/safe-buy via Binance API)
+- 🛡️ One-click Safe Buy: Token Audit → Signal Check → Order
+- 📡 Smart Money Signal Feed with chain/type filters
+- 🏠 Dashboard home page (four-panel overview)
+- 🔍 Token Detail page (K-line chart + security audit + signals)
+- ⚡ WebSocket real-time price stream (Binance WS → SSE)
+- 🧪 Jest unit tests (9 cases)
+- 📱 Mobile responsive bottom tab navigation
+
+### v1.4.0 — Planned 📋
 - [ ] Binance Pay integration for direct in-app funding
 - [ ] Cross-chain arbitrage alerts (Solana ↔ BSC ↔ Base)
-- [ ] Binance Smart Chain priority scanner (BSC-native token discovery)
 - [ ] Portfolio P&L tracking with historical snapshots
-- [ ] WebSocket streaming for live price ticks
+- [ ] Copy-trade signal detection
+- [ ] Rug-pull risk scoring with ML model
 
 ### v2.0.0 — Vision 🔭
 - [ ] DEX aggregator swap integration

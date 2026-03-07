@@ -49,6 +49,7 @@ export default function TokenDetail() {
   const [audit, setAudit] = useState(null)
   const [signals, setSignals] = useState([])
   const [loading, setLoading] = useState(true)
+  const [buyMsg, setBuyMsg] = useState(null)
 
   useEffect(() => {
     setLoading(true)
@@ -151,12 +152,13 @@ export default function TokenDetail() {
       </div>
 
       {/* Safe Buy Button */}
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-2">
         <button className="px-6 py-3 rounded-xl font-bold text-sm transition-all hover:scale-105"
           style={{ background: 'linear-gradient(135deg, #f0b90b, #d4a40a)', color: '#000' }}
-          onClick={() => alert('Configure BINANCE_API_KEY in .env to enable trading')}>
+          onClick={() => setBuyMsg(prev => prev ? null : 'Configure BINANCE_API_KEY in backend/.env to enable live trading (testnet supported)')}>
           🟡 Safe Buy — Audit → Signal → Trade
         </button>
+        {buyMsg && <p className="text-xs px-3 py-2 rounded-lg animate-fade-in" style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}>{buyMsg}</p>}
       </div>
     </div>
   )

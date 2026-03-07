@@ -394,3 +394,42 @@ Send a test notification to verify setup.
 | `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
 | `TOKEN_NOT_FOUND` | 404 | Token not found on any source |
 | `INTERNAL_ERROR` | 500 | Unexpected server error |
+| `NO_API_KEYS` | 403 | Binance API key not configured |
+| `INVALID_INPUT` | 400 | Missing or invalid trade params |
+| `TRADE_ERROR` | 500 | Binance order placement failed |
+| `AUDIT_FAILED` | 200 | Token audit blocked the trade |
+
+---
+
+## New Endpoints (v1.3.0)
+
+### Trading
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/trade/buy` | API Key | Place buy order |
+| POST | `/api/trade/sell` | API Key | Place sell order |
+| GET | `/api/trade/orders` | API Key | List open orders |
+| GET | `/api/trade/balance` | API Key | Account balances |
+| POST | `/api/trade/safe-buy` | API Key | Audit → Signal → Buy |
+
+### Signals
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/signals` | Smart money signals |
+| GET | `/api/signals/subscribe` | SSE signal stream |
+| POST | `/api/signals/filter` | Filter by chain/type/gain |
+
+### Streaming
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/stream/prices` | SSE real-time prices |
+| GET | `/api/stream/status` | WebSocket status |
+
+### K-Line
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/token/:chain/:address/kline` | OHLCV candlestick data |

@@ -48,11 +48,14 @@ function requireKeys(req, res, next) {
   next();
 }
 
+const VALID_ORDER_TYPES = ['MARKET', 'LIMIT', 'LIMIT_MAKER'];
+
 // POST /api/trade/buy
 router.post('/buy', requireKeys, async (req, res, next) => {
   try {
     const { symbol, quantity, price, type = 'MARKET' } = req.body;
     if (!symbol || !quantity) return res.status(400).json({ success: false, error: 'symbol and quantity required', code: 'INVALID_INPUT' });
+    if (!VALID_ORDER_TYPES.includes(type)) return res.status(400).json({ success: false, error: `Invalid order type. Allowed: ${VALID_ORDER_TYPES.join(', ')}`, code: 'INVALID_INPUT' });
 
     const params = { symbol: symbol.toUpperCase(), side: 'BUY', type, quantity: String(quantity) };
     if (type === 'LIMIT' && price) { params.price = String(price); params.timeInForce = 'GTC'; }
@@ -71,6 +74,7 @@ router.post('/sell', requireKeys, async (req, res, next) => {
   try {
     const { symbol, quantity, price, type = 'MARKET' } = req.body;
     if (!symbol || !quantity) return res.status(400).json({ success: false, error: 'symbol and quantity required', code: 'INVALID_INPUT' });
+    if (!VALID_ORDER_TYPES.includes(type)) return res.status(400).json({ success: false, error: `Invalid order type. Allowed: ${VALID_ORDER_TYPES.join(', ')}`, code: 'INVALID_INPUT' });
 
     const params = { symbol: symbol.toUpperCase(), side: 'SELL', type, quantity: String(quantity) };
     if (type === 'LIMIT' && price) { params.price = String(price); params.timeInForce = 'GTC'; }
