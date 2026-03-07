@@ -98,7 +98,7 @@ function App() {
               </div>
               <div className="hidden md:block">
                 <div className="text-sm font-bold text-white leading-tight">Meme Terminal</div>
-                <div className="text-xs" style={{ color: '#6b7280' }}>v1.0.0</div>
+                <div className="text-xs" style={{ color: '#6b7280' }}>v1.3.0</div>
               </div>
             </div>
 
@@ -248,7 +248,7 @@ function App() {
               className="hidden md:flex items-center justify-between px-6 py-2 border-t flex-shrink-0 text-xs"
               style={{ background: '#0d0e14', borderColor: '#1e2030', color: '#4b5563' }}
             >
-              <span>🐧 Meme Terminal v1.0.0 — AI-Powered Memecoin Trading</span>
+              <span>🐧 Meme Terminal v1.3.0 — AI-Powered Memecoin Trading</span>
               <span>
                 <a
                   href="https://github.com/Penguin-Life/meme-terminal"

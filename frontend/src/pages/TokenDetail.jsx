@@ -54,7 +54,7 @@ export default function TokenDetail() {
     setLoading(true)
     Promise.allSettled([
       api.get(`/token/${chain}/${address}`).then(d => setToken(d.data || d.pair || d)),
-      api.get(`/token/${chain}/${address}/kline?interval=1h&limit=48`).then(d => setKline(d.data?.klineList || d.klineList || d.data || [])),
+      api.get(`/token/${chain}/${address}/kline?interval=1h&limit=48`).then(d => setKline(d.klineList || d.data?.klineList || [])),
       api.post('/analyze/token', { chain, address }).then(d => setAudit(d.data || d.audit || d)),
       api.get(`/signals?chainId=${chain === 'solana' ? 'CT_501' : chain}`).then(d => setSignals((d.signals || []).slice(0, 5))),
     ]).finally(() => setLoading(false))

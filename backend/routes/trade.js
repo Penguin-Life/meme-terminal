@@ -146,7 +146,7 @@ router.post('/safe-buy', requireKeys, async (req, res, next) => {
     }
 
     // Step 3: Place Order
-    const params = { symbol: symbol.toUpperCase(), side: 'BUY', type: 'MARKET', quantity: String(quantity), timestamp: Date.now(), recvWindow: 5000 };
+    const params = { symbol: symbol.toUpperCase(), side: 'BUY', type: 'MARKET', quantity: String(quantity) };
     const { data } = await binanceRequest('POST', '/order', params, req.binanceKeys);
     steps.order = data;
 

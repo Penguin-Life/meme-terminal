@@ -413,4 +413,61 @@ router.get('/:chain/:address', async (req, res, next) => {
   }
 });
 
+// ─── K-Line / Candlestick Data ────────────────────────────────────────────────
+
+router.get('/:chain/:address/kline', async (req, res, next) => {
+  try {
+    let { chain, address } = req.params;
+    const { interval = '1h', limit = 48 } = req.query;
+    chain = validateChain(chain);
+    address = validateAddress(address, chain);
+
+    const cacheKey = `kline:${chain}:${address}:${interval}:${limit}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json(cached);
+
+    // Try Binance Web3 K-line API
+    const axios = require('axios');
+    const searchRes = await axios.get('https://web3.binance.com/bapi/defi/v5/public/wallet-direct/buw/wallet/market/token/search', {
+      params: { keyword: address, chainIds: chain.toLowerCase() === 'solana' ? 'CT_501' : '56' },
+      headers: { 'Accept-Encoding': 'identity' },
+      timeout: 8000
+    }).catch(() => null);
+
+    const tokenId = searchRes?.data?.data?.[0]?.tokenId;
+    let klineList = [];
+
+    if (tokenId) {
+      const klineRes = await axios.get('https://web3.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/market/token/kline', {
+        params: { tokenId, interval, limit: parseInt(limit) },
+        headers: { 'Accept-Encoding': 'identity' },
+        timeout: 8000
+      }).catch(() => null);
+
+      klineList = (klineRes?.data?.data?.klineList || []).map(k => ({
+        time: k.time || k.openTime,
+        open: parseFloat(k.open || 0),
+        high: parseFloat(k.high || 0),
+        low: parseFloat(k.low || 0),
+        close: parseFloat(k.close || 0),
+        volume: parseFloat(k.volume || 0)
+      }));
+    }
+
+    const result = {
+      success: true,
+      chain,
+      address,
+      interval,
+      klineList,
+      meta: { source: tokenId ? 'binance-web3' : 'none', timestamp: new Date().toISOString() }
+    };
+
+    if (klineList.length > 0) cache.set(cacheKey, result, 120);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

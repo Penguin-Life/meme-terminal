@@ -106,7 +106,7 @@ app.get('/api/health', (req, res) => {
     success: true,
     data: {
       service: 'meme-terminal-backend',
-      version: '1.0.0',
+      version: '1.3.0',
       status: 'healthy',
       uptime: Math.round(process.uptime()),
       environment: NODE_ENV,
@@ -143,7 +143,7 @@ app.get('/api/status', (req, res) => {
     success: true,
     data: {
       service: 'meme-terminal-backend',
-      version: '1.0.0',
+      version: '1.3.0',
       status: 'healthy',
       uptime: Math.round(process.uptime()),
       uptimeHuman: formatUptime(process.uptime()),
@@ -197,8 +197,8 @@ app.get('/api/cache/stats', (req, res) => {
 
 // ─── Routes (with tiered rate limiting) ──────────────────────────────────────
 
-app.use('/api/token',              searchLimiter,   tokenRoutes);
 app.use('/api/token/binance-alpha', searchLimiter,   binanceAlphaRoutes);
+app.use('/api/token',              searchLimiter,   tokenRoutes);
 app.use('/api/wallet',             searchLimiter,   walletRoutes);
 app.use('/api/alerts',             alertsLimiter,   alertRoutes);
 app.use('/api/notify',             notifyLimiter,   notifyRoutes);
