@@ -50,7 +50,7 @@ Telegram/Web UI → OpenClaw (AI Brain) → Skills Layer → Data Sources
 - **Frontend**: React + Vite + Tailwind CSS
 - **Data**: DexScreener, Pump.fun, GeckoTerminal, Helius, Birdeye
 - **Binance**: All 7 Skills from binance-skills-hub
-- **Deploy**: your server, PM2, Nginx
+- **Deploy**: Your server, PM2, Nginx
 
 ## API Keys Needed
 - DexScreener: free, no key

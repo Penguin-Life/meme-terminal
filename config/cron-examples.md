@@ -29,7 +29,7 @@ Summarize in a concise morning briefing:
 - New hot launches worth watching
 
 Format with emojis. Keep it under 10 lines.
-Send to the user on Telegram.
+Send to user on Telegram.
 ```
 
 ---
@@ -124,7 +124,7 @@ Keep summary under 15 lines. Send to Telegram.
 openclaw cron add \
   --schedule "0 9 * * *" \
   --tz "Asia/Shanghai" \
-  --prompt "Run morning meme terminal scan. Check http://localhost:3902/api/health first. Then GET /api/token/trending and POST /api/analyze/market. Send the user a morning briefing on Telegram with top 3 trending + market sentiment."
+  --prompt "Run morning meme terminal scan. Check http://localhost:3902/api/health first. Then GET /api/token/trending and POST /api/analyze/market. Send a morning briefing on Telegram with top 3 trending + market sentiment."
 
 # Alert check (15 min)
 openclaw cron add \
