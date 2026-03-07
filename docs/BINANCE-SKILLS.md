@@ -581,6 +581,119 @@ Step 4: Alert                 → Price gap = +10.7% → potential arb opportuni
 
 ---
 
+### Workflow 5: Binance Alpha Token Discovery
+
+Identify Binance-curated alpha tokens early — before mainstream listing or breakout:
+
+```
+Step 1: Crypto Market Rank (rankType=20)  → Fetch Binance Alpha token list
+Step 2: Filter by momentum signals         → priceChange24h, volume growth
+Step 3: Query Token Info                   → Verify liquidity, holders, social links
+Step 4: Query Token Audit                  → Safety check before any position
+Step 5: Set Alert                          → Price alert at target threshold
+```
+
+**What is Binance Alpha?**  
+Binance Alpha is a curated tier within Crypto Market Rank (rankType=20) that highlights tokens showing early on-chain momentum — often before they get CEX listing or broad market attention.
+
+**API Call**:
+```bash
+curl 'https://web3.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/market/token/rank/unified?rankType=20&pageSize=20' \
+  -H 'Accept-Encoding: identity'
+```
+
+**Response** (simplified):
+```json
+{
+  "code": "000000",
+  "data": {
+    "rankList": [
+      {
+        "rank": 1,
+        "symbol": "NEWGEM",
+        "name": "New Gem Token",
+        "price": "0.00412",
+        "priceChange24h": "34.5",
+        "volume24h": "2840000",
+        "marketCap": "8200000",
+        "holders": 1247
+      }
+    ]
+  }
+}
+```
+
+**Alpha Discovery Criteria**:
+| Signal | Threshold | Why |
+|--------|-----------|-----|
+| 24h price change | > +20% | Strong momentum |
+| Volume growth | 3× 7-day avg | Real demand |
+| Holder growth | Increasing | Community building |
+| Audit result | SAFE | No hidden risks |
+| Not on CEX | True | Early entry opportunity |
+
+**Meme Terminal Integration**:
+- New `/api/token/binance-alpha` backend endpoint fetches Alpha tokens
+- New **Binance Alpha page** in the React dashboard shows card grid of Alpha tokens
+- Auto-refreshes every 60 seconds for near-real-time discovery
+
+---
+
+### Workflow 6: CEX-DEX Arbitrage Pipeline
+
+Detect price gaps between Binance CEX and on-chain DEX — and act on them:
+
+```
+Step 1: Binance Spot (ticker/price)     → Get CEX price for token
+Step 2: Query Token Info (Web3 API)     → Get on-chain DEX price for same token
+Step 3: Calculate spread                → spreadPercent = (dex - cex) / cex × 100
+Step 4: Flag opportunities              → |spread| ≥ 1.5% = potential arb
+Step 5: Alert / Execute                 → Set alert or act via Binance Spot order
+```
+
+**Example — BONK Arbitrage**:
+```
+CEX Price (Binance): $0.00002841
+DEX Price (Raydium): $0.00003124
+Spread: +10.0% (DEX premium)
+Direction: dex_premium — buy on CEX, sell on DEX
+Opportunity: ✅ YES
+```
+
+**API Calls**:
+```bash
+# Step 1: CEX price
+curl 'https://api.binance.com/api/v3/ticker/price?symbol=BONKUSDT'
+# → { "symbol": "BONKUSDT", "price": "0.00002841" }
+
+# Step 2: DEX price (via Binance Web3 token search)
+curl 'https://web3.binance.com/bapi/defi/v5/public/wallet-direct/buw/wallet/market/token/search?keyword=BONK&chainIds=CT_501&orderBy=volume24h' \
+  -H 'Accept-Encoding: identity'
+# → price: "0.00003124" from top result
+```
+
+**Spread Thresholds**:
+| Spread | Classification | Action |
+|--------|---------------|--------|
+| ≥ 2% | 🟢 Opportunity | Consider arb trade |
+| 1–2% | 🟡 Watch | Monitor closely |
+| < 1% | ⚫ Normal | Price efficient |
+
+**Direction Types**:
+| Direction | Meaning | Strategy |
+|-----------|---------|---------|
+| `dex_premium` | DEX price > CEX | Buy CEX, sell DEX |
+| `cex_premium` | CEX price > DEX | Buy DEX, sell CEX |
+| `parity` | Prices aligned | No arb opportunity |
+
+**Meme Terminal Integration**:
+- New `/api/arbitrage/scan` backend endpoint for bulk and single-symbol comparison
+- New **Arbitrage Scanner page** in the dashboard with color-coded spread table
+- Custom symbol input for instant CEX-DEX comparison of any Binance-listed token
+- Auto-refreshes every 30 seconds — faster than most arb opportunities close
+
+---
+
 ## Quick Reference
 
 ### Chain IDs
