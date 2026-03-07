@@ -18,6 +18,10 @@ const notifyRoutes       = require('./routes/notify');
 const analyzeRoutes      = require('./routes/analyze');
 const binanceAlphaRoutes = require('./routes/binanceAlpha');
 const arbitrageRoutes    = require('./routes/arbitrage');
+const tradeRoutes        = require('./routes/trade');
+const streamRoutes       = require('./routes/stream');
+const signalRoutes       = require('./routes/signals');
+const priceStream        = require('./services/websocket');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const {
   searchLimiter,
@@ -200,6 +204,9 @@ app.use('/api/alerts',             alertsLimiter,   alertRoutes);
 app.use('/api/notify',             notifyLimiter,   notifyRoutes);
 app.use('/api/analyze',            analysisLimiter, analyzeRoutes);
 app.use('/api/arbitrage',          searchLimiter,   arbitrageRoutes);
+app.use('/api/trade',              analysisLimiter, tradeRoutes);
+app.use('/api/stream',                              streamRoutes);
+app.use('/api/signals',            searchLimiter,   signalRoutes);
 
 // ─── Production: Serve Frontend Static Files ──────────────────────────────────
 
@@ -223,7 +230,7 @@ app.use(errorHandler);
 
 const BANNER = `
 ╔═══════════════════════════════════════════════╗
-║  🐧  Meme Terminal Backend  v1.0.0            ║
+║  🐧  Meme Terminal Backend  v1.3.0            ║
 ║      AI-Powered Memecoin Trading Terminal     ║
 ╠═══════════════════════════════════════════════╣
 ║  Data: DexScreener · Pump.fun · GeckoTerminal ║
@@ -231,6 +238,8 @@ const BANNER = `
 
 app.listen(PORT, () => {
   console.log(BANNER);
+  // Start WebSocket price stream
+  priceStream.start();
   logger.info(`Server started on port ${PORT}`, { env: NODE_ENV, demoMode: DEMO_MODE });
   console.log(`\n  🌐  http://localhost:${PORT}/api/health`);
   console.log(`  📊  http://localhost:${PORT}/api/status`);

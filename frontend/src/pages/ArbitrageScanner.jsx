@@ -279,7 +279,7 @@ export default function ArbitrageScanner() {
       {/* Main table */}
       {results.length > 0 && (
         <div
-          className="rounded-xl overflow-hidden"
+          className="rounded-xl overflow-hidden arb-table-wrap"
           style={{ border: '1px solid #1e2030' }}
         >
           {/* Table header */}

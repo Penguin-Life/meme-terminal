@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-03-08
+
+### Added
+- 🔐 Spot Trading integration (`/api/trade/*`) — buy, sell, open orders, balance via Binance Spot API
+- 🛡️ Safe Buy flow — one-click: Token Audit → Signal Check → Place Order
+- 📡 Smart Money Signal Feed page with real-time filters (chain, buy/sell)
+- 🏠 Dashboard home page — four-panel overview (trending, signals, arbitrage, alpha)
+- 🔍 Token Detail page — K-line chart, security audit, smart money signals, safe buy button
+- ⚡ WebSocket real-time price stream service (Binance WS → SSE)
+- 🧪 Jest unit tests for arbitrage and binanceAlpha modules
+- 📱 Mobile bottom tab navigation and responsive layout
+
+### Changed
+- `server.js` upgraded to v1.3.0, registers trade/stream/signal routes
+- `.env.example` updated with Binance trading and WebSocket config
+- Default route now shows Dashboard instead of redirecting to Scanner
+
+---
+
 ## [1.2.0] - 2026-03-08
 
 ### Added
