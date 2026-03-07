@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
-import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff, BarChart2 } from 'lucide-react'
+import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff, BarChart2, LayoutDashboard } from 'lucide-react'
 import { ToastProvider } from './components/Toast.jsx'
 import api from './utils/api.js'
 
@@ -11,6 +11,9 @@ const Alerts = lazy(() => import('./pages/Alerts.jsx'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage.jsx'))
 const BinanceAlpha = lazy(() => import('./pages/BinanceAlpha.jsx'))
 const ArbitrageScanner = lazy(() => import('./pages/ArbitrageScanner.jsx'))
+const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
+const Signals = lazy(() => import('./pages/Signals.jsx'))
+const TokenDetail = lazy(() => import('./pages/TokenDetail.jsx'))
 
 // Page loading fallback
 function PageLoader() {
@@ -25,7 +28,9 @@ function PageLoader() {
 }
 
 const navItems = [
+  { to: '/', icon: LayoutDashboard, label: 'Home', emoji: '🏠' },
   { to: '/scanner', icon: Flame, label: 'Scanner', emoji: '🔥' },
+  { to: '/signals', icon: Activity, label: 'Signals', emoji: '📡' },
   { to: '/wallets', icon: Wallet, label: 'Wallets', emoji: '👛' },
   { to: '/alerts', icon: Bell, label: 'Alerts', emoji: '🔔' },
   { to: '/alpha', icon: Zap, label: 'Alpha', emoji: '🟡' },
@@ -103,6 +108,7 @@ function App() {
                 <NavLink
                   key={to}
                   to={to}
+                  end={to === '/'}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group ${
                       isActive ? 'text-white' : 'hover:text-white'
@@ -224,13 +230,15 @@ function App() {
             <main className="flex-1 overflow-auto main-content-mobile">
               <Suspense fallback={<PageLoader />}>
                 <Routes>
-                  <Route path="/" element={<Navigate to="/scanner" replace />} />
+                  <Route path="/" element={<Dashboard />} />
                   <Route path="/scanner" element={<Scanner />} />
+                  <Route path="/signals" element={<Signals />} />
                   <Route path="/wallets" element={<Wallets />} />
                   <Route path="/alerts" element={<Alerts />} />
                   <Route path="/alpha" element={<BinanceAlpha />} />
                   <Route path="/arbitrage" element={<ArbitrageScanner />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/token/:chain/:address" element={<TokenDetail />} />
                 </Routes>
               </Suspense>
             </main>
@@ -267,6 +275,7 @@ function App() {
                 <NavLink
                   key={to}
                   to={to}
+                  end={to === '/'}
                   className="flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg transition-all"
                   style={({ isActive }) => ({
                     color: isActive ? '#00ff88' : '#6b7280',

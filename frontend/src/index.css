@@ -169,3 +169,15 @@ body {
   min-width: 240px;
   max-width: 360px;
 }
+
+/* Mobile responsive: stack cards and scroll tables */
+@media (max-width: 639px) {
+  /* Arbitrage table: enable horizontal scroll on small screens */
+  .arb-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .arb-table-wrap > div {
+    min-width: 600px;
+  }
+}

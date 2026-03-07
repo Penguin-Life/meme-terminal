@@ -1,0 +1,125 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Flame, Zap, BarChart2, Activity, RefreshCw, ArrowRight } from 'lucide-react'
+import api from '../utils/api.js'
+
+function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading }) {
+  const nav = useNavigate()
+  return (
+    <div className="rounded-xl p-4 flex flex-col" style={{ background: '#13141e', border: '1px solid #2a2a3e', minHeight: 260 }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span>{emoji}</span>
+          <h3 className="font-semibold text-sm" style={{ color }}>{title}</h3>
+        </div>
+        <button onClick={() => nav(linkTo)} className="flex items-center gap-1 text-xs hover:underline" style={{ color: '#6b7280' }}>
+          View all <ArrowRight size={12} />
+        </button>
+      </div>
+      <div className="flex-1">
+        {loading ? (
+          <div className="flex items-center justify-center h-full"><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" style={{ color }} /></div>
+        ) : children}
+      </div>
+    </div>
+  )
+}
+
+function TokenRow({ symbol, name, price, change, onClick }) {
+  const isUp = change >= 0
+  return (
+    <div className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors" onClick={onClick}>
+      <div className="min-w-0">
+        <span className="font-medium text-sm text-white">{symbol}</span>
+        {name && <span className="text-xs ml-1.5" style={{ color: '#6b7280' }}>{name}</span>}
+      </div>
+      <div className="text-right flex-shrink-0 ml-2">
+        {price != null && <span className="text-xs text-white">${typeof price === 'number' ? (price >= 0.01 ? price.toFixed(4) : price.toExponential(2)) : price}</span>}
+        {change != null && <span className="text-xs ml-2" style={{ color: isUp ? '#00ff88' : '#ff4444' }}>{isUp ? '+' : ''}{change.toFixed(1)}%</span>}
+      </div>
+    </div>
+  )
+}
+
+function SignalRow({ signal }) {
+  const isBuy = signal.signalType === 'BUY'
+  const timeAgo = signal.signalTime ? `${Math.round((Date.now() - signal.signalTime) / 60000)}m ago` : ''
+  return (
+    <div className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-white/5 transition-colors">
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: isBuy ? 'rgba(0,255,136,0.15)' : 'rgba(255,68,68,0.15)', color: isBuy ? '#00ff88' : '#ff4444' }}>
+          {signal.signalType}
+        </span>
+        <span className="text-sm text-white font-medium">{signal.tokenSymbol}</span>
+      </div>
+      <div className="text-right flex-shrink-0">
+        {signal.maxGainPercent != null && <span className="text-xs" style={{ color: '#00ff88' }}>+{signal.maxGainPercent.toFixed(1)}%</span>}
+        <span className="text-xs ml-2" style={{ color: '#6b7280' }}>{timeAgo}</span>
+      </div>
+    </div>
+  )
+}
+
+function ArbRow({ result }) {
+  const absSpread = Math.abs(result.spreadPercent || 0)
+  const color = absSpread > 2 ? '#00ff88' : absSpread > 1 ? '#f0b90b' : '#6b7280'
+  return (
+    <div className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-white/5 transition-colors">
+      <span className="text-sm text-white font-medium">{result.keyword || result.symbol}</span>
+      <div className="flex items-center gap-3">
+        <span className="text-xs" style={{ color: '#9ca3af' }}>{result.direction === 'dex_premium' ? 'DEX↑' : 'CEX↑'}</span>
+        <span className="text-xs font-bold" style={{ color }}>{absSpread.toFixed(2)}%</span>
+      </div>
+    </div>
+  )
+}
+
+export default function Dashboard() {
+  const nav = useNavigate()
+  const [trending, setTrending] = useState([])
+  const [signals, setSignals] = useState([])
+  const [arb, setArb] = useState([])
+  const [alpha, setAlpha] = useState([])
+  const [loading, setLoading] = useState({ trending: true, signals: true, arb: true, alpha: true })
+  const [lastRefresh, setLastRefresh] = useState(Date.now())
+
+  useEffect(() => {
+    api.get('/token/trending').then(d => setTrending((d.pairs || d.data?.pairs || []).slice(0, 5))).catch(() => {}).finally(() => setLoading(p => ({ ...p, trending: false })))
+    api.get('/signals').then(d => setSignals((d.signals || []).slice(0, 5))).catch(() => {}).finally(() => setLoading(p => ({ ...p, signals: false })))
+    api.get('/arbitrage/scan').then(d => setArb((d.results || []).slice(0, 4))).catch(() => {}).finally(() => setLoading(p => ({ ...p, arb: false })))
+    api.get('/token/binance-alpha').then(d => setAlpha((d.tokens || []).slice(0, 5))).catch(() => {}).finally(() => setLoading(p => ({ ...p, alpha: false })))
+  }, [lastRefresh])
+
+  return (
+    <div className="p-4 md:p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-white">🐧 Meme Terminal</h1>
+        <button onClick={() => setLastRefresh(Date.now())} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs hover:bg-white/10 transition-colors" style={{ color: '#9ca3af' }}>
+          <RefreshCw size={14} /> Refresh
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <SectionCard title="Trending" emoji="🔥" icon={Flame} color="#ff6b35" linkTo="/scanner" loading={loading.trending}>
+          {trending.length > 0 ? trending.map((t, i) => (
+            <TokenRow key={i} symbol={t.baseToken?.symbol || t.symbol || '?'} name={t.baseToken?.name} price={parseFloat(t.priceUsd || t.price || 0)} change={parseFloat(t.priceChange?.h24 || t.priceChange24h || 0)} />
+          )) : <p className="text-xs" style={{ color: '#6b7280' }}>No data available</p>}
+        </SectionCard>
+
+        <SectionCard title="Smart Money Signals" emoji="📡" icon={Activity} color="#a855f7" linkTo="/signals" loading={loading.signals}>
+          {signals.length > 0 ? signals.map((s, i) => <SignalRow key={i} signal={s} />) : <p className="text-xs" style={{ color: '#6b7280' }}>No signals</p>}
+        </SectionCard>
+
+        <SectionCard title="Arbitrage" emoji="📊" icon={BarChart2} color="#00ff88" linkTo="/arbitrage" loading={loading.arb}>
+          {arb.length > 0 ? arb.map((r, i) => <ArbRow key={i} result={r} />) : <p className="text-xs" style={{ color: '#6b7280' }}>No data</p>}
+        </SectionCard>
+
+        <SectionCard title="Binance Alpha" emoji="🟡" icon={Zap} color="#f0b90b" linkTo="/alpha" loading={loading.alpha}>
+          {alpha.length > 0 ? alpha.map((t, i) => (
+            <TokenRow key={i} symbol={t.symbol} price={t.price} change={t.priceChange24h} />
+          )) : <p className="text-xs" style={{ color: '#6b7280' }}>No data</p>}
+        </SectionCard>
+      </div>
+    </div>
+  )
+}

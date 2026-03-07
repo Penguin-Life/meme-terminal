@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ExternalLink, TrendingUp, TrendingDown, Shield, Users, Globe, Twitter } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { ExternalLink, TrendingUp, TrendingDown, Shield, Users, Globe, Twitter, ArrowRight } from 'lucide-react'
 import ChainBadge from './ChainBadge.jsx'
 import StatusBadge from './StatusBadge.jsx'
 
@@ -65,6 +66,7 @@ function MiniBar({ value, max = 100 }) {
 }
 
 export default function TokenCard({ token, expanded, onExpand, onTrackWallet, onSetAlert }) {
+  const navigate = useNavigate()
   const { token: t, market, security, social, meta } = token || {}
   const isExpanded = expanded
 
