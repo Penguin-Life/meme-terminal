@@ -4,16 +4,19 @@
 
 ### *One person = One quant team*
 
+[![Built on Binance Skills Hub](https://img.shields.io/badge/Built_on-Binance_Skills_Hub-f0b90b?style=for-the-badge&logo=binance&logoColor=white)](docs/BINANCE-SKILLS.md)
+[![7 Official Binance Skills](https://img.shields.io/badge/7_Official-Binance_Skills-f0b90b?style=for-the-badge&logo=binance&logoColor=black)](docs/BINANCE-SKILLS.md)
+[![Full Trading Pipeline](https://img.shields.io/badge/Full-Trading_Pipeline-00ff88?style=for-the-badge&logo=lightning&logoColor=black)](docs/BINANCE-SKILLS.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-68a063?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)](https://reactjs.org/)
-[![Binance Skills](https://img.shields.io/badge/Binance_Skills-Integrated-f0b90b?logo=binance&logoColor=white)](docs/SKILLS-GUIDE.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-a855f7?logo=openai&logoColor=white)](https://openclaw.dev)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 **AI-powered memecoin intelligence. Real-time scanning. Natural-language trading queries via Telegram.**
 
-[Quick Start](#-quick-start) · [Features](#-features) · [Architecture](#-architecture) · [API Docs](docs/API.md) · [Skills Guide](docs/SKILLS-GUIDE.md)
+[Quick Start](#-quick-start) · [Binance Skills](#-powered-by-binance-skills-hub) · [Features](#-features) · [Architecture](#-architecture) · [API Docs](docs/API.md) · [Skills Guide](docs/SKILLS-GUIDE.md)
 
 </div>
 
@@ -27,16 +30,82 @@ No Bloomberg terminal subscription. No team of analysts. Just one terminal, a Te
 
 ---
 
+## 🟡 Powered by Binance Skills Hub
+
+> **Meme Terminal is built on 7 official Binance Skills** — providing a complete, end-to-end trading intelligence pipeline exclusive to the Binance ecosystem.
+
+| Skill | Purpose | Binance Exclusive |
+|-------|---------|:-----------------:|
+| 🔍 **Query Token Info** | Token search, price, K-line charts across BSC/Base/Solana | ✅ |
+| 🛡️ **Query Token Audit** | Honeypot detection, rug-pull risk, scam classification | ✅ |
+| 📊 **Crypto Market Rank** | Trending, Alpha picks, social hype, smart money inflow | ✅ |
+| 🚀 **Meme Rush** | Real-time launchpad token tracking (Pump.fun, Four.meme) | ✅ |
+| 👛 **Query Address Info** | Wallet portfolio & token positions on-chain | ✅ |
+| ⚡ **Trading Signal** | Smart money buy/sell signals with trigger prices & max gain | ✅ |
+| 💹 **Binance Spot** | CEX price reference, order book, 24h stats for listed tokens | ✅ |
+
+**Example conversations (Telegram):**
+```
+You: 查一下 BONK
+Terminal: 📊 BONK — $0.0000142 | +12.4% 24h | Vol $48M | Audit: SAFE ✅
+
+You: pump.fun 现在什么最热
+Terminal: 🔥 Top 5 launches: 1. PEPE2 (87% bonded)...
+
+You: 这个地址安全吗？ 0xABC...
+Terminal: 🛡️ 安全审计: 合约已验证 ✅ | 无蜜罐 ✅ | 流动性锁仓 ✅
+```
+
+→ Full skill guide: **[docs/BINANCE-SKILLS.md](docs/BINANCE-SKILLS.md)**
+
+---
+
+## 🟡 Binance Skills Deep Integration
+
+The 5-step pipeline that powers every trading decision in Meme Terminal:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    MEME TERMINAL TRADING PIPELINE                   │
+├──────────┬──────────┬──────────┬──────────┬────────────────────────┤
+│  Step 1  │  Step 2  │  Step 3  │  Step 4  │       Step 5           │
+│ DISCOVER │ RESEARCH │  AUDIT   │  SIGNAL  │       EXECUTE          │
+├──────────┼──────────┼──────────┼──────────┼────────────────────────┤
+│Meme Rush │  Token   │  Token   │ Trading  │    Binance Spot        │
+│(Pump.fun,│  Info    │  Audit   │  Signal  │  (CEX price ref +      │
+│Four.meme)│(price,   │(honeypot,│(smart    │   arbitrage scanner)   │
+│          │ volume,  │ rug, scam│ money    │                        │
+│          │ holders) │ check)   │ signals) │                        │
+├──────────┼──────────┼──────────┼──────────┼────────────────────────┤
+│🟡 Binance│🟡 Binance│🟡 Binance│🟡 Binance│     🟡 Binance         │
+│Meme Rush │Token Info│ Token    │ Trading  │       Spot             │
+│  Skill   │  Skill   │  Audit   │  Signal  │       Skill            │
+└──────────┴──────────┴──────────┴──────────┴────────────────────────┘
+```
+
+**Real example**: Found "MOONCAT" on Meme Rush (82% bonding curve)
+1. **Token Info** → $0.0000892, vol $45k/24h, 234 holders — momentum growing ✅
+2. **Token Audit** → SAFE, no mint authority, dev holds 0.5%, top10: 18% ✅
+3. **Trading Signal** → 3 smart wallets bought in last 2h (bullish signal) ✅
+4. **Binance Spot** → Not listed on CEX yet → early DEX entry opportunity ✅
+5. → **BUY** on Raydium at $0.0000892, target $0.0005 (+460% 🚀)
+
+---
+
 ## ⚡ Why Meme Terminal?
 
 | Feature | **Meme Terminal** | GMGN | DEXScreener | Birdeye |
 |---------|:-----------------:|:----:|:-----------:|:-------:|
+| **🟡 Binance smart money signals** | ✅ | ❌ | ❌ | ❌ |
+| **🟡 Binance token security audit** | ✅ | ❌ | ❌ | ❌ |
+| **🟡 Binance Alpha token discovery** | ✅ | ❌ | ❌ | ❌ |
+| **🟡 Meme Rush launchpad tracker** | ✅ | ❌ | ❌ | ❌ |
+| **🟡 CEX-DEX arbitrage scanner** | ✅ | ❌ | ❌ | ❌ |
 | Real-time token scanner | ✅ | ✅ | ✅ | ✅ |
 | Pump.fun bonding curve tracking | ✅ | ✅ | ❌ | ❌ |
 | Wallet / smart money tracking | ✅ | ✅ | ❌ | ✅ |
 | Telegram push alerts | ✅ | ✅ | ❌ | ⚠️ paid |
 | **Natural-language Telegram queries** | ✅ | ❌ | ❌ | ❌ |
-| **Binance on-chain smart money signals** | ✅ | ❌ | ❌ | ❌ |
 | **AI-powered token analysis** | ✅ | ❌ | ❌ | ❌ |
 | Multi-chain (SOL/ETH/BSC/Base/ARB) | ✅ | ⚠️ SOL only | ✅ | ✅ |
 | Self-hosted / open source | ✅ | ❌ | ❌ | ❌ |
@@ -52,11 +121,16 @@ No Bloomberg terminal subscription. No team of analysts. Just one terminal, a Te
 - 📈 **Price & Volume Tracking** — 24h change, volume, liquidity, FDV via DexScreener + GeckoTerminal
 - 🧪 **AI Token Analysis** — Natural-language analysis combining on-chain data + Binance signals
 
+### 🟡 Binance-Exclusive Features
+- 🔍 **Binance Alpha Discovery** — Early-stage curated tokens before mainstream listing
+- 📊 **CEX-DEX Arbitrage Scanner** — Spot price gaps between Binance Spot and on-chain DEX
+- 🧠 **Smart Money Signals** — Binance smart wallet buy/sell signals with trigger prices
+- 🛡️ **Token Security Audit** — Honeypot/rug-pull detection powered by Binance's security engine
+
 ### 👛 Wallet Intelligence
 - 🐋 **Smart Wallet Tracker** — Watch whale wallets, detect buy/sell moves in real time
 - 📊 **Portfolio Snapshot** — Token balances + positions for any wallet across chains
 - 🔗 **Trade History** — Recent transactions with profit/loss context
-- 🧠 **Smart Money Signals** — Binance on-chain smart money inflow rankings
 
 ### 🔔 Alert Engine
 - ⚡ **Price Alerts** — Trigger above/below custom thresholds
@@ -66,7 +140,7 @@ No Bloomberg terminal subscription. No team of analysts. Just one terminal, a Te
 
 ### 🤖 AI Skills Layer (OpenClaw)
 - 💬 **Natural Language** — Ask in plain text: "查一下 BONK 现在涨了多少"
-- 🔗 **7 Binance Skills** — Token info, market rank, meme rush, trading signals, wallet audit, security scan
+- 🟡 **7 Binance Skills** — Token info, market rank, meme rush, trading signals, wallet audit, security scan, spot
 - 📡 **6 Custom Skills** — DexScreener, Pump.fun, GeckoTerminal, Smart Wallet, Meme Radar, Terminal
 
 ### 🛡️ Production-Grade Infrastructure
@@ -95,20 +169,24 @@ graph TB
         SK4["smart-wallet skill"]
         SK5["meme-radar skill"]
         SK6["meme-terminal skill"]
-        BK1["binance: token-info"]
-        BK2["binance: market-rank"]
-        BK3["binance: meme-rush"]
-        BK4["binance: trading-signal"]
-        BK5["binance: token-audit"]
+        BK1["🟡 binance: token-info"]
+        BK2["🟡 binance: market-rank"]
+        BK3["🟡 binance: meme-rush"]
+        BK4["🟡 binance: trading-signal"]
+        BK5["🟡 binance: token-audit"]
+        BK6["🟡 binance: address-info"]
+        BK7["🟡 binance: spot"]
     end
 
     subgraph BACKEND["Express.js API  •  :3902"]
         direction LR
         RT1["/token/*"]
-        RT2["/wallet/*"]
-        RT3["/alerts/*"]
-        RT4["/analyze/*"]
-        RT5["/notify/*"]
+        RT2["/token/binance-alpha"]
+        RT3["/wallet/*"]
+        RT4["/alerts/*"]
+        RT5["/analyze/*"]
+        RT6["/notify/*"]
+        RT7["/arbitrage/scan"]
         CACHE["Smart Cache"]
         AE["Alert Engine<br/>(cron every 60s)"]
     end
@@ -119,6 +197,7 @@ graph TB
         PF["💊 Pump.fun"]
         HL["⚡ Helius (Solana)"]
         BN["🟡 Binance On-Chain"]
+        BS["🟡 Binance Spot API"]
     end
 
     TG --> BRAIN
@@ -126,8 +205,8 @@ graph TB
     BRAIN --> BACKEND
     BACKEND --> CACHE
     CACHE --> DATA
-    AE --> RT3
-    AE --> RT5
+    AE --> RT4
+    AE --> RT6
 ```
 
 ---
@@ -284,6 +363,11 @@ Base URL: `http://localhost:3902/api`
 | Tokens | `GET /token/trending` | Top trending pairs |
 | Tokens | `GET /token/new` | Latest listed pairs |
 | Tokens | `GET /token/:chain/:address` | Token details by address |
+| **🟡 Alpha** | `GET /token/binance-alpha` | Binance Alpha curated tokens |
+| **🟡 Alpha** | `GET /token/binance-alpha/trending` | Trending Alpha + overall tokens |
+| **🟡 Arbitrage** | `GET /arbitrage/scan` | Bulk CEX-DEX price comparison |
+| **🟡 Arbitrage** | `GET /arbitrage/scan?symbol=BONKUSDT` | Single symbol scan |
+| **🟡 Arbitrage** | `GET /arbitrage/pairs` | Supported symbol list |
 | Wallets | `GET /wallet/watchlist` | Get watchlist |
 | Wallets | `POST /wallet/watchlist` | Add wallet to watchlist |
 | Wallets | `DELETE /wallet/watchlist/:address` | Remove wallet from watchlist |
@@ -318,27 +402,13 @@ Meme Terminal ships with **13 skills** total — 6 custom + 7 Binance:
 | `gecko-terminal` | Custom | Multi-chain DEX pools and OHLCV |
 | `smart-wallet` | Custom | Whale tracking, wallet analysis |
 | `meme-radar` | Custom | Unified scanner across all sources |
-| `query-token-info` | Binance | Token metadata, price, K-line charts |
-| `crypto-market-rank` | Binance | Trending, social hype, smart money |
-| `meme-rush` | Binance | Launchpad tokens, topic rush |
-| `trading-signal` | Binance | Smart money buy/sell signals |
-| `query-address-info` | Binance | Wallet token balances on-chain |
-| `query-token-audit` | Binance | Scam/honeypot security scan |
-| `spot` | Binance | Spot market data |
-
-**Example conversations:**
-```
-You: 查一下 BONK
-Terminal: 📊 BONK — $0.0000142 | +12.4% 24h | Vol $48M...
-
-You: pump.fun 现在什么最热
-Terminal: 🔥 Top 5 launches: 1. PEPE2 (87% bonded)...
-
-You: 这个地址安全吗？ 0xABC...
-Terminal: 🛡️ 安全审计: 合约已验证 ✅ | 无蜜罐 ✅ | 流动性锁仓 ✅
-```
-
-→ Full examples: **[docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md)**
+| `query-token-info` | **🟡 Binance** | Token metadata, price, K-line charts |
+| `crypto-market-rank` | **🟡 Binance** | Trending, social hype, smart money, Alpha |
+| `meme-rush` | **🟡 Binance** | Launchpad tokens, topic rush |
+| `trading-signal` | **🟡 Binance** | Smart money buy/sell signals |
+| `query-address-info` | **🟡 Binance** | Wallet token balances on-chain |
+| `query-token-audit` | **🟡 Binance** | Scam/honeypot security scan |
+| `spot` | **🟡 Binance** | Spot market data, CEX-DEX arbitrage |
 
 ---
 
@@ -355,12 +425,13 @@ Terminal: 🛡️ 安全审计: 合约已验证 ✅ | 无蜜罐 ✅ | 流动性�
 | **AI Layer** | ![OpenClaw](https://img.shields.io/badge/OpenClaw-Skills-a855f7) |
 | **Routing** | ![React Router](https://img.shields.io/badge/React_Router-6-ca4245?logo=reactrouter&logoColor=white) |
 | **HTTP** | ![Axios](https://img.shields.io/badge/Axios-1.x-5a29e4) |
+| **Data** | ![Binance](https://img.shields.io/badge/Binance_Skills_Hub-7_Skills-f0b90b?logo=binance&logoColor=white) |
 
 ---
 
 ## 🗺️ Roadmap
 
-### v1.0.0 — Current ✅
+### v1.0.0 — Shipped ✅
 - Real-time token scanner (multi-chain)
 - Pump.fun monitor with bonding curve
 - Smart wallet tracker
@@ -369,17 +440,24 @@ Terminal: 🛡️ 安全审计: 合约已验证 ✅ | 无蜜罐 ✅ | 流动性�
 - Production-grade backend (caching, retry, security)
 - Responsive dark-mode React dashboard
 
-### v1.1.0 — In Progress 🔨
-- [ ] Demo mode with rich mock data for offline usage
-- [ ] One-click `scripts/setup.sh` installer
-- [ ] Docker + docker-compose for deployment
-- [ ] Binance integration showcase page
+### v1.1.0 — Shipped ✅
+- Demo mode with rich mock data for offline usage
+- One-click `scripts/setup.sh` installer
+- Docker + docker-compose for deployment
+- Binance integration showcase (`docs/BINANCE-SKILLS.md`)
 
-### v1.2.0 — Planned 📋
+### v1.2.0 — Shipped ✅
+- 🟡 Binance Alpha Token page — discover Binance-curated alpha tokens early
+- 📊 CEX-DEX Arbitrage Scanner — spot price gaps between Binance and DEX
+- 🏗️ README restructured with Binance-first positioning
+- 📝 New arbitrage and alpha discovery workflows in docs
+
+### v1.3.0 — Planned 📋 Binance Ecosystem Expansion
+- [ ] Binance Pay integration for direct in-app funding
+- [ ] Cross-chain arbitrage alerts (Solana ↔ BSC ↔ Base)
+- [ ] Binance Smart Chain priority scanner (BSC-native token discovery)
 - [ ] Portfolio P&L tracking with historical snapshots
-- [ ] Rug-pull risk scoring (contract analysis)
 - [ ] WebSocket streaming for live price ticks
-- [ ] Copy-trade signal detection
 
 ### v2.0.0 — Vision 🔭
 - [ ] DEX aggregator swap integration
@@ -421,11 +499,11 @@ MIT — see [LICENSE](LICENSE)
 
 Built on the shoulders of giants:
 
+- [Binance Skills Hub](https://github.com/binance) — 7 official on-chain skills powering the trading pipeline
 - [DexScreener](https://dexscreener.com) — Free DEX pair API
 - [GeckoTerminal](https://geckoterminal.com) — Multi-chain pool data
 - [Pump.fun](https://pump.fun) — Solana meme launch platform
 - [Helius](https://helius.dev) — Solana RPC & indexer
-- [Binance Web3](https://github.com/binance) — On-chain skill signals
 - [OpenClaw](https://openclaw.dev) — AI agent framework
 
 ---
@@ -435,6 +513,8 @@ Built on the shoulders of giants:
 **Built with 🐧 love by [Penguin-Life](https://github.com/Penguin-Life)**
 
 *One person. One terminal. One quant team.*
+
+[![Built on Binance Skills Hub](https://img.shields.io/badge/Built_on-Binance_Skills_Hub-f0b90b?logo=binance&logoColor=white)](docs/BINANCE-SKILLS.md)
 
 ⭐ If this helps your trading, star the repo!
 

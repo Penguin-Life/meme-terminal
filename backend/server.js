@@ -11,11 +11,13 @@ const morgan = require('morgan');
 const path = require('path');
 const compression = require('compression');
 
-const tokenRoutes   = require('./routes/token');
-const walletRoutes  = require('./routes/wallet');
-const alertRoutes   = require('./routes/alert');
-const notifyRoutes  = require('./routes/notify');
-const analyzeRoutes = require('./routes/analyze');
+const tokenRoutes        = require('./routes/token');
+const walletRoutes       = require('./routes/wallet');
+const alertRoutes        = require('./routes/alert');
+const notifyRoutes       = require('./routes/notify');
+const analyzeRoutes      = require('./routes/analyze');
+const binanceAlphaRoutes = require('./routes/binanceAlpha');
+const arbitrageRoutes    = require('./routes/arbitrage');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const {
   searchLimiter,
@@ -191,11 +193,13 @@ app.get('/api/cache/stats', (req, res) => {
 
 // ─── Routes (with tiered rate limiting) ──────────────────────────────────────
 
-app.use('/api/token',   searchLimiter,   tokenRoutes);
-app.use('/api/wallet',  searchLimiter,   walletRoutes);
-app.use('/api/alerts',  alertsLimiter,   alertRoutes);
-app.use('/api/notify',  notifyLimiter,   notifyRoutes);
-app.use('/api/analyze', analysisLimiter, analyzeRoutes);
+app.use('/api/token',              searchLimiter,   tokenRoutes);
+app.use('/api/token/binance-alpha', searchLimiter,   binanceAlphaRoutes);
+app.use('/api/wallet',             searchLimiter,   walletRoutes);
+app.use('/api/alerts',             alertsLimiter,   alertRoutes);
+app.use('/api/notify',             notifyLimiter,   notifyRoutes);
+app.use('/api/analyze',            analysisLimiter, analyzeRoutes);
+app.use('/api/arbitrage',          searchLimiter,   arbitrageRoutes);
 
 // ─── Production: Serve Frontend Static Files ──────────────────────────────────
 

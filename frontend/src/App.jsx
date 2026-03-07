@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
-import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff } from 'lucide-react'
+import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff, BarChart2 } from 'lucide-react'
 import { ToastProvider } from './components/Toast.jsx'
 import api from './utils/api.js'
 
@@ -9,6 +9,8 @@ const Scanner = lazy(() => import('./pages/Scanner.jsx'))
 const Wallets = lazy(() => import('./pages/Wallets.jsx'))
 const Alerts = lazy(() => import('./pages/Alerts.jsx'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage.jsx'))
+const BinanceAlpha = lazy(() => import('./pages/BinanceAlpha.jsx'))
+const ArbitrageScanner = lazy(() => import('./pages/ArbitrageScanner.jsx'))
 
 // Page loading fallback
 function PageLoader() {
@@ -26,6 +28,8 @@ const navItems = [
   { to: '/scanner', icon: Flame, label: 'Scanner', emoji: '🔥' },
   { to: '/wallets', icon: Wallet, label: 'Wallets', emoji: '👛' },
   { to: '/alerts', icon: Bell, label: 'Alerts', emoji: '🔔' },
+  { to: '/alpha', icon: Zap, label: 'Alpha', emoji: '🟡' },
+  { to: '/arbitrage', icon: BarChart2, label: 'Arbitrage', emoji: '📊' },
   { to: '/settings', icon: Settings, label: 'Settings', emoji: '⚙️' },
 ]
 
@@ -224,6 +228,8 @@ function App() {
                   <Route path="/scanner" element={<Scanner />} />
                   <Route path="/wallets" element={<Wallets />} />
                   <Route path="/alerts" element={<Alerts />} />
+                  <Route path="/alpha" element={<BinanceAlpha />} />
+                  <Route path="/arbitrage" element={<ArbitrageScanner />} />
                   <Route path="/settings" element={<SettingsPage />} />
                 </Routes>
               </Suspense>

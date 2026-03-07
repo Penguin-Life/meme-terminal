@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-03-08
+
+### Added
+- 🟡 Binance Alpha Token page — discover Binance-curated alpha tokens
+- 📊 CEX-DEX Arbitrage Scanner — spot price gaps between Binance and DEX
+- 🏗️ README restructured with Binance-first positioning
+- 📝 New arbitrage and alpha discovery workflows in docs
+- `backend/routes/binanceAlpha.js` — new `/api/token/binance-alpha` and `/api/token/binance-alpha/trending` endpoints
+- `backend/routes/arbitrage.js` — new `/api/arbitrage/scan` and `/api/arbitrage/pairs` endpoints
+- `frontend/src/pages/BinanceAlpha.jsx` — Alpha token card grid with live refresh
+- `frontend/src/pages/ArbitrageScanner.jsx` — CEX-DEX spread table with color-coded opportunities
+- Nav links in sidebar and mobile nav for Alpha and Arbitrage pages
+- Workflow 5 (Binance Alpha Discovery) and Workflow 6 (CEX-DEX Arbitrage) in `docs/BINANCE-SKILLS.md`
+- v1.3.0 roadmap entry: Binance Ecosystem Expansion (Pay, cross-chain arb, BSC scanner)
+
+### Changed
+- README now highlights Binance Skills Hub as core differentiator with hero banner badges
+- Comparison table reordered to put Binance-exclusive features first
+- Roadmap updated: v1.1.0 and v1.2.0 marked as DONE ✅
+- `backend/server.js` registers two new route modules (binanceAlpha, arbitrage)
+- `frontend/src/App.jsx` lazy-loads two new pages and adds nav items
+
+---
+
 ## [1.1.0] — 2026-03-05
 
 ### 🔍 Deep Audit, Gap Filling & Final Polish (R41-R49)
