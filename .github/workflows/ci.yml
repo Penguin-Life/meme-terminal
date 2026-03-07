@@ -38,6 +38,10 @@ jobs:
           echo "PORT=3902" >> .env
           echo "NODE_ENV=test" >> .env
 
+      - name: Run tests
+        working-directory: backend
+        run: npm test
+
       - name: Check backend starts (smoke test)
         working-directory: backend
         run: |
@@ -49,6 +53,7 @@ jobs:
         env:
           PORT: 3902
           NODE_ENV: test
+          WS_ENABLED: 'false'
 
   # ─── Frontend ──────────────────────────────────────────────────────────────
   frontend:

@@ -299,6 +299,13 @@ export default function TokenCard({ token, expanded, onExpand, onTrackWallet, on
             >
               <Shield size={12} /> Set Alert
             </button>
+            <button
+              onClick={() => t?.address && navigate(`/token/${t.chain || 'solana'}/${t.address}`)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+              style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}
+            >
+              <ArrowRight size={12} /> Detail
+            </button>
           </div>
         </div>
       )}

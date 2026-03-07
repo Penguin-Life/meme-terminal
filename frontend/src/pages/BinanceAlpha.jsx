@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { RefreshCw, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import api from '../utils/api.js'
 
@@ -44,10 +45,11 @@ function PriceChange({ value }) {
 /**
  * Individual Alpha token card.
  */
-function AlphaCard({ token, index }) {
+function AlphaCard({ token, index, onNavigate }) {
   return (
     <div
-      className="rounded-xl p-4 flex flex-col gap-3 transition-all hover:scale-[1.01]"
+      className="rounded-xl p-4 flex flex-col gap-3 transition-all hover:scale-[1.01] cursor-pointer"
+      onClick={() => token.contractAddress && onNavigate && onNavigate(token)}
       style={{
         background: 'linear-gradient(135deg, #13141e 0%, #1a1b25 100%)',
         border: '1px solid rgba(240,185,11,0.25)',
@@ -141,6 +143,7 @@ function AlphaCard({ token, index }) {
  * 币安Alpha代币发现页面 — 展示币安精选的Alpha代币，用于早期发现机会
  */
 export default function BinanceAlpha() {
+  const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -269,7 +272,10 @@ export default function BinanceAlpha() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {tokens.map((token, i) => (
-              <AlphaCard key={token.contractAddress || token.symbol || i} token={token} index={i} />
+              <AlphaCard key={token.contractAddress || token.symbol || i} token={token} index={i} onNavigate={(t) => {
+                const chain = t.chainId === 'CT_501' ? 'solana' : t.chainId === '56' ? 'bsc' : t.chainId === '8453' ? 'base' : 'ethereum'
+                navigate(`/token/${chain}/${t.contractAddress}`)
+              }} />
             ))}
           </div>
         </>
