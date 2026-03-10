@@ -2,18 +2,7 @@ import { useState } from 'react'
 import { ExternalLink, Trash2, ChevronDown, ChevronUp, RefreshCw, Copy, Check } from 'lucide-react'
 import ChainBadge from './ChainBadge.jsx'
 import api from '../utils/api.js'
-
-function shortAddr(addr) {
-  if (!addr) return ''
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-}
-
-function fmt(num) {
-  if (num === null || num === undefined) return '—'
-  if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`
-  if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`
-  return `$${num.toFixed(2)}`
-}
+import { shortAddr, fmtUsd as fmt } from '../utils/format.js'
 
 export default function WalletCard({ wallet, onRemove }) {
   const [expanded, setExpanded] = useState(false)

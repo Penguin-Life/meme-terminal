@@ -152,7 +152,32 @@
 
 **Build Verification**: Frontend: `✓ built in 1.24s` (all chunks OK, new shared components tree-shaken into separate chunks). Backend: `node --check server.js` passes.
 
-### What's Next (Round 5 suggestions)
+### Round 5 — Polish New Features, Format Migration, Backend Hardening
+- **Step**: 1-3 (Polish R1-R4 features + Backend improvements + Deployment)
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+#### Format.js Migration (Architecture Cleanup)
+1. **TokenCard.jsx** — Removed 3 local functions (`fmt`, `fmtPrice`, `fmtAge`), now imports from shared `format.js`. Eliminates ~20 lines of duplicate code.
+2. **WalletCard.jsx** — Removed 2 local functions (`shortAddr`, `fmt`), now imports from shared `format.js`.
+3. **BinanceAlpha.jsx** — Removed 2 local functions (`fmtUsd`, `fmtPrice`) + dead `_Shared` alias imports. Now uses shared `format.js` directly.
+4. **ArbitrageScanner.jsx** — Removed local `fmtPrice` function + dead `_Shared` alias import. Now uses shared `format.js`.
+5. **Alerts.jsx** — Removed local `shortAddr` function + dead `_Shared` alias import. Now uses shared `format.js`.
+6. **Dashboard.jsx** — Replaced inline price formatting (`toFixed`/`toExponential`) and manual `timeAgo` calculation with shared `fmtPrice` and `timeAgo` from `format.js`.
+7. **TokenDetail.jsx** — Replaced inline price formatting and USD formatting with shared `fmtPrice` and `fmtUsd`.
+
+**Result**: `format.js` is now the single source of truth for all number/price/time/address formatting across 9 files. Zero duplicate formatting functions remain (except `fmtTime` in Alerts which is a distinct date-formatting function).
+
+#### Backend Hardening
+8. **CSP Header Fix** 🐛 — The Content-Security-Policy was `script-src 'none'` which would completely break the React SPA when served in production mode. Fixed to allow `'self'` scripts/styles, `data:` images, and Binance API/WebSocket connections.
+9. **Wallet Route Validation** — Added `VALID_CHAINS` whitelist and address length validation (20-66 chars) to `POST /api/wallet/watchlist`. Invalid chains now return 400 with `INVALID_CHAIN` code; malformed addresses return `INVALID_ADDRESS`.
+
+#### README & Documentation
+10. **README Roadmap Updated** — Added v1.5.0 section documenting Command Palette, shared component library, format.js, SEO overhaul, UX polish, backend hardening, and architecture cleanup. Bumped planned section to v1.6.0.
+
+**Build Verification**: Frontend: `✓ built in 1.23s` (all chunks OK, `format.js` tree-shaken into shared chunk). Backend: `node --check server.js` passes.
+
+### What's Next (Round 6 suggestions)
 - Step 1: Polish the Command Palette (recent pages, favorites, action commands like "Toggle demo mode")
 - Step 2: PWA manifest + service worker for installability
 - Step 3: Accessibility pass (aria-labels, focus management, screen reader hints)

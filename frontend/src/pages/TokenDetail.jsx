@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Shield, ShieldAlert, ShieldCheck, TrendingUp, TrendingDown, Activity, Copy, Check } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import api from '../utils/api.js'
+import { fmtPrice, fmtUsd, timeAgo } from '../utils/format.js'
 
 function Badge({ level }) {
   const map = {
@@ -130,7 +131,7 @@ export default function TokenDetail() {
             <CopyAddress address={address} />
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-white">{price >= 0.01 ? `$${price.toFixed(4)}` : `$${price.toExponential(3)}`}</p>
+            <p className="text-2xl font-bold text-white">{fmtPrice(price)}</p>
             <p className="flex items-center justify-end gap-1 text-sm font-medium" style={{ color: isUp ? '#00ff88' : '#ff4444' }}>
               {isUp ? <TrendingUp size={16} /> : <TrendingDown size={16} />} {isUp ? '+' : ''}{change24h.toFixed(2)}%
             </p>
@@ -140,9 +141,9 @@ export default function TokenDetail() {
         {/* Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
           {[
-            { label: 'Volume 24h', value: t.volume?.h24 || t.volume24h, fmt: v => `$${(parseFloat(v)/1e6).toFixed(2)}M` },
-            { label: 'Liquidity', value: t.liquidity?.usd || t.liquidity, fmt: v => `$${(parseFloat(v)/1e6).toFixed(2)}M` },
-            { label: 'Market Cap', value: t.marketCap || t.fdv, fmt: v => `$${(parseFloat(v)/1e6).toFixed(1)}M` },
+            { label: 'Volume 24h', value: t.volume?.h24 || t.volume24h, fmt: v => fmtUsd(parseFloat(v)) },
+            { label: 'Liquidity', value: t.liquidity?.usd || t.liquidity, fmt: v => fmtUsd(parseFloat(v)) },
+            { label: 'Market Cap', value: t.marketCap || t.fdv, fmt: v => fmtUsd(parseFloat(v)) },
             { label: 'Holders', value: t.holders, fmt: v => parseInt(v).toLocaleString() },
           ].map(({ label, value, fmt }) => (
             <div key={label} className="rounded-lg p-3" style={{ background: '#0f0f1a' }}>

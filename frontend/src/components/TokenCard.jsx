@@ -3,34 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ExternalLink, TrendingUp, TrendingDown, Shield, Users, Globe, Twitter, ArrowRight } from 'lucide-react'
 import ChainBadge from './ChainBadge.jsx'
 import StatusBadge from './StatusBadge.jsx'
-
-function fmt(num, decimals = 2) {
-  if (num === null || num === undefined) return '—'
-  if (num >= 1e9) return `$${(num / 1e9).toFixed(1)}B`
-  if (num >= 1e6) return `$${(num / 1e6).toFixed(1)}M`
-  if (num >= 1e3) return `$${(num / 1e3).toFixed(1)}K`
-  if (num >= 1) return `$${num.toFixed(decimals)}`
-  if (num > 0) return `$${num.toFixed(6)}`
-  return '$0'
-}
-
-function fmtPrice(num) {
-  if (num === null || num === undefined) return '—'
-  if (num >= 1) return `$${num.toFixed(4)}`
-  if (num > 0.001) return `$${num.toFixed(6)}`
-  return `$${num.toPrecision(3)}`
-}
-
-function fmtAge(isoString) {
-  if (!isoString) return '—'
-  const diff = Date.now() - new Date(isoString).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h`
-  const days = Math.floor(hrs / 24)
-  return `${days}d`
-}
+import { fmtUsd as fmt, fmtPrice, fmtAge } from '../utils/format.js'
 
 function PriceChange({ value, label }) {
   if (value === null || value === undefined) return null

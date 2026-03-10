@@ -462,7 +462,16 @@ Meme Terminal ships with **13 skills** total — 6 custom + 7 Binance:
 - 🧪 Jest unit tests (9 cases)
 - 📱 Mobile responsive bottom tab navigation
 
-### v1.4.0 — Planned 📋
+### v1.5.0 — Shipped ✅
+- ⌘K **Command Palette** — VS Code-style quick navigation & token search from anywhere
+- 🧩 **Shared component library** — `<PageHeader>`, `<EmptyState>`, `<ErrorBanner>` reusable across all pages
+- 🔧 **format.js utility module** — Centralized `fmtUsd`, `fmtPrice`, `fmtCompact`, `timeAgo`, `shortAddr`, `fmtAge` — eliminated 6+ duplicate formatting functions
+- 🔍 **SEO overhaul** — Open Graph, Twitter Card, meta descriptions, theme-color
+- 🎨 **UX polish across all pages** — loading skeletons, shimmer animations, copy-to-clipboard buttons, live timers, sort controls, search & filter bars
+- 🛡️ **Backend hardening** — CSP header fix, wallet chain/address validation, improved error logging
+- ♻️ **Architecture cleanup** — Version unified at v1.5.0, removed dead imports, consistent error patterns
+
+### v1.6.0 — Planned 📋
 - [ ] Binance Pay integration for direct in-app funding
 - [ ] Cross-chain arbitrage alerts (Solana ↔ BSC ↔ Base)
 - [ ] Portfolio P&L tracking with historical snapshots

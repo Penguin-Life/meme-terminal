@@ -3,18 +3,7 @@ import { RefreshCw, TrendingUp, TrendingDown, Minus, Zap, AlertCircle } from 'lu
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
-import { fmtPrice as fmtPriceShared } from '../utils/format.js'
-
-/**
- * Format a price value for display.
- */
-function fmtPrice(n) {
-  if (n == null) return '—'
-  if (n >= 1) return `$${n.toFixed(4)}`
-  if (n >= 0.01) return `$${n.toFixed(6)}`
-  if (n >= 0.000001) return `$${n.toFixed(8)}`
-  return `$${n.toExponential(3)}`
-}
+import { fmtPrice } from '../utils/format.js'
 
 /**
  * Color-code a spread percent value.

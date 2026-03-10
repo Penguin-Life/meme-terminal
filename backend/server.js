@@ -62,9 +62,11 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  // In production the server serves the React SPA, so we need permissive
+  // script/style sources. API-only responses don't serve HTML anyway.
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'none'; script-src 'none'; connect-src 'self'"
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.binance.com wss://stream.binance.com; font-src 'self' data:"
   );
   res.setHeader('Referrer-Policy', 'no-referrer');
   next();

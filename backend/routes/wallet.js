@@ -13,6 +13,7 @@ const { createError } = require('../middleware/errorHandler');
 const { readJson, writeJson } = require('../utils/dataStore');
 const { DEMO_MODE, MOCK_WALLET_PORTFOLIO } = require('../services/mockData');
 
+const VALID_CHAINS = ['solana', 'eth', 'ethereum', 'bsc', 'base', 'arbitrum', 'polygon'];
 const WATCHLIST_FILE = path.join(__dirname, '../data/watchlist.json');
 
 // ─── Watchlist helpers ────────────────────────────────────────────────────────
@@ -44,6 +45,12 @@ router.post('/watchlist', (req, res, next) => {
     const { address, chain, label, notes } = req.body;
     if (!address || !chain) {
       throw createError('Fields "address" and "chain" are required', 400, 'BAD_REQUEST');
+    }
+    if (!VALID_CHAINS.includes(chain.toLowerCase())) {
+      throw createError(`Invalid chain "${chain}". Must be one of: ${VALID_CHAINS.join(', ')}`, 400, 'INVALID_CHAIN');
+    }
+    if (address.length < 20 || address.length > 66) {
+      throw createError('Invalid address length. Expected 20-66 characters.', 400, 'INVALID_ADDRESS');
     }
 
     const watchlist = readWatchlist();

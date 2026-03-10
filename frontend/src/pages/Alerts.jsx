@@ -4,7 +4,7 @@ import ChainBadge from '../components/ChainBadge.jsx'
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
-import { shortAddr as shortAddrShared } from '../utils/format.js'
+import { shortAddr } from '../utils/format.js'
 
 const ALERT_TYPES = [
   { value: 'price_above', label: 'Price Above', icon: '📈', color: '#00ff88' },
@@ -15,12 +15,6 @@ const ALERT_TYPES = [
 ]
 
 const CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon']
-
-function shortAddr(addr) {
-  if (!addr) return ''
-  if (addr.length <= 12) return addr
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-}
 
 function fmtTime(iso) {
   if (!iso) return '—'

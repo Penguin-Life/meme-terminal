@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Flame, Zap, BarChart2, Activity, RefreshCw, ArrowRight } from 'lucide-react'
 import api from '../utils/api.js'
+import { fmtPrice, timeAgo as fmtTimeAgo } from '../utils/format.js'
 
 function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading, error, onRetry }) {
   const nav = useNavigate()
@@ -39,7 +40,7 @@ function TokenRow({ symbol, name, price, change, onClick }) {
         {name && <span className="text-xs ml-1.5" style={{ color: '#6b7280' }}>{name}</span>}
       </div>
       <div className="text-right flex-shrink-0 ml-2">
-        {price != null && <span className="text-xs text-white">${typeof price === 'number' ? (price >= 0.01 ? price.toFixed(4) : price.toExponential(2)) : price}</span>}
+        {price != null && <span className="text-xs text-white">{fmtPrice(typeof price === 'number' ? price : parseFloat(price))}</span>}
         {change != null && <span className="text-xs ml-2" style={{ color: isUp ? '#00ff88' : '#ff4444' }}>{isUp ? '+' : ''}{change.toFixed(1)}%</span>}
       </div>
     </div>
@@ -48,7 +49,7 @@ function TokenRow({ symbol, name, price, change, onClick }) {
 
 function SignalRow({ signal }) {
   const isBuy = signal.signalType === 'BUY'
-  const timeAgo = signal.signalTime ? `${Math.round((Date.now() - signal.signalTime) / 60000)}m ago` : ''
+  const timeAgoStr = signal.signalTime ? fmtTimeAgo(signal.signalTime) : ''
   return (
     <div className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-white/5 transition-colors">
       <div className="flex items-center gap-2 min-w-0">
@@ -59,7 +60,7 @@ function SignalRow({ signal }) {
       </div>
       <div className="text-right flex-shrink-0">
         {signal.maxGainPercent != null && <span className="text-xs" style={{ color: '#00ff88' }}>+{signal.maxGainPercent.toFixed(1)}%</span>}
-        <span className="text-xs ml-2" style={{ color: '#6b7280' }}>{timeAgo}</span>
+        <span className="text-xs ml-2" style={{ color: '#6b7280' }}>{timeAgoStr}</span>
       </div>
     </div>
   )

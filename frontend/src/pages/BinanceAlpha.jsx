@@ -4,29 +4,7 @@ import { RefreshCw, ExternalLink, TrendingUp, TrendingDown, Minus, Search, X } f
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
-import { fmtUsd as fmtUsdShared, fmtPrice as fmtPriceShared } from '../utils/format.js'
-
-/**
- * Format a large USD number into a readable string.
- * e.g. 1_234_567 → "$1.23M"
- */
-function fmtUsd(n) {
-  if (n == null) return '—'
-  if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`
-  if (n >= 1e6) return `$${(n / 1e6).toFixed(2)}M`
-  if (n >= 1e3) return `$${(n / 1e3).toFixed(1)}K`
-  return `$${n.toFixed(4)}`
-}
-
-/**
- * Format a token price intelligently based on magnitude.
- */
-function fmtPrice(n) {
-  if (n == null) return '—'
-  if (n >= 1) return `$${n.toFixed(4)}`
-  if (n >= 0.0001) return `$${n.toFixed(6)}`
-  return `$${n.toExponential(3)}`
-}
+import { fmtUsd, fmtPrice } from '../utils/format.js'
 
 /**
  * Render a price-change badge with appropriate color and icon.
