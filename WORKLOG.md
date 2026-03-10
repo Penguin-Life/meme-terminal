@@ -258,10 +258,45 @@
 **Build Verification**: Frontend: `✓ built in 1.23s` (all chunks OK). Backend: all 5 test suites pass.
 **Version**: Bumped to v1.5.2.
 
-### What's Next (Round 8 suggestions)
+### Round 8 — Final Wrap-Up (Pre-GitHub Push)
+- **Step**: Regression check, CHANGELOG, README polish, cleanup
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+#### Version Consistency Fix
+1. **Unified all version strings to v1.5.2** — Fixed mismatches across:
+   - `package.json` (root/backend/frontend): was 1.3.0, now 1.5.2
+   - `backend/server.js` health + status + banner: was 1.5.1, now 1.5.2
+   - `frontend/src/pages/SettingsPage.jsx`: was 1.5.1, now 1.5.2
+   - `frontend/src/App.jsx`: already 1.5.2 ✅
+
+#### CHANGELOG.md
+2. **Full rewrite** — Added proper v1.4.0 and v1.5.0 and v1.5.2 sections (were missing). Condensed v1.0.0/v1.1.0 entries. All 7 releases now documented with Added/Changed/Fixed categories per Keep a Changelog format.
+
+#### README.md
+3. **Roadmap updated** — Added v1.4.0 (Shipped ✅) and v1.5.2 (Shipped ✅) sections. Condensed v1.5.0 entry.
+4. **Features list expanded** — Added "Inline Sparklines", "Command Palette" section, "50 Unit Tests" to feature list.
+
+#### Cleanup
+5. **Removed optimizer build files** — Deleted `.optimizer-prompt.txt`, `.optimizer-orchestrator.log`, `.optimizer-orchestrator.status`, `scripts/optimizer_orchestrator.sh` (build tools, not product).
+6. **`.gitignore` updated** — Added `.optimizer*` pattern to prevent re-tracking.
+7. **Root `npm test` fixed** — Was an echo placeholder; now runs `cd backend && npm test` (50 tests).
+
+#### Final Regression Check
+- ✅ `npx vite build` — `✓ built in 1.24s` (all chunks OK)
+- ✅ `node --check backend/server.js` — passes
+- ✅ `npm test` — 5 suites, 50 tests, all passing (0.14s)
+- ✅ No optimizer/build files remain
+- ✅ All version strings unified at 1.5.2
+
+**Ready for GitHub push.**
+
+---
+
+### Future Ideas (Post-Push)
 - PWA manifest + service worker for installability
 - Performance audit (React.memo on heavy components, virtualized lists)
 - Command Palette enhancements (recent pages, action commands)
 - Dark/light theme toggle
 - Data export (CSV/JSON) from Scanner/Signals pages
-- Consider: notification sound toggle, WebSocket reconnect backoff
+- Notification sound toggle, WebSocket reconnect backoff

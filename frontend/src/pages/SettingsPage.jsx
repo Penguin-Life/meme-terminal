@@ -3,7 +3,7 @@ import { Settings, Server, RefreshCw, ExternalLink, Zap, Info, FlaskConical, Che
 import api from '../utils/api.js'
 import usePageTitle from '../hooks/usePageTitle.js'
 
-const APP_VERSION = '1.5.1'
+const APP_VERSION = '1.5.2'
 
 export default function SettingsPage() {
   usePageTitle('Settings')

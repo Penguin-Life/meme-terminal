@@ -1,7 +1,7 @@
 {
   "name": "meme-terminal",
-  "version": "1.3.0",
-  "description": "AI-Powered Memecoin Trading Terminal — workspace root",
+  "version": "1.5.2",
+  "description": "AI-Powered Memecoin Trading Terminal \u2014 workspace root",
   "private": true,
   "scripts": {
     "setup": "npm run setup:backend && npm run setup:frontend",
@@ -15,7 +15,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "build": "npm run build:frontend",
     "build:frontend": "cd frontend && npm run build",
-    "test": "echo 'No tests configured yet. Run: cd backend && node server.js to verify backend.'"
+    "test": "cd backend && npm test"
   },
   "engines": {
     "node": ">=20.0.0"

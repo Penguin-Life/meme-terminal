@@ -119,6 +119,7 @@ The 5-step pipeline that powers every trading decision in Meme Terminal:
 - 🔥 **Live Token Scanner** — Real-time search, trending pairs, and new listings across all major chains
 - 💊 **Pump.fun Monitor** — Track launches by stage: new / finalizing / migrated; bonding curve progress; King of the Hill
 - 📈 **Price & Volume Tracking** — 24h change, volume, liquidity, FDV via DexScreener + GeckoTerminal
+- 📊 **Inline Sparklines** — Micro SVG trend charts on Dashboard for trending tokens and Binance Alpha
 - 🧪 **AI Token Analysis** — Natural-language analysis combining on-chain data + Binance signals
 
 ### 🟡 Binance-Exclusive Features
@@ -143,12 +144,18 @@ The 5-step pipeline that powers every trading decision in Meme Terminal:
 - 🟡 **7 Binance Skills** — Token info, market rank, meme rush, trading signals, wallet audit, security scan, spot
 - 📡 **6 Custom Skills** — DexScreener, Pump.fun, GeckoTerminal, Smart Wallet, Meme Radar, Terminal
 
+### ⌘K Command Palette
+- 🔍 **Quick Navigation** — VS Code / Linear-style overlay with ⌘K / Ctrl+K from anywhere
+- 🔎 **Live Token Search** — Type 2+ chars to search tokens via API (debounced 300ms)
+- ⌨️ **Keyboard-First** — Arrow keys to navigate, Enter to select, Escape to close
+
 ### 🛡️ Production-Grade Infrastructure
 - ⚡ **Smart TTL Caching** — Adaptive cache with hit/miss analytics, minimizes API quota burn
 - 🔄 **Exponential Backoff** — Graceful retry on all external API calls
 - 🛡️ **Security Hardened** — Helmet headers, CORS, express-rate-limit, input validation
 - 📝 **Structured Logging** — Daily rotating logs, request tracing
 - 💾 **Resilient Data Store** — Auto-create, corruption detection, backup/restore for watchlist + alerts
+- 🧪 **50 Unit Tests** — Backend test suite covering formatting, alerts, signals, arbitrage, alpha modules
 
 ---
 
@@ -462,14 +469,32 @@ Meme Terminal ships with **13 skills** total — 6 custom + 7 Binance:
 - 🧪 Jest unit tests (9 cases)
 - 📱 Mobile responsive bottom tab navigation
 
+### v1.5.2 — Shipped ✅
+- 📊 **Dashboard Sparklines** — Inline SVG micro-charts for trending tokens and Binance Alpha (zero deps)
+- 🧪 **50 unit tests** across 5 suites (format, alerts, signals, arbitrage, alpha)
+- 📄 **Dynamic page titles** — `usePageTitle` hook sets `document.title` per page
+- ♿ **Accessibility pass** — ARIA labels on navigation, alerts, status indicators, command palette
+- 🚨 **Backend-down detection** — Dashboard shows "Backend unavailable" banner with retry + DEMO_MODE hint
+- 📱 **Mobile polish** — Scrollable quick-action pills, responsive command palette/settings/token stats
+- 🛡️ **Backend hardening** — Alert/trade/signal input validation, threshold type checks
+
 ### v1.5.0 — Shipped ✅
 - ⌘K **Command Palette** — VS Code-style quick navigation & token search from anywhere
 - 🧩 **Shared component library** — `<PageHeader>`, `<EmptyState>`, `<ErrorBanner>` reusable across all pages
-- 🔧 **format.js utility module** — Centralized `fmtUsd`, `fmtPrice`, `fmtCompact`, `timeAgo`, `shortAddr`, `fmtAge` — eliminated 6+ duplicate formatting functions
+- 🔧 **format.js utility module** — Centralized formatting, eliminated 6+ duplicate functions
 - 🔍 **SEO overhaul** — Open Graph, Twitter Card, meta descriptions, theme-color
-- 🎨 **UX polish across all pages** — loading skeletons, shimmer animations, copy-to-clipboard buttons, live timers, sort controls, search & filter bars
-- 🛡️ **Backend hardening** — CSP header fix, wallet chain/address validation, improved error logging
-- ♻️ **Architecture cleanup** — Version unified at v1.5.0, removed dead imports, consistent error patterns
+- 🛡️ **Backend hardening** — CSP header fix, wallet chain/address validation
+- ♻️ **Architecture cleanup** — Unified versioning, removed dead imports
+
+### v1.4.0 — Shipped ✅
+- 🔍 **Wallet search & chain filter** — Search + SOL/ETH/BSC/BASE/ARB filter pills
+- 📋 **Copy-to-clipboard** — One-click copy for addresses with animated feedback
+- 🔀 **Sort controls** — ArbitrageScanner and BinanceAlpha sortable by multiple fields
+- ⏱️ **Live timers** — Real-time "Xs ago" counters on ArbitrageScanner and BinanceAlpha
+- 🏠 **Dashboard quick actions** — One-tap navigation pills
+- ⬆️ **Back-to-top button** — Floating button on Scanner page
+- 🦴 **Shimmer skeletons** — Structured loading states across all data pages
+- 🎨 **Visual polish** — 404 page, hover effects, entrance animations, premium empty states
 
 ### v1.6.0 — Planned 📋
 - [ ] Binance Pay integration for direct in-app funding
