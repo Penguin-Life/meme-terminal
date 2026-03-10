@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { RefreshCw, TrendingUp, TrendingDown, Minus, Zap, AlertCircle } from 'lucide-react'
+import ErrorBanner from '../components/ErrorBanner.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
+import { fmtPrice as fmtPriceShared } from '../utils/format.js'
 
 /**
  * Format a price value for display.
@@ -280,18 +283,7 @@ export default function ArbitrageScanner() {
       )}
 
       {/* Error */}
-      {error && (
-        <div
-          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3"
-          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
-        >
-          <span className="text-sm">⚠️ {error}</span>
-          <button onClick={fetchBulk} className="text-xs px-2.5 py-1 rounded font-medium hover:opacity-80"
-            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}>
-            Retry
-          </button>
-        </div>
-      )}
+      <ErrorBanner message={error} onRetry={fetchBulk} loading={loading} />
 
       {/* Results count + sort */}
       {results.length > 0 && (
@@ -418,15 +410,12 @@ export default function ArbitrageScanner() {
 
       {/* Empty state */}
       {!loading && results.length === 0 && !error && (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="text-4xl">📊</div>
-          <div className="text-sm" style={{ color: '#9ca3af' }}>No arbitrage data loaded yet</div>
-          <button onClick={fetchBulk}
-            className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80"
-            style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}>
-            Start Scan
-          </button>
-        </div>
+        <EmptyState
+          icon="📊"
+          title="No arbitrage data loaded yet"
+          actionLabel="Start Scan"
+          onAction={fetchBulk}
+        />
       )}
 
       {/* Legend */}

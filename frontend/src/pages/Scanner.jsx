@@ -4,6 +4,8 @@ import { RefreshCw, ArrowUp } from 'lucide-react'
 import SearchBar from '../components/SearchBar.jsx'
 import TokenCard from '../components/TokenCard.jsx'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'
+import ErrorBanner from '../components/ErrorBanner.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
 
@@ -89,17 +91,15 @@ export default function Scanner() {
     return () => clearInterval(autoRefreshRef.current)
   }, [tab, chain, fetchTrending])
 
-  // Keyboard shortcut: Ctrl+K or / to focus search
+  // Keyboard shortcut: / to focus search (⌘K is now handled by global Command Palette)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't trigger if already in an input/textarea
       const tag = document.activeElement?.tagName?.toLowerCase()
       if (tag === 'input' || tag === 'textarea') {
-        // Allow Escape to blur
         if (e.key === 'Escape') document.activeElement.blur()
         return
       }
-      if ((e.ctrlKey && e.key === 'k') || e.key === '/') {
+      if (e.key === '/') {
         e.preventDefault()
         searchBarRef.current?.focus()
         setTab('search')
@@ -183,9 +183,9 @@ export default function Scanner() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">Token Scanner</h1>
+          <h1 className="text-xl font-bold text-white">🔥 Token Scanner</h1>
           <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
-            Real-time meme coin data
+            Real-time memecoin discovery & analysis
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -276,23 +276,7 @@ export default function Scanner() {
       </div>
 
       {/* Error */}
-      {currentError && (
-        <div
-          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
-          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
-        >
-          <span className="text-sm">⚠️ {currentError}</span>
-          <button
-            onClick={handleRetry}
-            disabled={currentLoading}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
-            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
-          >
-            <RefreshCw size={10} className={currentLoading ? 'animate-spin' : ''} />
-            Retry
-          </button>
-        </div>
-      )}
+      <ErrorBanner message={currentError} onRetry={handleRetry} loading={currentLoading} />
 
       {/* Token grid */}
       {currentLoading && currentTokens.length === 0 ? (

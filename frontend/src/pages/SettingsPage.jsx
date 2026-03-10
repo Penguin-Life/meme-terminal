@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Settings, Server, RefreshCw, ExternalLink, Zap, Info, FlaskConical, CheckCircle, XCircle, Clock } from 'lucide-react'
 import api from '../utils/api.js'
 
-const APP_VERSION = '1.4.0'
+const APP_VERSION = '1.5.0'
 
 export default function SettingsPage() {
   const [health, setHealth] = useState(null)
@@ -259,9 +259,11 @@ export default function SettingsPage() {
         <div className="text-sm font-semibold mb-3 text-white">Keyboard Shortcuts</div>
         <div className="space-y-2 text-xs">
           {[
-            { keys: ['/', 'Ctrl+K'], desc: 'Focus search bar (Scanner page)' },
-            { keys: ['Enter'], desc: 'Submit search' },
-            { keys: ['Escape'], desc: 'Clear search / blur input' },
+            { keys: ['⌘K', 'Ctrl+K'], desc: 'Open Command Palette (global)' },
+            { keys: ['/'], desc: 'Focus search bar (Scanner page)' },
+            { keys: ['↑', '↓'], desc: 'Navigate command palette results' },
+            { keys: ['Enter'], desc: 'Select / submit search' },
+            { keys: ['Escape'], desc: 'Close palette / clear search' },
           ].map(({ keys, desc }) => (
             <div key={desc} className="flex items-center justify-between">
               <span style={{ color: '#9ca3af' }}>{desc}</span>

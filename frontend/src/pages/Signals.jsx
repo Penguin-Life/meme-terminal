@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { RefreshCw, TrendingUp, TrendingDown, Filter } from 'lucide-react'
+import { TrendingUp, TrendingDown, Filter } from 'lucide-react'
+import PageHeader from '../components/PageHeader.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
+import { timeAgo } from '../utils/format.js'
 
 const FILTERS = [
   { label: 'All', value: '' },
@@ -15,15 +18,6 @@ const CHAINS = [
   { label: 'Base', value: '8453' },
   { label: 'ETH', value: '1' },
 ]
-
-function timeAgo(ts) {
-  if (!ts) return ''
-  const diff = Date.now() - ts
-  if (diff < 60000) return 'just now'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
-  return `${Math.floor(diff / 86400000)}d ago`
-}
 
 function SignalCard({ signal }) {
   const isBuy = signal.signalType === 'BUY'
@@ -106,12 +100,13 @@ export default function Signals() {
 
   return (
     <div className="p-4 md:p-6 space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="text-xl font-bold text-white">📡 Smart Money Signals</h1>
-        <button onClick={() => setRefreshKey(k => k + 1)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs hover:bg-white/10 transition-colors" style={{ color: '#9ca3af' }}>
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh
-        </button>
-      </div>
+      <PageHeader
+        title="📡 Smart Money Signals"
+        subtitle="On-chain smart money signal detection"
+        loading={loading}
+        onRefresh={() => setRefreshKey(k => k + 1)}
+        badgeColor="#a855f7"
+      />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -173,22 +168,16 @@ export default function Signals() {
           {signals.map((s, i) => <SignalCard key={i} signal={s} />)}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 animate-fade-in">
-          <div className="text-4xl">📡</div>
-          <div className="text-sm font-medium" style={{ color: '#9ca3af' }}>No signals found</div>
-          <p className="text-xs text-center max-w-xs" style={{ color: '#6b7280' }}>
-            {typeFilter || chainFilter
-              ? 'Try adjusting your filters to see more signals'
-              : 'Smart money signals will appear here as they are detected'}
-          </p>
-          {(typeFilter || chainFilter) && (
-            <button onClick={() => { setTypeFilter(''); setChainFilter('') }}
-              className="mt-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
-              style={{ background: 'rgba(168,85,247,0.1)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.2)' }}>
-              Clear Filters
-            </button>
-          )}
-        </div>
+        <EmptyState
+          icon="📡"
+          title="No signals found"
+          description={typeFilter || chainFilter
+            ? 'Try adjusting your filters to see more signals'
+            : 'Smart money signals will appear here as they are detected'}
+          actionLabel={typeFilter || chainFilter ? 'Clear Filters' : undefined}
+          onAction={typeFilter || chainFilter ? () => { setTypeFilter(''); setChainFilter('') } : undefined}
+          actionColor="#a855f7"
+        />
       )}
     </div>
   )

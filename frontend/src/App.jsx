@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { useState, useEffect, useRef, lazy, Suspense } from 'react'
-import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff, BarChart2, LayoutDashboard } from 'lucide-react'
+import { Flame, Wallet, Bell, Settings, Activity, Zap, WifiOff, BarChart2, LayoutDashboard, Command } from 'lucide-react'
 import { ToastProvider } from './components/Toast.jsx'
+import CommandPalette from './components/CommandPalette.jsx'
 import api from './utils/api.js'
+
+const APP_VERSION = '1.5.0'
 
 // Lazy-load pages for better initial bundle performance
 const Scanner = lazy(() => import('./pages/Scanner.jsx'))
@@ -59,7 +62,20 @@ function App() {
   const [connected, setConnected] = useState(null) // null=checking, true=ok, false=error
   const [demoMode, setDemoMode] = useState(false)
   const [showOfflineBanner, setShowOfflineBanner] = useState(false)
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const offlineTimerRef = useRef(null)
+
+  // Global keyboard shortcut: ⌘K / Ctrl+K to open Command Palette
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setCommandPaletteOpen(prev => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     const check = () => {
@@ -115,7 +131,7 @@ function App() {
               </div>
               <div className="hidden md:block">
                 <div className="text-sm font-bold text-white leading-tight">Meme Terminal</div>
-                <div className="text-xs" style={{ color: '#6b7280' }}>v1.3.0</div>
+                <div className="text-xs" style={{ color: '#6b7280' }}>v{APP_VERSION}</div>
               </div>
             </div>
 
@@ -152,6 +168,23 @@ function App() {
                 </NavLink>
               ))}
             </nav>
+
+            {/* Command Palette trigger */}
+            <div className="px-2 pb-1">
+              <button
+                onClick={() => setCommandPaletteOpen(true)}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all hover:bg-white/5"
+                style={{ color: '#6b7280', border: '1px solid #1e2030' }}
+                title="Quick search — ⌘K"
+              >
+                <Command size={12} />
+                <span className="hidden md:inline flex-1 text-left">Search...</span>
+                <kbd className="hidden md:inline px-1.5 py-0.5 rounded"
+                  style={{ background: '#1e2030', border: '1px solid #2a2d3e', fontFamily: 'monospace', fontSize: '10px' }}>
+                  ⌘K
+                </kbd>
+              </button>
+            </div>
 
             {/* Connection Status */}
             <div
@@ -266,7 +299,7 @@ function App() {
               className="hidden md:flex items-center justify-between px-6 py-2 border-t flex-shrink-0 text-xs"
               style={{ background: '#0d0e14', borderColor: '#1e2030', color: '#4b5563' }}
             >
-              <span>🐧 Meme Terminal v1.3.0 — AI-Powered Memecoin Trading</span>
+              <span>🐧 Meme Terminal v{APP_VERSION} — AI-Powered Memecoin Trading</span>
               <span>
                 <a
                   href="https://github.com/Penguin-Life/meme-terminal"
@@ -313,6 +346,7 @@ function App() {
           </nav>
 
         </div>
+        <CommandPalette open={commandPaletteOpen} onClose={() => setCommandPaletteOpen(false)} />
       </ToastProvider>
     </BrowserRouter>
   )

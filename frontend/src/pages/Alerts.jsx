@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Plus, Bell, BellOff, Trash2, RefreshCw, Play, Zap } from 'lucide-react'
 import ChainBadge from '../components/ChainBadge.jsx'
+import ErrorBanner from '../components/ErrorBanner.jsx'
 import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
+import { shortAddr as shortAddrShared } from '../utils/format.js'
 
 const ALERT_TYPES = [
   { value: 'price_above', label: 'Price Above', icon: '📈', color: '#00ff88' },
@@ -142,9 +144,9 @@ export default function Alerts() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">Alert Center</h1>
+          <h1 className="text-xl font-bold text-white">🔔 Alert Center</h1>
           <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
-            Smart money signal detection
+            Price alerts & whale activity notifications
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -348,23 +350,7 @@ export default function Alerts() {
       )}
 
       {/* Error */}
-      {error && (
-        <div
-          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
-          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
-        >
-          <span className="text-sm">⚠️ {error}</span>
-          <button
-            onClick={fetchAlerts}
-            disabled={loading}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
-            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
-          >
-            <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
-            Retry
-          </button>
-        </div>
-      )}
+      <ErrorBanner message={error} onRetry={fetchAlerts} loading={loading} />
 
       {/* Stats */}
       {!loading && alerts.length > 0 && (

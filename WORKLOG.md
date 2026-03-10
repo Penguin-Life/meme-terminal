@@ -1,9 +1,9 @@
 # WORKLOG — Meme Terminal Self-Iteration
 
 ## Current State
-- Version: 1.4.0
-- Last major work: Round 3 — Visual polish, edge cases, regression check
-- Self-iteration cycle: Steps 1-7 complete (Rounds 1-3)
+- Version: 1.5.0
+- Last major work: Round 4 — SEO, architecture cleanup, Command Palette
+- Self-iteration cycle: Steps 1-10 complete (Rounds 1-4)
 
 ## Round Log
 
@@ -118,8 +118,44 @@
 
 **Build Verification**: Frontend: `✓ built in 1.21s` (all chunks OK). Backend: `node --check server.js` passes.
 
-### What's Next (Round 4 suggestions)
-- Step 8: Architecture — extract shared EmptyState/ErrorState/PageHeader components to reduce duplication
-- Step 9: New features — Favorites system, notification sound toggle, PWA manifest
-- Step 10: Accessibility — aria-labels, focus management, screen reader hints
-- Consider: Dark/light theme toggle, responsive table on mobile for Arbitrage, performance audit (lazy loading)
+### Round 4 — Copy & SEO, Architecture Cleanup, Command Palette
+- **Step**: 8-10 (SEO + Architecture + New Feature)
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+#### Step 8: Copy & SEO
+1. **index.html Meta Tags Overhaul** — Added comprehensive SEO: `<meta name="description">`, keywords, author, robots, Open Graph (`og:title`, `og:description`, `og:type`, `og:site_name`), Twitter Card meta tags, `theme-color`, `color-scheme`, Apple mobile web app meta.
+2. **Version Consistency** — Fixed version mismatch (sidebar showed v1.3.0, SettingsPage had v1.4.0, backend had v1.3.0). All now unified at **v1.5.0** across frontend (App.jsx, SettingsPage), backend (health, status, banner).
+3. **Page Title Improvements** — Added emoji prefixes and improved subtitles across all pages:
+   - Scanner: "🔥 Token Scanner — Real-time memecoin discovery & analysis"
+   - Wallets: "👛 Wallet Tracker — Monitor whale wallets & smart money moves"
+   - Alerts: "🔔 Alert Center — Price alerts & whale activity notifications"
+   - Signals: uses PageHeader with subtitle "On-chain smart money signal detection"
+4. **Keyboard Shortcut Docs Updated** — SettingsPage now lists global ⌘K/Ctrl+K for Command Palette, plus ↑↓ navigation and / for Scanner search.
+
+#### Step 9: Architecture Cleanup
+5. **Shared `format.js` Utility Module** — Extracted `fmtUsd()`, `fmtPrice()`, `fmtCompact()`, `timeAgo()`, `shortAddr()`, `fmtAge()` into `src/utils/format.js`. Eliminates 6+ duplicate formatting functions scattered across TokenCard, ArbitrageScanner, BinanceAlpha, WalletCard, Signals, Alerts.
+6. **`<PageHeader>` Component** — Reusable page header with title, subtitle, badge, refresh button, and action slots. Used in Signals page; available for all pages.
+7. **`<EmptyState>` Component** — Unified empty state with icon, title, description, and optional action button. Replaced bespoke empty states in Signals, ArbitrageScanner, and BinanceAlpha (3 pages).
+8. **`<ErrorBanner>` Component** — Reusable error banner with retry button. Replaced 5 identical error display blocks in Scanner, Wallets, Alerts, ArbitrageScanner, BinanceAlpha.
+9. **Scanner Keyboard Shortcut Fix** — Removed conflicting Ctrl+K handler from Scanner (now handled globally by Command Palette). Scanner keeps `/` for local search focus.
+
+#### Step 10: New Feature — Command Palette ⌘K
+10. **Command Palette** — Full-featured VS Code / Linear-style quick navigation overlay:
+    - **Global shortcut**: ⌘K / Ctrl+K toggles the palette from anywhere
+    - **Page navigation**: All 8 pages searchable by name, description, and tags
+    - **Live token search**: Type 2+ characters to search tokens via API (debounced 300ms)
+    - **Keyboard navigation**: ↑↓ to navigate, Enter to select, Escape to close
+    - **Visual polish**: Backdrop blur, green accent theming, section headers, selected-item highlight, footer with shortcut hints
+    - **Sidebar trigger**: "Search..." button with ⌘K badge in sidebar for discoverability
+    - Implemented as `<CommandPalette>` component mounted in App.jsx
+
+**Build Verification**: Frontend: `✓ built in 1.24s` (all chunks OK, new shared components tree-shaken into separate chunks). Backend: `node --check server.js` passes.
+
+### What's Next (Round 5 suggestions)
+- Step 1: Polish the Command Palette (recent pages, favorites, action commands like "Toggle demo mode")
+- Step 2: PWA manifest + service worker for installability
+- Step 3: Accessibility pass (aria-labels, focus management, screen reader hints)
+- Step 4: Responsive table improvements for Arbitrage on mobile
+- Step 5: Performance audit (React.memo on heavy components, virtualized lists for large token grids)
+- Consider: Dark/light theme toggle, notification sound toggle, data export (CSV/JSON)

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Plus, Wallet, RefreshCw, Search, Filter } from 'lucide-react'
 import WalletCard from '../components/WalletCard.jsx'
 import { WalletCardSkeleton } from '../components/LoadingSkeleton.jsx'
+import ErrorBanner from '../components/ErrorBanner.jsx'
 import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
 
@@ -88,9 +89,9 @@ export default function Wallets() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-white">Wallet Tracker</h1>
+          <h1 className="text-xl font-bold text-white">👛 Wallet Tracker</h1>
           <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
-            Monitor whale wallets and smart money
+            Monitor whale wallets & smart money moves
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -210,23 +211,7 @@ export default function Wallets() {
       )}
 
       {/* Error */}
-      {error && (
-        <div
-          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3 animate-fade-in"
-          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
-        >
-          <span className="text-sm">⚠️ {error}</span>
-          <button
-            onClick={fetchWatchlist}
-            disabled={loading}
-            className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
-            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
-          >
-            <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
-            Retry
-          </button>
-        </div>
-      )}
+      <ErrorBanner message={error} onRetry={fetchWatchlist} loading={loading} />
 
       {/* Search & Filter bar */}
       {!loading && watchlist.length > 0 && (

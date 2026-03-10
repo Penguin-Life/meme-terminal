@@ -106,7 +106,7 @@ app.get('/api/health', (req, res) => {
     success: true,
     data: {
       service: 'meme-terminal-backend',
-      version: '1.3.0',
+      version: '1.5.0',
       status: 'healthy',
       uptime: Math.round(process.uptime()),
       environment: NODE_ENV,
@@ -143,7 +143,7 @@ app.get('/api/status', (req, res) => {
     success: true,
     data: {
       service: 'meme-terminal-backend',
-      version: '1.3.0',
+      version: '1.5.0',
       status: 'healthy',
       uptime: Math.round(process.uptime()),
       uptimeHuman: formatUptime(process.uptime()),
@@ -230,7 +230,7 @@ app.use(errorHandler);
 
 const BANNER = `
 ╔═══════════════════════════════════════════════╗
-║  🐧  Meme Terminal Backend  v1.3.0            ║
+║  🐧  Meme Terminal Backend  v1.5.0            ║
 ║      AI-Powered Memecoin Trading Terminal     ║
 ╠═══════════════════════════════════════════════╣
 ║  Data: DexScreener · Pump.fun · GeckoTerminal ║

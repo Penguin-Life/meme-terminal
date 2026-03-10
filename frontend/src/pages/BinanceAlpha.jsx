@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RefreshCw, ExternalLink, TrendingUp, TrendingDown, Minus, Search, X } from 'lucide-react'
+import ErrorBanner from '../components/ErrorBanner.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
+import { fmtUsd as fmtUsdShared, fmtPrice as fmtPriceShared } from '../utils/format.js'
 
 /**
  * Format a large USD number into a readable string.
@@ -297,21 +300,7 @@ export default function BinanceAlpha() {
       )}
 
       {/* Error */}
-      {error && (
-        <div
-          className="mb-4 p-3 rounded-lg flex items-center justify-between gap-3"
-          style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.2)' }}
-        >
-          <span className="text-sm">⚠️ {error}</span>
-          <button
-            onClick={fetchAlpha}
-            className="text-xs px-2.5 py-1 rounded font-medium hover:opacity-80"
-            style={{ background: 'rgba(255,68,68,0.15)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.3)' }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
+      <ErrorBanner message={error} onRetry={fetchAlpha} loading={loading} />
 
       {/* Loading skeleton */}
       {loading && tokens.length === 0 && (
@@ -351,32 +340,24 @@ export default function BinanceAlpha() {
 
       {/* Empty search state */}
       {!loading && tokens.length === 0 && allTokens.length > 0 && searchQuery && (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 animate-fade-in">
-          <div className="text-4xl">🔍</div>
-          <div className="text-sm" style={{ color: '#9ca3af' }}>
-            No tokens match "<span className="text-white">{searchQuery}</span>"
-          </div>
-          <button onClick={() => setSearchQuery('')}
-            className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80 btn-press"
-            style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}>
-            Clear Search
-          </button>
-        </div>
+        <EmptyState
+          icon="🔍"
+          title={`No tokens match "${searchQuery}"`}
+          actionLabel="Clear Search"
+          onAction={() => setSearchQuery('')}
+          actionColor="#f0b90b"
+        />
       )}
 
       {/* Empty state */}
       {!loading && allTokens.length === 0 && !error && (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="text-4xl">🟡</div>
-          <div className="text-sm" style={{ color: '#9ca3af' }}>No Alpha tokens loaded yet</div>
-          <button
-            onClick={fetchAlpha}
-            className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80 btn-press"
-            style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}
-          >
-            Load Alpha Tokens
-          </button>
-        </div>
+        <EmptyState
+          icon="🟡"
+          title="No Alpha tokens loaded yet"
+          actionLabel="Load Alpha Tokens"
+          onAction={fetchAlpha}
+          actionColor="#f0b90b"
+        />
       )}
 
       {/* Footer note */}
