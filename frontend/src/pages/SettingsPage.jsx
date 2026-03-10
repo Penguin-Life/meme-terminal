@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Settings, Server, RefreshCw, ExternalLink, Zap, Info, FlaskConical } from 'lucide-react'
 import api from '../utils/api.js'
 
-const APP_VERSION = '1.0.0'
+const APP_VERSION = '1.3.0'
 
 export default function SettingsPage() {
   const [health, setHealth] = useState(null)

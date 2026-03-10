@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Flame, Zap, BarChart2, Activity, RefreshCw, ArrowRight } from 'lucide-react'
 import api from '../utils/api.js'
 
-function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading }) {
+function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading, error, onRetry }) {
   const nav = useNavigate()
   return (
     <div className="rounded-xl p-4 flex flex-col" style={{ background: '#13141e', border: '1px solid #2a2a3e', minHeight: 260 }}>
@@ -19,6 +19,11 @@ function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loadin
       <div className="flex-1">
         {loading ? (
           <div className="flex items-center justify-center h-full"><div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" style={{ color }} /></div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <p className="text-xs" style={{ color: '#ff4444' }}>Failed to load data</p>
+            {onRetry && <button onClick={onRetry} className="text-xs px-2 py-1 rounded hover:bg-white/10 transition-colors" style={{ color: '#9ca3af' }}>Retry</button>}
+          </div>
         ) : children}
       </div>
     </div>
@@ -81,13 +86,15 @@ export default function Dashboard() {
   const [arb, setArb] = useState([])
   const [alpha, setAlpha] = useState([])
   const [loading, setLoading] = useState({ trending: true, signals: true, arb: true, alpha: true })
+  const [errors, setErrors] = useState({ trending: null, signals: null, arb: null, alpha: null })
   const [lastRefresh, setLastRefresh] = useState(Date.now())
 
   useEffect(() => {
-    api.get('/token/trending').then(d => setTrending((d.pairs || d.data?.pairs || []).slice(0, 5))).catch(() => {}).finally(() => setLoading(p => ({ ...p, trending: false })))
-    api.get('/signals').then(d => setSignals((d.signals || []).slice(0, 5))).catch(() => {}).finally(() => setLoading(p => ({ ...p, signals: false })))
-    api.get('/arbitrage/scan').then(d => setArb((d.results || []).slice(0, 4))).catch(() => {}).finally(() => setLoading(p => ({ ...p, arb: false })))
-    api.get('/token/binance-alpha').then(d => setAlpha((d.tokens || []).slice(0, 5))).catch(() => {}).finally(() => setLoading(p => ({ ...p, alpha: false })))
+    setErrors({ trending: null, signals: null, arb: null, alpha: null })
+    api.get('/token/trending').then(d => setTrending((d.pairs || d.data?.pairs || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, trending: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, trending: false })))
+    api.get('/signals').then(d => setSignals((d.signals || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, signals: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, signals: false })))
+    api.get('/arbitrage/scan').then(d => setArb((d.results || []).slice(0, 4))).catch(e => setErrors(p => ({ ...p, arb: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, arb: false })))
+    api.get('/token/binance-alpha').then(d => setAlpha((d.tokens || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, alpha: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, alpha: false })))
   }, [lastRefresh])
 
   return (
@@ -100,21 +107,22 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <SectionCard title="Trending" emoji="🔥" icon={Flame} color="#ff6b35" linkTo="/scanner" loading={loading.trending}>
+        <SectionCard title="Trending" emoji="🔥" icon={Flame} color="#ff6b35" linkTo="/scanner" loading={loading.trending} error={errors.trending} onRetry={() => setLastRefresh(Date.now())}>
           {trending.length > 0 ? trending.map((t, i) => (
-            <TokenRow key={i} symbol={t.baseToken?.symbol || t.symbol || '?'} name={t.baseToken?.name} price={parseFloat(t.priceUsd || t.price || 0)} change={parseFloat(t.priceChange?.h24 || t.priceChange24h || 0)} />
+            <TokenRow key={i} symbol={t.baseToken?.symbol || t.symbol || '?'} name={t.baseToken?.name} price={parseFloat(t.priceUsd || t.price || 0)} change={parseFloat(t.priceChange?.h24 || t.priceChange24h || 0)}
+              onClick={() => { const chain = t.chainId || 'solana'; const addr = t.baseToken?.address || t.pairAddress; if (addr) nav(`/token/${chain}/${addr}`) }} />
           )) : <p className="text-xs" style={{ color: '#6b7280' }}>No data available</p>}
         </SectionCard>
 
-        <SectionCard title="Smart Money Signals" emoji="📡" icon={Activity} color="#a855f7" linkTo="/signals" loading={loading.signals}>
+        <SectionCard title="Smart Money Signals" emoji="📡" icon={Activity} color="#a855f7" linkTo="/signals" loading={loading.signals} error={errors.signals} onRetry={() => setLastRefresh(Date.now())}>
           {signals.length > 0 ? signals.map((s, i) => <SignalRow key={i} signal={s} />) : <p className="text-xs" style={{ color: '#6b7280' }}>No signals</p>}
         </SectionCard>
 
-        <SectionCard title="Arbitrage" emoji="📊" icon={BarChart2} color="#00ff88" linkTo="/arbitrage" loading={loading.arb}>
+        <SectionCard title="Arbitrage" emoji="📊" icon={BarChart2} color="#00ff88" linkTo="/arbitrage" loading={loading.arb} error={errors.arb} onRetry={() => setLastRefresh(Date.now())}>
           {arb.length > 0 ? arb.map((r, i) => <ArbRow key={i} result={r} />) : <p className="text-xs" style={{ color: '#6b7280' }}>No data</p>}
         </SectionCard>
 
-        <SectionCard title="Binance Alpha" emoji="🟡" icon={Zap} color="#f0b90b" linkTo="/alpha" loading={loading.alpha}>
+        <SectionCard title="Binance Alpha" emoji="🟡" icon={Zap} color="#f0b90b" linkTo="/alpha" loading={loading.alpha} error={errors.alpha} onRetry={() => setLastRefresh(Date.now())}>
           {alpha.length > 0 ? alpha.map((t, i) => (
             <TokenRow key={i} symbol={t.symbol} price={t.price} change={t.priceChange24h} />
           )) : <p className="text-xs" style={{ color: '#6b7280' }}>No data</p>}
