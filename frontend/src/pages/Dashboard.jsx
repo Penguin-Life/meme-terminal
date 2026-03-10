@@ -5,10 +5,28 @@ import api from '../utils/api.js'
 import { fmtPrice, timeAgo as fmtTimeAgo } from '../utils/format.js'
 import usePageTitle from '../hooks/usePageTitle.js'
 
+/** Tiny inline SVG sparkline — no recharts overhead */
+function Sparkline({ data, width = 48, height = 16, color = '#00ff88' }) {
+  if (!data || data.length < 2) return null
+  const min = Math.min(...data)
+  const max = Math.max(...data)
+  const range = max - min || 1
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width
+    const y = height - ((v - min) / range) * height
+    return `${x.toFixed(1)},${y.toFixed(1)}`
+  }).join(' ')
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="inline-block ml-2 flex-shrink-0" style={{ verticalAlign: 'middle' }}>
+      <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading, error, onRetry }) {
   const nav = useNavigate()
   return (
-    <div className="rounded-xl p-4 flex flex-col" style={{ background: '#13141e', border: '1px solid #2a2a3e', minHeight: 260 }}>
+    <div className="rounded-xl p-4 flex flex-col dash-section-card" style={{ background: '#13141e', border: '1px solid #2a2a3e', minHeight: 260 }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span>{emoji}</span>
@@ -32,17 +50,19 @@ function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loadin
   )
 }
 
-function TokenRow({ symbol, name, price, change, onClick }) {
+function TokenRow({ symbol, name, price, change, sparkData, onClick }) {
   const isUp = change >= 0
+  const sparkColor = isUp ? '#00ff88' : '#ff4444'
   return (
     <div className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors" onClick={onClick}>
-      <div className="min-w-0">
+      <div className="min-w-0 flex items-center">
         <span className="font-medium text-sm text-white">{symbol}</span>
-        {name && <span className="text-xs ml-1.5" style={{ color: '#6b7280' }}>{name}</span>}
+        {name && <span className="text-xs ml-1.5 hidden sm:inline" style={{ color: '#6b7280' }}>{name}</span>}
       </div>
-      <div className="text-right flex-shrink-0 ml-2">
+      <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+        <Sparkline data={sparkData} color={sparkColor} />
         {price != null && <span className="text-xs text-white">{fmtPrice(typeof price === 'number' ? price : parseFloat(price))}</span>}
-        {change != null && <span className="text-xs ml-2" style={{ color: isUp ? '#00ff88' : '#ff4444' }}>{isUp ? '+' : ''}{change.toFixed(1)}%</span>}
+        {change != null && <span className="text-xs ml-1" style={{ color: sparkColor }}>{isUp ? '+' : ''}{change.toFixed(1)}%</span>}
       </div>
     </div>
   )
@@ -100,8 +120,22 @@ export default function Dashboard() {
     api.get('/token/binance-alpha').then(d => setAlpha((d.tokens || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, alpha: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, alpha: false })))
   }, [lastRefresh])
 
+  const allFailed = !loading.trending && !loading.signals && !loading.arb && !loading.alpha &&
+    errors.trending && errors.signals && errors.arb && errors.alpha
+
   return (
     <div className="p-4 md:p-6 space-y-4">
+      {/* All-sections-failed banner */}
+      {allFailed && (
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm" style={{ background: 'rgba(255,68,68,0.08)', border: '1px solid rgba(255,68,68,0.2)', color: '#ff6b6b' }}>
+          <span>⚠️</span>
+          <div className="flex-1">
+            <p className="font-medium">Backend unavailable</p>
+            <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>Check that the API server is running on port 3902, or enable DEMO_MODE in .env</p>
+          </div>
+          <button onClick={() => setLastRefresh(Date.now())} className="px-3 py-1 rounded-lg text-xs font-medium hover:bg-white/5 transition-colors" style={{ border: '1px solid rgba(255,68,68,0.3)' }}>Retry</button>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">🐧 Meme Terminal</h1>
@@ -122,8 +156,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick action pills */}
-      <div className="flex gap-2 mb-4 flex-wrap">
+      {/* Quick action pills — scrollable on mobile */}
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
         {[
           { label: 'Scan Tokens', emoji: '🔥', to: '/scanner' },
           { label: 'Check Signals', emoji: '📡', to: '/signals' },
@@ -133,7 +167,7 @@ export default function Dashboard() {
           <button
             key={to}
             onClick={() => nav(to)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95 flex-shrink-0"
             style={{ background: 'rgba(255,255,255,0.04)', color: '#9ca3af', border: '1px solid #1e2030' }}
           >
             <span>{emoji}</span> {label}
@@ -143,10 +177,20 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SectionCard title="Trending" emoji="🔥" icon={Flame} color="#ff6b35" linkTo="/scanner" loading={loading.trending} error={errors.trending} onRetry={() => setLastRefresh(Date.now())}>
-          {trending.length > 0 ? trending.map((t, i) => (
-            <TokenRow key={i} symbol={t.baseToken?.symbol || t.symbol || '?'} name={t.baseToken?.name} price={parseFloat(t.priceUsd || t.price || 0)} change={parseFloat(t.priceChange?.h24 || t.priceChange24h || 0)}
-              onClick={() => { const chain = t.chainId || 'solana'; const addr = t.baseToken?.address || t.pairAddress; if (addr) nav(`/token/${chain}/${addr}`) }} />
-          )) : <p className="text-xs" style={{ color: '#6b7280' }}>No data available</p>}
+          {trending.length > 0 ? trending.map((t, i) => {
+            const price = parseFloat(t.priceUsd || t.price || 0)
+            const change = parseFloat(t.priceChange?.h24 || t.priceChange24h || 0)
+            // Generate sparkline from h6/h1/m5 price changes if available, else synthesize from 24h change
+            const h6 = parseFloat(t.priceChange?.h6 || change * 0.4)
+            const h1 = parseFloat(t.priceChange?.h1 || change * 0.15)
+            const m5 = parseFloat(t.priceChange?.m5 || change * 0.03)
+            const base = price / (1 + change / 100) || price
+            const spark = [base, base * (1 + m5 / 200), base * (1 + m5 / 100), base * (1 + h1 / 200), base * (1 + h1 / 100), base * (1 + h6 / 200), base * (1 + h6 / 100), price]
+            return (
+              <TokenRow key={i} symbol={t.baseToken?.symbol || t.symbol || '?'} name={t.baseToken?.name} price={price} change={change} sparkData={spark}
+                onClick={() => { const chain = t.chainId || 'solana'; const addr = t.baseToken?.address || t.pairAddress; if (addr) nav(`/token/${chain}/${addr}`) }} />
+            )
+          }) : <p className="text-xs" style={{ color: '#6b7280' }}>No data available</p>}
         </SectionCard>
 
         <SectionCard title="Smart Money Signals" emoji="📡" icon={Activity} color="#a855f7" linkTo="/signals" loading={loading.signals} error={errors.signals} onRetry={() => setLastRefresh(Date.now())}>
@@ -158,9 +202,12 @@ export default function Dashboard() {
         </SectionCard>
 
         <SectionCard title="Binance Alpha" emoji="🟡" icon={Zap} color="#f0b90b" linkTo="/alpha" loading={loading.alpha} error={errors.alpha} onRetry={() => setLastRefresh(Date.now())}>
-          {alpha.length > 0 ? alpha.map((t, i) => (
-            <TokenRow key={i} symbol={t.symbol} price={t.price} change={t.priceChange24h} />
-          )) : <p className="text-xs" style={{ color: '#6b7280' }}>No data</p>}
+          {alpha.length > 0 ? alpha.map((t, i) => {
+            const chg = t.priceChange24h || 0
+            const base = (t.price || 0) / (1 + chg / 100) || t.price || 0
+            const spark = [base, base * (1 + chg / 400), base * (1 + chg / 200), base * (1 + chg / 133), t.price || 0]
+            return <TokenRow key={i} symbol={t.symbol} price={t.price} change={chg} sparkData={spark} />
+          }) : <p className="text-xs" style={{ color: '#6b7280' }}>No data</p>}
         </SectionCard>
       </div>
     </div>

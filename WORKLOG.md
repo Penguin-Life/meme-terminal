@@ -1,9 +1,9 @@
 # WORKLOG — Meme Terminal Self-Iteration
 
 ## Current State
-- Version: 1.5.1
-- Last major work: Round 6 — Backend hardening, accessibility, Docker cleanup
-- Self-iteration cycle: Steps 1-10 complete (Rounds 1-4), Round 5 polish, Round 6 quality pass
+- Version: 1.5.2
+- Last major work: Round 7 — Sparklines, mobile polish, test suite expansion, error resilience
+- Self-iteration cycle: Steps 1-10 complete (Rounds 1-4), Round 5 polish, Round 6 quality pass, Round 7 cycle-2 start
 
 ## Round Log
 
@@ -223,10 +223,45 @@
 
 **Build Verification**: Frontend: `✓ built in 1.23s` (all chunks OK, new `usePageTitle` hook tree-shaken properly). Backend: `node --check server.js` + all 10 route files pass syntax check.
 
-### What's Next (Round 7 suggestions)
-- Step 1: Polish the Command Palette (recent pages, favorites, action commands like "Toggle demo mode")
-- Step 2: PWA manifest + service worker for installability
-- Step 3: Accessibility pass (aria-labels, focus management, screen reader hints)
-- Step 4: Responsive table improvements for Arbitrage on mobile
-- Step 5: Performance audit (React.memo on heavy components, virtualized lists for large token grids)
-- Consider: Dark/light theme toggle, notification sound toggle, data export (CSV/JSON)
+### Round 7 — Sparklines, Mobile Polish, Test Suite, Error Resilience
+- **Step**: Cycle 2 (Testing + Mobile + Visualization + Config)
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+#### Data Visualization — Dashboard Sparklines
+1. **Inline SVG Sparkline Component** — New `<Sparkline>` component renders tiny inline price trend charts (48×16px SVG polylines). Zero dependencies — pure SVG, no recharts overhead. Color-coded: green for up, red for down.
+2. **Trending Tokens Sparklines** — Dashboard Trending section now shows sparklines next to each token. Data synthesized from available price change intervals (h24/h6/h1/m5) to create 8-point trend curves.
+3. **Binance Alpha Sparklines** — Alpha section also gets sparklines derived from 24h price change data.
+
+#### Mobile Responsiveness
+4. **Quick Action Pills Scroll** — Dashboard quick-action pills now horizontally scroll on mobile instead of wrapping (added `overflow-x-auto`, `flex-shrink-0`, `scrollbar-hide` CSS utility).
+5. **Mobile CSS Enhancements** — New `@media (max-width: 639px)` rules:
+   - `.dash-section-card` reduced min-height (260→200px) for better mobile viewport fit
+   - `.token-stats-grid` tighter gap/padding on TokenDetail stats
+   - `.cmd-palette-inner` full-width on mobile
+   - `.settings-grid` single column on small screens
+   - Token names hidden on mobile in Dashboard rows (`hidden sm:inline`)
+6. **Scrollbar Hide Utility** — `.scrollbar-hide` class (webkit + Firefox) for clean horizontal scroll containers.
+
+#### Offline/Error Resilience
+7. **All-Sections-Failed Banner** — Dashboard now detects when all 4 API sections fail simultaneously and shows a prominent "Backend unavailable" banner with retry button and helpful hint about DEMO_MODE.
+
+#### Test Suite Expansion (Backend)
+8. **Alert Validation Tests** (`alertValidation.test.js`) — 9 tests covering: required field validation, type/chain whitelisting, threshold requirements for price_above/price_below/large_tx, and confirming new_buy/new_listing don't require thresholds.
+9. **Signal Normalization Tests** (`signalNormalize.test.js`) — 9 tests covering: complete signal normalization, all fallback paths (smartSignalType→signalType, createTime→signalTime, address→walletAddress, imageUrl→logoUrl), empty input handling, string price parsing.
+10. **Format Utility Tests** (`formatUtils.test.js`) — 22 tests covering all 5 shared formatting functions: `fmtUsd` (billions/millions/thousands/small/null/zero), `fmtPrice` (all magnitude ranges + scientific notation), `fmtCompact`, `shortAddr` (long/short/empty/null), `timeAgo` (just now/minutes/hours/days/null/ISO string).
+
+#### Config/Env
+11. **.env.example Updated** — Added missing `BINANCE_API_KEY`, `BINANCE_SECRET_KEY`, and `BINANCE_TESTNET` entries with documentation links for mainnet and testnet key generation.
+
+**Test Results**: 5 suites, 50 tests, all passing (0.24s).
+**Build Verification**: Frontend: `✓ built in 1.23s` (all chunks OK). Backend: all 5 test suites pass.
+**Version**: Bumped to v1.5.2.
+
+### What's Next (Round 8 suggestions)
+- PWA manifest + service worker for installability
+- Performance audit (React.memo on heavy components, virtualized lists)
+- Command Palette enhancements (recent pages, action commands)
+- Dark/light theme toggle
+- Data export (CSV/JSON) from Scanner/Signals pages
+- Consider: notification sound toggle, WebSocket reconnect backoff

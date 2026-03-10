@@ -274,6 +274,10 @@ button:focus-visible {
   max-width: 360px;
 }
 
+/* Hide scrollbar for pill containers */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Mobile responsive: stack cards and scroll tables */
 @media (max-width: 639px) {
   /* Arbitrage table: enable horizontal scroll on small screens */
@@ -283,5 +287,29 @@ button:focus-visible {
   }
   .arb-table-wrap > div {
     min-width: 600px;
+  }
+
+  /* TokenDetail stats: 2-col grid stays but shrink padding */
+  .token-stats-grid {
+    gap: 0.5rem !important;
+  }
+  .token-stats-grid > div {
+    padding: 0.5rem !important;
+  }
+
+  /* Dashboard section cards: reduce min-height on mobile */
+  .dash-section-card {
+    min-height: 200px !important;
+  }
+
+  /* Command palette: full width on mobile */
+  .cmd-palette-inner {
+    width: calc(100vw - 2rem) !important;
+    max-width: 100% !important;
+  }
+
+  /* Settings page sections: single column */
+  .settings-grid {
+    grid-template-columns: 1fr !important;
   }
 }

@@ -141,7 +141,7 @@ export default function TokenDetail() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 token-stats-grid">
           {[
             { label: 'Volume 24h', value: t.volume?.h24 || t.volume24h, fmt: v => fmtUsd(parseFloat(v)) },
             { label: 'Liquidity', value: t.liquidity?.usd || t.liquidity, fmt: v => fmtUsd(parseFloat(v)) },
