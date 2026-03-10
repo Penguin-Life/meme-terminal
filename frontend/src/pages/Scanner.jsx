@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RefreshCw, Keyboard } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import SearchBar from '../components/SearchBar.jsx'
 import TokenCard from '../components/TokenCard.jsx'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'

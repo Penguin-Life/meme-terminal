@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Shield, ShieldAlert, ShieldCheck, TrendingUp, TrendingDown, Activity } from 'lucide-react'
+import { ArrowLeft, Shield, ShieldAlert, ShieldCheck, TrendingUp, TrendingDown, Activity, Copy, Check } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import api from '../utils/api.js'
 
@@ -41,6 +41,23 @@ function PriceChart({ data }) {
   )
 }
 
+function CopyAddress({ address }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(address).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+  return (
+    <button onClick={handleCopy} className="flex items-center gap-1.5 mt-1 group" title="Click to copy address">
+      <span className="text-xs font-mono" style={{ color: '#4b5563' }}>{address.slice(0, 8)}...{address.slice(-6)}</span>
+      {copied ? <Check size={12} style={{ color: '#00ff88' }} /> : <Copy size={12} style={{ color: '#4b5563' }} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
+      {copied && <span className="text-xs" style={{ color: '#00ff88' }}>Copied!</span>}
+    </button>
+  )
+}
+
 export default function TokenDetail() {
   const { chain, address } = useParams()
   const nav = useNavigate()
@@ -49,20 +66,48 @@ export default function TokenDetail() {
   const [audit, setAudit] = useState(null)
   const [signals, setSignals] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [buyMsg, setBuyMsg] = useState(null)
 
   useEffect(() => {
     setLoading(true)
+    setError(null)
     Promise.allSettled([
       api.get(`/token/${chain}/${address}`).then(d => setToken(d.data || d.pair || d)),
       api.get(`/token/${chain}/${address}/kline?interval=1h&limit=48`).then(d => setKline(d.klineList || d.data?.klineList || [])),
       api.post('/analyze/token', { chain, address }).then(d => setAudit(d.data || d.audit || d)),
       api.get(`/signals?chainId=${chain === 'solana' ? 'CT_501' : chain}`).then(d => setSignals((d.signals || []).slice(0, 5))),
-    ]).finally(() => setLoading(false))
+    ]).then(results => {
+      // If the main token fetch failed, show error
+      if (results[0].status === 'rejected') {
+        setError(results[0].reason?.message || 'Failed to load token data')
+      }
+    }).finally(() => setLoading(false))
   }, [chain, address])
 
   if (loading) return (
-    <div className="flex items-center justify-center h-full"><div className="w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full animate-spin" /></div>
+    <div className="flex flex-col items-center justify-center h-full gap-3">
+      <div className="w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+      <span className="text-xs" style={{ color: '#6b7280' }}>Loading token data...</span>
+    </div>
+  )
+
+  if (error && !token) return (
+    <div className="flex flex-col items-center justify-center h-full gap-4 p-4">
+      <div className="text-4xl">⚠️</div>
+      <div className="text-lg font-bold text-white">Failed to Load Token</div>
+      <p className="text-sm text-center max-w-md" style={{ color: '#6b7280' }}>{error}</p>
+      <div className="flex gap-3">
+        <button onClick={() => nav(-1)} className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+          style={{ background: 'rgba(156,163,175,0.1)', color: '#9ca3af', border: '1px solid rgba(156,163,175,0.2)' }}>
+          ← Go Back
+        </button>
+        <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+          style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}>
+          Retry
+        </button>
+      </div>
+    </div>
   )
 
   const t = token || {}
@@ -82,7 +127,7 @@ export default function TokenDetail() {
           <div>
             <h1 className="text-2xl font-bold text-white">{t.baseToken?.symbol || t.symbol || address.slice(0, 8)}</h1>
             <p className="text-sm" style={{ color: '#6b7280' }}>{t.baseToken?.name || t.name || ''}</p>
-            <p className="text-xs mt-1 font-mono" style={{ color: '#4b5563' }}>{address}</p>
+            <CopyAddress address={address} />
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold text-white">{price >= 0.01 ? `$${price.toFixed(4)}` : `$${price.toExponential(3)}`}</p>

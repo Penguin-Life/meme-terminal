@@ -100,10 +100,23 @@ export default function Dashboard() {
   return (
     <div className="p-4 md:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white">🐧 Meme Terminal</h1>
-        <button onClick={() => setLastRefresh(Date.now())} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs hover:bg-white/10 transition-colors" style={{ color: '#9ca3af' }}>
-          <RefreshCw size={14} /> Refresh
-        </button>
+        <div>
+          <h1 className="text-xl font-bold text-white">🐧 Meme Terminal</h1>
+          <p className="text-xs mt-0.5" style={{ color: '#4b5563' }}>
+            AI-powered memecoin intelligence dashboard
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {!loading.trending && (
+            <span className="hidden sm:inline text-xs" style={{ color: '#4b5563' }}>
+              Updated {new Date(lastRefresh).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+          <button onClick={() => setLastRefresh(Date.now())} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs hover:bg-white/10 transition-colors" style={{ color: '#9ca3af' }}
+            title="Refresh all dashboard data">
+            <RefreshCw size={14} className={Object.values(loading).some(Boolean) ? 'animate-spin' : ''} /> Refresh
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { RefreshCw, TrendingUp, TrendingDown, Minus, Zap, AlertCircle } from 'lucide-react'
 import api from '../utils/api.js'
 
@@ -86,6 +86,13 @@ export default function ArbitrageScanner() {
   const [customSymbol, setCustomSymbol] = useState('')
   const [customResult, setCustomResult] = useState(null)
   const [customLoading, setCustomLoading] = useState(false)
+  const [now, setNow] = useState(Date.now())
+
+  // Live timer for "Xs ago"
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(t)
+  }, [])
 
   const fetchBulk = useCallback(async () => {
     setLoading(true)
@@ -156,7 +163,7 @@ export default function ArbitrageScanner() {
         <div className="flex items-center gap-2">
           {lastFetch && (
             <span className="hidden sm:inline text-xs" style={{ color: '#6b7280' }}>
-              {Math.floor((Date.now() - lastFetch) / 1000)}s ago
+              {Math.floor((now - lastFetch) / 1000)}s ago
             </span>
           )}
           <button

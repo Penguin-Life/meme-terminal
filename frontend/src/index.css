@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: #0a0b0f;
   color: #e5e7eb;
@@ -39,6 +43,25 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #2d3050;
+}
+
+/* Input focus ring — consistent green accent */
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(0, 255, 136, 0.4) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.1);
+}
+
+/* Button focus visible for keyboard nav */
+button:focus-visible {
+  outline: 2px solid rgba(0, 255, 136, 0.5);
+  outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(0, 255, 136, 0.25);
+  color: #fff;
 }
 
 .animate-pulse-fast {
@@ -98,6 +121,28 @@ body {
 
 .animate-slide-out-right {
   animation: slideOutRight 0.25s ease-in both;
+}
+
+/* Shimmer animation for loading skeletons */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #1e2030 25%, #2a2d3e 50%, #1e2030 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Glow effect for opportunity badges */
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(0, 255, 136, 0.2); }
+  50% { box-shadow: 0 0 12px rgba(0, 255, 136, 0.4); }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
 }
 
 /* Stagger delays for grid items */

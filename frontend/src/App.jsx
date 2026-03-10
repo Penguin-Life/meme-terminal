@@ -15,6 +15,21 @@ const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
 const Signals = lazy(() => import('./pages/Signals.jsx'))
 const TokenDetail = lazy(() => import('./pages/TokenDetail.jsx'))
 
+// 404 page
+function NotFoundPage() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-4" style={{ color: '#6b7280' }}>
+      <div className="text-6xl">🐧</div>
+      <div className="text-2xl font-bold text-white">404 — Page Not Found</div>
+      <p className="text-sm">This page doesn't exist in the terminal.</p>
+      <a href="/" className="px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+        style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}>
+        ← Back to Dashboard
+      </a>
+    </div>
+  )
+}
+
 // Page loading fallback
 function PageLoader() {
   return (
@@ -239,6 +254,7 @@ function App() {
                   <Route path="/arbitrage" element={<ArbitrageScanner />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/token/:chain/:address" element={<TokenDetail />} />
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </Suspense>
             </main>

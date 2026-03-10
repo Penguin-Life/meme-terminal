@@ -132,16 +132,62 @@ export default function Signals() {
         ))}
       </div>
 
+      {/* Active filter indicator */}
+      {(typeFilter || chainFilter) && (
+        <div className="flex items-center gap-2 text-xs" style={{ color: '#9ca3af' }}>
+          <Filter size={12} />
+          <span>Filtered by: {[typeFilter && `Type: ${typeFilter}`, chainFilter && `Chain: ${CHAINS.find(c => c.value === chainFilter)?.label || chainFilter}`].filter(Boolean).join(' · ')}</span>
+          <button onClick={() => { setTypeFilter(''); setChainFilter('') }}
+            className="px-2 py-0.5 rounded hover:bg-white/10 transition-colors" style={{ color: '#ff4444' }}>
+            Clear
+          </button>
+        </div>
+      )}
+
+      {/* Signal count */}
+      {!loading && signals.length > 0 && (
+        <div className="text-xs" style={{ color: '#6b7280' }}>
+          Showing {signals.length} signal{signals.length !== 1 ? 's' : ''}
+        </div>
+      )}
+
       {/* Signal Grid */}
       {loading ? (
-        <div className="flex justify-center py-12"><div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" /></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-xl p-4 animate-pulse" style={{ background: '#13141e', border: '1px solid #2a2a3e' }}>
+              <div className="flex items-center justify-between mb-3">
+                <div className="h-4 w-24 rounded" style={{ background: '#1e2030' }} />
+                <div className="h-5 w-12 rounded" style={{ background: '#1e2030' }} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <div key={j}><div className="h-3 w-12 rounded mb-1" style={{ background: '#1e2030' }} /><div className="h-4 w-16 rounded" style={{ background: '#1e2030' }} /></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : signals.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {signals.map((s, i) => <SignalCard key={i} signal={s} />)}
         </div>
       ) : (
-        <div className="text-center py-12" style={{ color: '#6b7280' }}>
-          <p className="text-sm">No signals found for current filters</p>
+        <div className="flex flex-col items-center justify-center py-16 gap-3 animate-fade-in">
+          <div className="text-4xl">📡</div>
+          <div className="text-sm font-medium" style={{ color: '#9ca3af' }}>No signals found</div>
+          <p className="text-xs text-center max-w-xs" style={{ color: '#6b7280' }}>
+            {typeFilter || chainFilter
+              ? 'Try adjusting your filters to see more signals'
+              : 'Smart money signals will appear here as they are detected'}
+          </p>
+          {(typeFilter || chainFilter) && (
+            <button onClick={() => { setTypeFilter(''); setChainFilter('') }}
+              className="mt-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+              style={{ background: 'rgba(168,85,247,0.1)', color: '#a855f7', border: '1px solid rgba(168,85,247,0.2)' }}>
+              Clear Filters
+            </button>
+          )}
         </div>
       )}
     </div>
