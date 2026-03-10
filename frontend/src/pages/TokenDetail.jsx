@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Shield, ShieldAlert, ShieldCheck, TrendingUp, TrendingDown, Activity, Copy, Check } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import api from '../utils/api.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 import { fmtPrice, fmtUsd, timeAgo } from '../utils/format.js'
 
 function Badge({ level }) {
@@ -61,6 +62,7 @@ function CopyAddress({ address }) {
 
 export default function TokenDetail() {
   const { chain, address } = useParams()
+  usePageTitle(address ? `Token ${address.slice(0, 8)}…` : 'Token Detail')
   const nav = useNavigate()
   const [token, setToken] = useState(null)
   const [kline, setKline] = useState([])

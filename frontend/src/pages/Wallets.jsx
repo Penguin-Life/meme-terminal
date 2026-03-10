@@ -3,12 +3,14 @@ import { Plus, Wallet, RefreshCw, Search, Filter } from 'lucide-react'
 import WalletCard from '../components/WalletCard.jsx'
 import { WalletCardSkeleton } from '../components/LoadingSkeleton.jsx'
 import ErrorBanner from '../components/ErrorBanner.jsx'
+import usePageTitle from '../hooks/usePageTitle.js'
 import { useToast } from '../components/Toast.jsx'
 import api from '../utils/api.js'
 
 const CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum']
 
 export default function Wallets() {
+  usePageTitle('Wallet Tracker')
   const toast = useToast()
   const [watchlist, setWatchlist] = useState([])
   const [loading, setLoading] = useState(true)

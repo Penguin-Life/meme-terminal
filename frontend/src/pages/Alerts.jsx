@@ -3,6 +3,7 @@ import { Plus, Bell, BellOff, Trash2, RefreshCw, Play, Zap } from 'lucide-react'
 import ChainBadge from '../components/ChainBadge.jsx'
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import { useToast } from '../components/Toast.jsx'
+import usePageTitle from '../hooks/usePageTitle.js'
 import api from '../utils/api.js'
 import { shortAddr } from '../utils/format.js'
 
@@ -22,6 +23,7 @@ function fmtTime(iso) {
 }
 
 export default function Alerts() {
+  usePageTitle('Alert Center')
   const toast = useToast()
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)

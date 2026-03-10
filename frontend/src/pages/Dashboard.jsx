@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Flame, Zap, BarChart2, Activity, RefreshCw, ArrowRight } from 'lucide-react'
 import api from '../utils/api.js'
 import { fmtPrice, timeAgo as fmtTimeAgo } from '../utils/format.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading, error, onRetry }) {
   const nav = useNavigate()
@@ -81,6 +82,7 @@ function ArbRow({ result }) {
 }
 
 export default function Dashboard() {
+  usePageTitle('Dashboard')
   const nav = useNavigate()
   const [trending, setTrending] = useState([])
   const [signals, setSignals] = useState([])

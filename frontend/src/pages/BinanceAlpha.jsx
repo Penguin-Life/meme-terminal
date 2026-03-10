@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { RefreshCw, ExternalLink, TrendingUp, TrendingDown, Minus, Search, X } from 'lucide-react'
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import EmptyState from '../components/EmptyState.jsx'
+import usePageTitle from '../hooks/usePageTitle.js'
 import api from '../utils/api.js'
 import { fmtUsd, fmtPrice } from '../utils/format.js'
 
@@ -124,6 +125,7 @@ function AlphaCard({ token, index, onNavigate }) {
  * 币安Alpha代币发现页面 — 展示币安精选的Alpha代币，用于早期发现机会
  */
 export default function BinanceAlpha() {
+  usePageTitle('Binance Alpha')
   const navigate = useNavigate()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)

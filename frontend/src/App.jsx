@@ -5,7 +5,7 @@ import { ToastProvider } from './components/Toast.jsx'
 import CommandPalette from './components/CommandPalette.jsx'
 import api from './utils/api.js'
 
-const APP_VERSION = '1.5.0'
+const APP_VERSION = '1.5.1'
 
 // Lazy-load pages for better initial bundle performance
 const Scanner = lazy(() => import('./pages/Scanner.jsx'))
@@ -136,12 +136,13 @@ function App() {
             </div>
 
             {/* Nav */}
-            <nav className="flex flex-col gap-1 p-2 flex-1">
+            <nav className="flex flex-col gap-1 p-2 flex-1" aria-label="Main navigation">
               {navItems.map(({ to, icon: Icon, label, emoji }) => (
                 <NavLink
                   key={to}
                   to={to}
                   end={to === '/'}
+                  aria-label={label}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 group ${
                       isActive ? 'text-white' : 'hover:text-white'
@@ -155,7 +156,7 @@ function App() {
                 >
                   {({ isActive }) => (
                     <>
-                      <span className="text-base flex-shrink-0">{emoji}</span>
+                      <span className="text-base flex-shrink-0" aria-hidden="true">{emoji}</span>
                       <span className="hidden md:block text-sm font-medium">{label}</span>
                       {isActive && (
                         <div
@@ -176,6 +177,7 @@ function App() {
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all hover:bg-white/5"
                 style={{ color: '#6b7280', border: '1px solid #1e2030' }}
                 title="Quick search — ⌘K"
+                aria-label="Open command palette (⌘K)"
               >
                 <Command size={12} />
                 <span className="hidden md:inline flex-1 text-left">Search...</span>
@@ -190,10 +192,12 @@ function App() {
             <div
               className="px-3 py-3 border-t"
               style={{ borderColor: '#1e2030' }}
+              aria-live="polite"
             >
               <div className="flex items-center gap-2">
                 <div
                   className="w-2 h-2 rounded-full flex-shrink-0"
+                  aria-hidden="true"
                   style={{
                     background: connected === null ? '#f59e0b' : connected ? '#00ff88' : '#ff4444',
                     boxShadow: connected === true ? '0 0 6px #00ff88' : 'none'
@@ -212,14 +216,16 @@ function App() {
             {showOfflineBanner && (
               <div
                 className="flex items-center justify-between gap-3 px-4 py-2 text-sm flex-shrink-0"
+                role="alert"
                 style={{ background: 'rgba(255,68,68,0.15)', borderBottom: '1px solid rgba(255,68,68,0.3)', color: '#ff4444' }}
               >
                 <div className="flex items-center gap-2">
-                  <WifiOff size={14} />
+                  <WifiOff size={14} aria-hidden="true" />
                   <span>Backend unreachable — check that the API server is running on port 3902</span>
                 </div>
                 <button
                   onClick={() => setShowOfflineBanner(false)}
+                  aria-label="Dismiss offline warning"
                   className="flex-shrink-0 text-xs px-2 py-0.5 rounded transition-opacity hover:opacity-70"
                   style={{ background: 'rgba(255,68,68,0.2)', color: '#ff4444' }}
                 >
@@ -277,7 +283,7 @@ function App() {
             </header>
 
             {/* Page content */}
-            <main className="flex-1 overflow-auto main-content-mobile">
+            <main className="flex-1 overflow-auto main-content-mobile" role="main" aria-label="Page content">
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
@@ -320,6 +326,7 @@ function App() {
           <nav
             className="mobile-bottom-nav fixed bottom-0 left-0 right-0 border-t z-50"
             style={{ background: '#0d0e14', borderColor: '#1e2030' }}
+            aria-label="Mobile navigation"
           >
             <div className="flex items-center justify-around py-2">
               {mobileNavItems.map(({ to, label, emoji }) => (
@@ -327,6 +334,7 @@ function App() {
                   key={to}
                   to={to}
                   end={to === '/'}
+                  aria-label={label}
                   className="flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg transition-all"
                   style={({ isActive }) => ({
                     color: isActive ? '#00ff88' : '#6b7280',
@@ -334,7 +342,7 @@ function App() {
                 >
                   {({ isActive }) => (
                     <>
-                      <span className={`text-xl leading-none transition-transform ${isActive ? 'scale-110' : ''}`}>
+                      <span className={`text-xl leading-none transition-transform ${isActive ? 'scale-110' : ''}`} aria-hidden="true">
                         {emoji}
                       </span>
                       <span className="text-xs font-medium">{label}</span>

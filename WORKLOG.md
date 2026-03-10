@@ -1,9 +1,9 @@
 # WORKLOG — Meme Terminal Self-Iteration
 
 ## Current State
-- Version: 1.5.0
-- Last major work: Round 4 — SEO, architecture cleanup, Command Palette
-- Self-iteration cycle: Steps 1-10 complete (Rounds 1-4)
+- Version: 1.5.1
+- Last major work: Round 6 — Backend hardening, accessibility, Docker cleanup
+- Self-iteration cycle: Steps 1-10 complete (Rounds 1-4), Round 5 polish, Round 6 quality pass
 
 ## Round Log
 
@@ -177,7 +177,53 @@
 
 **Build Verification**: Frontend: `✓ built in 1.23s` (all chunks OK, `format.js` tree-shaken into shared chunk). Backend: `node --check server.js` passes.
 
-### What's Next (Round 6 suggestions)
+### Round 6 — Backend Hardening, Accessibility, Docker Cleanup
+- **Step**: Quality pass (backend validation, a11y, performance, Docker)
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+#### Backend API Hardening
+1. **Alert POST: Threshold Logic Fix** 🐛 — `new_buy` was still in the threshold-required list despite Round 2 notes saying it was fixed. Now correctly uses `needsThreshold = ['price_above', 'price_below', 'large_tx']` — `new_buy` and `new_listing` no longer require thresholds.
+
+2. **Alert PATCH: Threshold Validation** — Added `parseFloat` + `isNaN` check when updating threshold via PATCH. Previously accepted strings like `"abc"` silently. Now returns 400 `INVALID_THRESHOLD`.
+
+3. **Trade Routes: Numeric Input Validation** — Both `/api/trade/buy` and `/api/trade/sell` now validate:
+   - `quantity` must be a positive number (rejects `NaN`, `0`, negatives)
+   - `price` must be a positive number when provided for LIMIT orders
+   - LIMIT orders without `price` now return a clear 400 error
+   Previously accepted any truthy value for quantity/price.
+
+4. **Signals POST /filter: Consistent Error Handling** — Changed from throwing to error middleware (500) to graceful fallback matching GET / pattern. Also added `minGain` validation (must be non-negative number if provided).
+
+#### Frontend Accessibility
+5. **`usePageTitle` Hook** — New hook (`src/hooks/usePageTitle.js`) sets `document.title` per page. All 9 pages now update the browser tab title:
+   - Dashboard → "Dashboard | Meme Terminal"
+   - Scanner → "Token Scanner | Meme Terminal"
+   - Signals → "Smart Money Signals | Meme Terminal"
+   - Wallets → "Wallet Tracker | Meme Terminal"
+   - Alerts → "Alert Center | Meme Terminal"
+   - BinanceAlpha → "Binance Alpha | Meme Terminal"
+   - ArbitrageScanner → "Arbitrage Scanner | Meme Terminal"
+   - Settings → "Settings | Meme Terminal"
+   - TokenDetail → "Token {addr}… | Meme Terminal"
+
+6. **Aria Labels & Roles** — Comprehensive accessibility pass on `App.jsx`:
+   - Both desktop and mobile `<nav>` elements get `aria-label` ("Main navigation" / "Mobile navigation")
+   - All `NavLink` items get `aria-label={label}`
+   - Emoji decorations marked `aria-hidden="true"` (both sidebar + mobile nav)
+   - `<main>` gets `role="main"` + `aria-label="Page content"`
+   - Offline banner gets `role="alert"` for screen reader announcement
+   - Dismiss button gets `aria-label="Dismiss offline warning"`
+   - Command palette button gets `aria-label="Open command palette (⌘K)"`
+   - Connection status dot gets `aria-hidden="true"`, container gets `aria-live="polite"`
+   - `WifiOff` icon gets `aria-hidden="true"`
+
+#### Docker
+7. **docker-compose.yml: Removed deprecated `version` key** — `version: '3.8'` removed. Docker Compose v2+ ignores it and shows deprecation warnings. Added comment explaining the removal.
+
+**Build Verification**: Frontend: `✓ built in 1.23s` (all chunks OK, new `usePageTitle` hook tree-shaken properly). Backend: `node --check server.js` + all 10 route files pass syntax check.
+
+### What's Next (Round 7 suggestions)
 - Step 1: Polish the Command Palette (recent pages, favorites, action commands like "Toggle demo mode")
 - Step 2: PWA manifest + service worker for installability
 - Step 3: Accessibility pass (aria-labels, focus management, screen reader hints)

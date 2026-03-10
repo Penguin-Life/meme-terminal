@@ -1,8 +1,7 @@
-version: '3.8'
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  Meme Terminal — Docker Compose
 #  One command to rule them all: docker compose up
+#  (version key removed — deprecated in Docker Compose v2+)
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:

@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, Filter } from 'lucide-react'
 import PageHeader from '../components/PageHeader.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 import { timeAgo } from '../utils/format.js'
 
 const FILTERS = [
@@ -72,6 +73,7 @@ function SignalCard({ signal }) {
 }
 
 export default function Signals() {
+  usePageTitle('Smart Money Signals')
   const [signals, setSignals] = useState([])
   const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState('')

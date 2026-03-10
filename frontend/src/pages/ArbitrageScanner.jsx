@@ -3,6 +3,7 @@ import { RefreshCw, TrendingUp, TrendingDown, Minus, Zap, AlertCircle } from 'lu
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import api from '../utils/api.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 import { fmtPrice } from '../utils/format.js'
 
 /**
@@ -71,6 +72,7 @@ function OpportunityBadge() {
  * CEX-DEX价差扫描器 — 对比币安现货与链上DEX价格，发现套利机会
  */
 export default function ArbitrageScanner() {
+  usePageTitle('Arbitrage Scanner')
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)

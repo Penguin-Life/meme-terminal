@@ -59,7 +59,9 @@ router.post('/', (req, res, next) => {
     if (!VALID_CHAINS.includes(chain)) {
       throw createError(`Invalid chain. Must be one of: ${VALID_CHAINS.join(', ')}`, 400, 'INVALID_CHAIN');
     }
-    if (['price_above', 'price_below', 'large_tx', 'new_buy'].includes(type) && threshold == null) {
+    // Only price-based and large_tx alerts require thresholds
+    const needsThreshold = ['price_above', 'price_below', 'large_tx'];
+    if (needsThreshold.includes(type) && threshold == null) {
       throw createError(`Alert type "${type}" requires a "threshold" value`, 400, 'MISSING_THRESHOLD');
     }
 
@@ -117,6 +119,14 @@ router.patch('/:id', (req, res, next) => {
     }
     if (patch.chain && !VALID_CHAINS.includes(patch.chain)) {
       throw createError(`Invalid chain: ${patch.chain}`, 400, 'INVALID_CHAIN');
+    }
+    // Validate threshold is numeric when provided
+    if (patch.threshold !== undefined) {
+      const parsed = parseFloat(patch.threshold);
+      if (isNaN(parsed)) {
+        throw createError('Threshold must be a valid number', 400, 'INVALID_THRESHOLD');
+      }
+      patch.threshold = parsed;
     }
 
     alerts[idx] = { ...alerts[idx], ...patch, updatedAt: new Date().toISOString() };

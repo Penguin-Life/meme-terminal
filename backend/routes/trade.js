@@ -56,9 +56,16 @@ router.post('/buy', requireKeys, async (req, res, next) => {
     const { symbol, quantity, price, type = 'MARKET' } = req.body;
     if (!symbol || !quantity) return res.status(400).json({ success: false, error: 'symbol and quantity required', code: 'INVALID_INPUT' });
     if (!VALID_ORDER_TYPES.includes(type)) return res.status(400).json({ success: false, error: `Invalid order type. Allowed: ${VALID_ORDER_TYPES.join(', ')}`, code: 'INVALID_INPUT' });
+    const parsedQty = parseFloat(quantity);
+    if (isNaN(parsedQty) || parsedQty <= 0) return res.status(400).json({ success: false, error: 'quantity must be a positive number', code: 'INVALID_INPUT' });
+    if (type === 'LIMIT' && price != null) {
+      const parsedPrice = parseFloat(price);
+      if (isNaN(parsedPrice) || parsedPrice <= 0) return res.status(400).json({ success: false, error: 'price must be a positive number for LIMIT orders', code: 'INVALID_INPUT' });
+    }
+    if (type === 'LIMIT' && !price) return res.status(400).json({ success: false, error: 'price is required for LIMIT orders', code: 'INVALID_INPUT' });
 
-    const params = { symbol: symbol.toUpperCase(), side: 'BUY', type, quantity: String(quantity) };
-    if (type === 'LIMIT' && price) { params.price = String(price); params.timeInForce = 'GTC'; }
+    const params = { symbol: symbol.toUpperCase(), side: 'BUY', type, quantity: String(parsedQty) };
+    if (type === 'LIMIT' && price) { params.price = String(parseFloat(price)); params.timeInForce = 'GTC'; }
 
     const { data } = await binanceRequest('POST', '/order', params, req.binanceKeys);
     logger.info(`Trade BUY: ${symbol} qty=${quantity}`, { orderId: data.orderId });
@@ -75,9 +82,16 @@ router.post('/sell', requireKeys, async (req, res, next) => {
     const { symbol, quantity, price, type = 'MARKET' } = req.body;
     if (!symbol || !quantity) return res.status(400).json({ success: false, error: 'symbol and quantity required', code: 'INVALID_INPUT' });
     if (!VALID_ORDER_TYPES.includes(type)) return res.status(400).json({ success: false, error: `Invalid order type. Allowed: ${VALID_ORDER_TYPES.join(', ')}`, code: 'INVALID_INPUT' });
+    const parsedQty = parseFloat(quantity);
+    if (isNaN(parsedQty) || parsedQty <= 0) return res.status(400).json({ success: false, error: 'quantity must be a positive number', code: 'INVALID_INPUT' });
+    if (type === 'LIMIT' && price != null) {
+      const parsedPrice = parseFloat(price);
+      if (isNaN(parsedPrice) || parsedPrice <= 0) return res.status(400).json({ success: false, error: 'price must be a positive number for LIMIT orders', code: 'INVALID_INPUT' });
+    }
+    if (type === 'LIMIT' && !price) return res.status(400).json({ success: false, error: 'price is required for LIMIT orders', code: 'INVALID_INPUT' });
 
-    const params = { symbol: symbol.toUpperCase(), side: 'SELL', type, quantity: String(quantity) };
-    if (type === 'LIMIT' && price) { params.price = String(price); params.timeInForce = 'GTC'; }
+    const params = { symbol: symbol.toUpperCase(), side: 'SELL', type, quantity: String(parsedQty) };
+    if (type === 'LIMIT' && price) { params.price = String(parseFloat(price)); params.timeInForce = 'GTC'; }
 
     const { data } = await binanceRequest('POST', '/order', params, req.binanceKeys);
     logger.info(`Trade SELL: ${symbol} qty=${quantity}`, { orderId: data.orderId });

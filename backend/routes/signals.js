@@ -97,6 +97,12 @@ router.get('/subscribe', (req, res) => {
 router.post('/filter', async (req, res, next) => {
   try {
     const { chainId, type, minGain } = req.body;
+
+    // Validate minGain if provided
+    if (minGain != null && (isNaN(parseFloat(minGain)) || parseFloat(minGain) < 0)) {
+      return res.status(400).json({ success: false, error: 'minGain must be a non-negative number', code: 'INVALID_INPUT', meta: { timestamp: new Date().toISOString() } });
+    }
+
     const body = { smartSignalType: type || '', page: 1, pageSize: 50 };
     if (chainId) body.chainId = chainId;
 
@@ -108,7 +114,8 @@ router.post('/filter', async (req, res, next) => {
     res.json({ success: true, count: signals.length, signals, meta: { filters: { chainId, type, minGain }, timestamp: new Date().toISOString() } });
   } catch (err) {
     logger.error(`Signals filter error: ${err.message}`);
-    next(err);
+    // Consistent with GET / — graceful fallback instead of 500
+    res.json({ success: false, count: 0, signals: [], error: 'Signal filter API unavailable', meta: { timestamp: new Date().toISOString() } });
   }
 });
 

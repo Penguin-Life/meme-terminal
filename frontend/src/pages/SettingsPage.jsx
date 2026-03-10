@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Settings, Server, RefreshCw, ExternalLink, Zap, Info, FlaskConical, CheckCircle, XCircle, Clock } from 'lucide-react'
 import api from '../utils/api.js'
+import usePageTitle from '../hooks/usePageTitle.js'
 
-const APP_VERSION = '1.5.0'
+const APP_VERSION = '1.5.1'
 
 export default function SettingsPage() {
+  usePageTitle('Settings')
   const [health, setHealth] = useState(null)
   const [healthLoading, setHealthLoading] = useState(false)
   const [status, setStatus] = useState(null)

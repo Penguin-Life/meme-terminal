@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { RefreshCw, ArrowUp } from 'lucide-react'
 import SearchBar from '../components/SearchBar.jsx'
 import TokenCard from '../components/TokenCard.jsx'
+import usePageTitle from '../hooks/usePageTitle.js'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'
 import ErrorBanner from '../components/ErrorBanner.jsx'
 import EmptyState from '../components/EmptyState.jsx'
@@ -18,6 +19,7 @@ const TABS = [
 const CHAINS = ['solana', 'ethereum', 'bsc', 'base', 'arbitrum']
 
 export default function Scanner() {
+  usePageTitle('Token Scanner')
   const navigate = useNavigate()
   const toast = useToast()
 
