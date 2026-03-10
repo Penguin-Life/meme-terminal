@@ -78,7 +78,7 @@ export default function TokenCard({ token, expanded, onExpand, onTrackWallet, on
 
   return (
     <div
-      className="rounded-xl border transition-all cursor-pointer group"
+      className="rounded-xl border transition-all cursor-pointer group card-hover"
       style={{
         background: isExpanded ? '#1a1b25' : '#12131a',
         borderColor: isExpanded ? 'rgba(0,255,136,0.25)' : '#1e2030',

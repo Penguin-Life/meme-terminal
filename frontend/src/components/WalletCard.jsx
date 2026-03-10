@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, Trash2, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react'
+import { ExternalLink, Trash2, ChevronDown, ChevronUp, RefreshCw, Copy, Check } from 'lucide-react'
 import ChainBadge from './ChainBadge.jsx'
 import api from '../utils/api.js'
 
@@ -20,8 +20,18 @@ export default function WalletCard({ wallet, onRemove }) {
   const [portfolio, setPortfolio] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [copied, setCopied] = useState(false)
 
   const { address, chain, label } = wallet
+
+  const handleCopy = async (e) => {
+    e.stopPropagation()
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch { /* ignore */ }
+  }
 
   const loadPortfolio = async () => {
     setLoading(true)
@@ -80,6 +90,14 @@ export default function WalletCard({ wallet, onRemove }) {
             <span className="text-xs font-mono" style={{ color: '#6b7280' }}>
               {shortAddr(address)}
             </span>
+            <button
+              onClick={handleCopy}
+              className="transition-colors hover:text-white"
+              style={{ color: copied ? '#00ff88' : '#6b7280' }}
+              title={copied ? 'Copied!' : 'Copy address'}
+            >
+              {copied ? <Check size={10} /> : <Copy size={10} />}
+            </button>
             <a
               href={explorerUrl()}
               target="_blank"
@@ -198,7 +216,14 @@ export default function WalletCard({ wallet, onRemove }) {
               {portfolio.nativeBalance !== null && portfolio.nativeBalance !== undefined && (
                 <div className="mt-3 pt-3 border-t text-xs flex items-center justify-between" style={{ borderColor: '#1e2030' }}>
                   <span style={{ color: '#6b7280' }}>Native Balance:</span>
-                  <span className="text-white font-medium">{portfolio.nativeBalance?.toFixed(4)} SOL</span>
+                  <span className="text-white font-medium">
+                    {portfolio.nativeBalance?.toFixed(4)} {
+                      chain === 'solana' ? 'SOL' :
+                      chain === 'bsc' ? 'BNB' :
+                      chain === 'polygon' ? 'MATIC' :
+                      'ETH'
+                    }
+                  </span>
                 </div>
               )}
             </>

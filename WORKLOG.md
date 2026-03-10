@@ -43,8 +43,39 @@
 
 10. **Build Verification** — Frontend: `✓ built in 1.28s` (all chunks OK). Backend: `node --check server.js` passes.
 
-### What's Next (Round 2 suggestions)
-- Step 8: Copy refinement — standardize all button labels, add aria-labels for accessibility
-- Step 9: Architecture — extract shared loading/error/empty state patterns into reusable components
-- Step 10: New feature — add "Favorites" or "Quick Actions" widget to Dashboard; or a notification sound toggle for signals
-- Consider: Responsive table improvements on Arbitrage page, PWA manifest for mobile install
+### Round 2 — Creative Features, Bug Fixes, UX Flow Audit
+- **Step**: 2-4 (Creative extensions + Bug hunt + UX audit)
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+1. **Wallets: Search & Filter** — Added search bar + chain filter pills. Users can now search wallets by label/address/notes and filter by chain (SOL/ETH/BSC/BASE/ARB). Shows "X of Y wallets" with clear-filters button. Empty filter result has dedicated state.
+
+2. **Wallets: Premium Empty State** — Replaced plain empty state with a dashed-border icon container, longer descriptive copy, and feature pills ("Multi-chain support", "Portfolio tracking", "Explorer links") to communicate value.
+
+3. **WalletCard: Copy Address Button** — Added one-click copy-to-clipboard with ✅ feedback animation on wallet addresses. Uses Copy/Check icons from lucide.
+
+4. **WalletCard: Native Balance Chain Fix** 🐛 — Fixed bug where native balance always displayed "SOL" regardless of chain. Now correctly shows SOL/ETH/BNB/MATIC based on `wallet.chain`.
+
+5. **Alerts: Threshold Logic Fix** 🐛 — `new_buy` no longer requires a threshold (was incorrectly in the `needsThreshold` list). Only `price_above`, `price_below`, `large_tx` need thresholds.
+
+6. **Alerts: Shimmer Loading Skeleton** — Replaced basic spinner with 3 shimmer skeleton rows matching AlertRow layout for better perceived performance.
+
+7. **Alerts: Premium Empty State** — Enhanced with dashed-border container, longer descriptive text, and alert-type feature pills showing available alert types.
+
+8. **Scanner: Back-to-Top Button** — Added floating "Back to top" button that appears after scrolling 400px. Uses smooth scroll, glassmorphism style, auto-hides on scroll up.
+
+9. **Dashboard: Quick Action Pills** — Added quick-access pill buttons below header for "Scan Tokens", "Check Signals", "Arbitrage", "Binance Alpha" — one-tap navigation to key features.
+
+10. **Mobile Nav: Overflow Fix** 🐛 — Reduced mobile bottom nav from 8 items to 6 (removed Alpha + Arbitrage which are power-user features accessible from Dashboard). Prevents cramped touch targets.
+
+11. **TokenCard: Hover Effect** — Added `card-hover` class for subtle translateY(-1px) lift on hover, making cards feel interactive.
+
+**Build Verification**: Frontend: `✓ built in 1.25s` (all chunks OK). Backend: `node --check server.js` passes.
+
+### What's Next (Round 3 suggestions)
+- Step 5: Visual polish — gradient accents, micro-interactions on buttons, loading state consistency
+- Step 6: Edge case audit — test with 0 data, 100+ items, long addresses, missing fields
+- Step 7: Accessibility — aria-labels, focus management, screen reader support
+- Step 8: Architecture — extract shared EmptyState/ErrorState components
+- Step 9: New features — Favorites system, notification sound toggle, PWA manifest
+- Consider: Responsive table improvements on Arbitrage page, dark/light theme toggle

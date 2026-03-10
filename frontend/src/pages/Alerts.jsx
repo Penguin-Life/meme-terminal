@@ -44,7 +44,7 @@ export default function Alerts() {
   const [checkResults, setCheckResults] = useState(null)
   const [checkError, setCheckError] = useState(null)
 
-  const needsThreshold = ['price_above', 'price_below', 'large_tx', 'new_buy'].includes(form.type)
+  const needsThreshold = ['price_above', 'price_below', 'large_tx'].includes(form.type)
 
   const fetchAlerts = async () => {
     setLoading(true)
@@ -382,24 +382,47 @@ export default function Alerts() {
         </div>
       )}
 
-      {/* Loading */}
+      {/* Loading — shimmer skeleton */}
       {loading ? (
-        <div className="flex items-center justify-center py-20 gap-2">
-          <div className="w-5 h-5 border-2 rounded-full animate-spin" style={{ borderColor: '#1e2030', borderTopColor: '#00ff88' }} />
-          <span className="text-sm" style={{ color: '#6b7280' }}>Loading alerts...</span>
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3 p-3 rounded-xl border" style={{ background: '#12131a', borderColor: '#1e2030' }}>
+              <div className="w-8 h-8 rounded-lg skeleton-shimmer flex-shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3.5 rounded skeleton-shimmer" style={{ width: '45%' }} />
+                <div className="h-2.5 rounded skeleton-shimmer" style={{ width: '65%' }} />
+              </div>
+              <div className="flex gap-1.5">
+                <div className="w-7 h-7 rounded-lg skeleton-shimmer" />
+                <div className="w-7 h-7 rounded-lg skeleton-shimmer" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : alerts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
-          <Bell size={48} style={{ color: '#1e2030' }} />
-          <div className="text-sm" style={{ color: '#9ca3af' }}>No alerts configured</div>
-          <div className="text-xs" style={{ color: '#6b7280' }}>Create an alert to get notified of market moves</div>
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(0,255,136,0.05)', border: '2px dashed rgba(0,255,136,0.15)' }}>
+            <Bell size={36} style={{ color: '#1e2030' }} />
+          </div>
+          <div className="text-sm font-medium" style={{ color: '#9ca3af' }}>No alerts configured</div>
+          <div className="text-xs max-w-xs text-center" style={{ color: '#6b7280' }}>
+            Set up price alerts, whale movement notifications, and new listing monitors
+          </div>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+            className="mt-3 flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-80"
             style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}
           >
             <Plus size={14} /> Create First Alert
           </button>
+          <div className="flex gap-4 mt-6 text-xs" style={{ color: '#4b5563' }}>
+            {ALERT_TYPES.slice(0, 3).map(({ icon, label, color }) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <span>{icon}</span>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <>

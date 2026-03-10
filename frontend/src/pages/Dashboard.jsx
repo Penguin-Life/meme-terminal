@@ -119,6 +119,25 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Quick action pills */}
+      <div className="flex gap-2 mb-4 flex-wrap">
+        {[
+          { label: 'Scan Tokens', emoji: '🔥', to: '/scanner' },
+          { label: 'Check Signals', emoji: '📡', to: '/signals' },
+          { label: 'Arbitrage', emoji: '📊', to: '/arbitrage' },
+          { label: 'Binance Alpha', emoji: '🟡', to: '/alpha' },
+        ].map(({ label, emoji, to }) => (
+          <button
+            key={to}
+            onClick={() => nav(to)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95"
+            style={{ background: 'rgba(255,255,255,0.04)', color: '#9ca3af', border: '1px solid #1e2030' }}
+          >
+            <span>{emoji}</span> {label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SectionCard title="Trending" emoji="🔥" icon={Flame} color="#ff6b35" linkTo="/scanner" loading={loading.trending} error={errors.trending} onRetry={() => setLastRefresh(Date.now())}>
           {trending.length > 0 ? trending.map((t, i) => (

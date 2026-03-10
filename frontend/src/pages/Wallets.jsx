@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Plus, Wallet, RefreshCw } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { Plus, Wallet, RefreshCw, Search, Filter } from 'lucide-react'
 import WalletCard from '../components/WalletCard.jsx'
 import { WalletCardSkeleton } from '../components/LoadingSkeleton.jsx'
 import { useToast } from '../components/Toast.jsx'
@@ -16,6 +16,25 @@ export default function Wallets() {
   const [form, setForm] = useState({ address: '', chain: 'solana', label: '', notes: '' })
   const [addLoading, setAddLoading] = useState(false)
   const [addError, setAddError] = useState(null)
+  const [filterChain, setFilterChain] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // Filtered and searched wallets
+  const filteredWallets = useMemo(() => {
+    let result = watchlist
+    if (filterChain !== 'all') {
+      result = result.filter(w => w.chain === filterChain)
+    }
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase()
+      result = result.filter(w =>
+        (w.label || '').toLowerCase().includes(q) ||
+        (w.address || '').toLowerCase().includes(q) ||
+        (w.notes || '').toLowerCase().includes(q)
+      )
+    }
+    return result
+  }, [watchlist, filterChain, searchTerm])
 
   const fetchWatchlist = async () => {
     setLoading(true)
@@ -209,6 +228,54 @@ export default function Wallets() {
         </div>
       )}
 
+      {/* Search & Filter bar */}
+      {!loading && watchlist.length > 0 && (
+        <div className="flex items-center gap-2 mb-4 flex-wrap animate-fade-in">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#6b7280' }} />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="Search wallets..."
+              className="w-full pl-9 pr-3 py-2 rounded-lg text-sm outline-none"
+              style={{ background: '#12131a', border: '1px solid #1e2030', color: '#e5e7eb' }}
+            />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Filter size={12} style={{ color: '#6b7280' }} />
+            {['all', ...CHAINS].map(c => (
+              <button
+                key={c}
+                onClick={() => setFilterChain(c)}
+                className="px-2.5 py-1 rounded-full text-xs font-medium transition-all"
+                style={{
+                  background: filterChain === c ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.03)',
+                  color: filterChain === c ? '#00ff88' : '#6b7280',
+                  border: `1px solid ${filterChain === c ? 'rgba(0,255,136,0.3)' : '#1e2030'}`,
+                }}
+              >
+                {c === 'all' ? 'All' : c.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Active filter indicator */}
+      {(filterChain !== 'all' || searchTerm.trim()) && watchlist.length > 0 && (
+        <div className="flex items-center gap-2 mb-3 text-xs" style={{ color: '#9ca3af' }}>
+          <span>Showing {filteredWallets.length} of {watchlist.length} wallets</span>
+          <button
+            onClick={() => { setFilterChain('all'); setSearchTerm('') }}
+            className="px-2 py-0.5 rounded text-xs transition-all hover:opacity-80"
+            style={{ background: 'rgba(255,68,68,0.1)', color: '#ff4444', border: '1px solid rgba(255,68,68,0.15)' }}
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+
       {/* Stats */}
       {!loading && watchlist.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-6 animate-fade-in-up">
@@ -232,20 +299,50 @@ export default function Wallets() {
         </div>
       ) : watchlist.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3 animate-fade-in">
-          <Wallet size={48} style={{ color: '#1e2030' }} />
-          <div className="text-sm" style={{ color: '#9ca3af' }}>No wallets tracked yet</div>
-          <div className="text-xs" style={{ color: '#6b7280' }}>Add a wallet address to start monitoring</div>
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(0,255,136,0.05)', border: '2px dashed rgba(0,255,136,0.15)' }}>
+            <Wallet size={36} style={{ color: '#1e2030' }} />
+          </div>
+          <div className="text-sm font-medium" style={{ color: '#9ca3af' }}>No wallets tracked yet</div>
+          <div className="text-xs max-w-xs text-center" style={{ color: '#6b7280' }}>
+            Track whale wallets, smart money addresses, and your own portfolio across multiple chains
+          </div>
           <button
             onClick={() => setShowAddForm(true)}
-            className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+            className="mt-3 flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-80"
             style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}
           >
             <Plus size={14} /> Add First Wallet
           </button>
+          <div className="flex gap-4 mt-6 text-xs" style={{ color: '#4b5563' }}>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full" style={{ background: '#00ff88' }} />
+              Multi-chain support
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full" style={{ background: '#3b82f6' }} />
+              Portfolio tracking
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full" style={{ background: '#f59e0b' }} />
+              Explorer links
+            </div>
+          </div>
+        </div>
+      ) : filteredWallets.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 animate-fade-in">
+          <Search size={32} style={{ color: '#1e2030' }} />
+          <div className="text-sm" style={{ color: '#9ca3af' }}>No wallets match your filters</div>
+          <button
+            onClick={() => { setFilterChain('all'); setSearchTerm('') }}
+            className="mt-1 text-xs px-3 py-1.5 rounded-lg transition-all hover:opacity-80"
+            style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <div className="space-y-3">
-          {watchlist.map((wallet, i) => (
+          {filteredWallets.map((wallet, i) => (
             <div key={`${wallet.address}-${wallet.chain}`} className={`animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}>
               <WalletCard
                 wallet={wallet}

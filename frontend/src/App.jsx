@@ -43,15 +43,17 @@ function PageLoader() {
 }
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Home', emoji: '🏠' },
-  { to: '/scanner', icon: Flame, label: 'Scanner', emoji: '🔥' },
-  { to: '/signals', icon: Activity, label: 'Signals', emoji: '📡' },
-  { to: '/wallets', icon: Wallet, label: 'Wallets', emoji: '👛' },
-  { to: '/alerts', icon: Bell, label: 'Alerts', emoji: '🔔' },
-  { to: '/alpha', icon: Zap, label: 'Alpha', emoji: '🟡' },
-  { to: '/arbitrage', icon: BarChart2, label: 'Arbitrage', emoji: '📊' },
-  { to: '/settings', icon: Settings, label: 'Settings', emoji: '⚙️' },
+  { to: '/', icon: LayoutDashboard, label: 'Home', emoji: '🏠', mobile: true },
+  { to: '/scanner', icon: Flame, label: 'Scanner', emoji: '🔥', mobile: true },
+  { to: '/signals', icon: Activity, label: 'Signals', emoji: '📡', mobile: true },
+  { to: '/wallets', icon: Wallet, label: 'Wallets', emoji: '👛', mobile: true },
+  { to: '/alerts', icon: Bell, label: 'Alerts', emoji: '🔔', mobile: true },
+  { to: '/alpha', icon: Zap, label: 'Alpha', emoji: '🟡', mobile: false },
+  { to: '/arbitrage', icon: BarChart2, label: 'Arbitrage', emoji: '📊', mobile: false },
+  { to: '/settings', icon: Settings, label: 'Settings', emoji: '⚙️', mobile: true },
 ]
+
+const mobileNavItems = navItems.filter(n => n.mobile)
 
 function App() {
   const [connected, setConnected] = useState(null) // null=checking, true=ok, false=error
@@ -281,13 +283,13 @@ function App() {
             </footer>
           </div>
 
-          {/* Mobile bottom navigation */}
+          {/* Mobile bottom navigation — reduced items for usability */}
           <nav
             className="mobile-bottom-nav fixed bottom-0 left-0 right-0 border-t z-50"
             style={{ background: '#0d0e14', borderColor: '#1e2030' }}
           >
             <div className="flex items-center justify-around py-2">
-              {navItems.map(({ to, label, emoji }) => (
+              {mobileNavItems.map(({ to, label, emoji }) => (
                 <NavLink
                   key={to}
                   to={to}

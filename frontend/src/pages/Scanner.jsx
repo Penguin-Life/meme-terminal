@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, ArrowUp } from 'lucide-react'
 import SearchBar from '../components/SearchBar.jsx'
 import TokenCard from '../components/TokenCard.jsx'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'
@@ -31,6 +31,7 @@ export default function Scanner() {
   const [lastRefresh, setLastRefresh] = useState(null)
   const autoRefreshRef = useRef(null)
   const searchBarRef = useRef(null)
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   const fetchTrending = useCallback(async (selectedChain = chain) => {
     setLoading(l => ({ ...l, trending: true }))
@@ -107,6 +108,20 @@ export default function Scanner() {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+  // Show "back to top" button on scroll
+  useEffect(() => {
+    const mainEl = document.querySelector('.main-content-mobile') || document.querySelector('main')
+    if (!mainEl) return
+    const onScroll = () => setShowScrollTop(mainEl.scrollTop > 400)
+    mainEl.addEventListener('scroll', onScroll, { passive: true })
+    return () => mainEl.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const scrollToTop = () => {
+    const mainEl = document.querySelector('.main-content-mobile') || document.querySelector('main')
+    mainEl?.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const handleExpand = async (tokenItem) => {
     const id = tokenItem.token?.address
@@ -329,6 +344,23 @@ export default function Scanner() {
           <div className="w-3 h-3 border-2 rounded-full animate-spin" style={{ borderColor: '#1e2030', borderTopColor: '#00ff88' }} />
           Loading details...
         </div>
+      )}
+
+      {/* Scroll to top button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all hover:opacity-90 animate-fade-in-up shadow-lg"
+          style={{
+            background: 'rgba(0,255,136,0.15)',
+            color: '#00ff88',
+            border: '1px solid rgba(0,255,136,0.3)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 90,
+          }}
+        >
+          <ArrowUp size={12} /> Back to top
+        </button>
       )}
     </div>
   )
