@@ -87,6 +87,7 @@ export default function ArbitrageScanner() {
   const [customResult, setCustomResult] = useState(null)
   const [customLoading, setCustomLoading] = useState(false)
   const [now, setNow] = useState(Date.now())
+  const [sortBy, setSortBy] = useState('spread') // 'spread' | 'symbol'
 
   // Live timer for "Xs ago"
   useEffect(() => {
@@ -131,8 +132,17 @@ export default function ArbitrageScanner() {
     }
   }
 
-  const results = data?.results || []
+  const rawResults = data?.results || []
   const opportunities = data?.opportunities || 0
+
+  const results = useMemo(() => {
+    const sorted = [...rawResults]
+    if (sortBy === 'symbol') {
+      sorted.sort((a, b) => (a.keyword || a.symbol).localeCompare(b.keyword || b.symbol))
+    }
+    // default 'spread' is already sorted by API
+    return sorted
+  }, [rawResults, sortBy])
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in">
@@ -155,7 +165,7 @@ export default function ArbitrageScanner() {
               </span>
             )}
           </div>
-          <h1 className="text-xl font-bold text-white">CEX–DEX Arbitrage Scanner</h1>
+          <h1 className="text-xl font-bold gradient-text-green">CEX–DEX Arbitrage Scanner</h1>
           <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
             Binance Spot vs on-chain DEX price gaps · 币安现货 vs 链上价差
           </p>
@@ -169,7 +179,7 @@ export default function ArbitrageScanner() {
           <button
             onClick={fetchBulk}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50 btn-press"
             style={{ background: 'rgba(0,255,136,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,136,0.2)' }}
           >
             <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
@@ -283,6 +293,37 @@ export default function ArbitrageScanner() {
         </div>
       )}
 
+      {/* Results count + sort */}
+      {results.length > 0 && (
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium" style={{ color: '#9ca3af' }}>
+              {results.length} pairs scanned
+            </span>
+            {opportunities > 0 && (
+              <span className="text-xs px-2 py-0.5 rounded-full font-bold animate-glow"
+                style={{ background: 'rgba(0,255,136,0.12)', color: '#00ff88' }}>
+                {opportunities} opp{opportunities > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-xs">
+            <span style={{ color: '#6b7280' }}>Sort:</span>
+            {['spread', 'symbol'].map(s => (
+              <button key={s} onClick={() => setSortBy(s)}
+                className="px-2 py-1 rounded transition-all btn-press"
+                style={{
+                  background: sortBy === s ? 'rgba(0,255,136,0.12)' : 'rgba(255,255,255,0.04)',
+                  color: sortBy === s ? '#00ff88' : '#6b7280',
+                  border: `1px solid ${sortBy === s ? 'rgba(0,255,136,0.25)' : 'transparent'}`
+                }}>
+                {s === 'spread' ? '% Spread' : 'A-Z'}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Main table */}
       {results.length > 0 && (
         <div
@@ -293,7 +334,7 @@ export default function ArbitrageScanner() {
           <div
             className="grid gap-3 px-4 py-3 text-xs font-semibold uppercase tracking-wider"
             style={{
-              background: '#0d0e14',
+              background: 'linear-gradient(180deg, #0d0e14, #0a0b0f)',
               color: '#6b7280',
               gridTemplateColumns: '120px 1fr 1fr 100px 140px 60px'
             }}
@@ -310,7 +351,7 @@ export default function ArbitrageScanner() {
           {results.map((row, i) => (
             <div
               key={row.symbol}
-              className="grid gap-3 px-4 py-3 items-center transition-colors"
+              className="grid gap-3 px-4 py-3 items-center transition-colors row-hover"
               style={{
                 gridTemplateColumns: '120px 1fr 1fr 100px 140px 60px',
                 borderTop: '1px solid #1e2030',
@@ -352,12 +393,25 @@ export default function ArbitrageScanner() {
       {/* Loading */}
       {loading && results.length === 0 && (
         <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #1e2030' }}>
+          {/* Skeleton header */}
+          <div className="h-10" style={{ background: 'linear-gradient(180deg, #0d0e14, #0a0b0f)' }} />
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-14 animate-pulse"
-              style={{ borderTop: i > 0 ? '1px solid #1e2030' : 'none', background: i % 2 === 0 ? '#0d0e14' : '#0a0b0f' }}
-            />
+              className="grid gap-3 px-4 py-3 items-center"
+              style={{
+                gridTemplateColumns: '120px 1fr 1fr 100px 140px 60px',
+                borderTop: '1px solid #1e2030',
+                background: i % 2 === 0 ? '#0d0e14' : '#0a0b0f'
+              }}
+            >
+              <div className="h-4 w-16 rounded skeleton-shimmer" />
+              <div className="h-4 w-20 rounded skeleton-shimmer" />
+              <div className="h-4 w-20 rounded skeleton-shimmer" />
+              <div className="h-4 w-14 rounded skeleton-shimmer" />
+              <div className="h-4 w-24 rounded skeleton-shimmer" />
+              <div className="h-4 w-8 rounded skeleton-shimmer" />
+            </div>
           ))}
         </div>
       )}

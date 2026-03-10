@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RefreshCw, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { RefreshCw, ExternalLink, TrendingUp, TrendingDown, Minus, Search, X } from 'lucide-react'
 import api from '../utils/api.js'
 
 /**
@@ -148,6 +148,15 @@ export default function BinanceAlpha() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [lastFetch, setLastFetch] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState('rank') // rank | change | volume
+  const [now, setNow] = useState(Date.now())
+
+  // Live timer
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(t)
+  }, [])
 
   const fetchAlpha = useCallback(async () => {
     setLoading(true)
@@ -169,7 +178,25 @@ export default function BinanceAlpha() {
     return () => clearInterval(interval)
   }, [fetchAlpha])
 
-  const tokens = data?.tokens || []
+  const allTokens = data?.tokens || []
+
+  const tokens = useMemo(() => {
+    let filtered = allTokens
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      filtered = filtered.filter(t =>
+        (t.symbol || '').toLowerCase().includes(q) ||
+        (t.name || '').toLowerCase().includes(q) ||
+        (t.contractAddress || '').toLowerCase().includes(q)
+      )
+    }
+    if (sortBy === 'change') {
+      filtered = [...filtered].sort((a, b) => (b.priceChange24h ?? -999) - (a.priceChange24h ?? -999))
+    } else if (sortBy === 'volume') {
+      filtered = [...filtered].sort((a, b) => (b.volume24h ?? 0) - (a.volume24h ?? 0))
+    }
+    return filtered
+  }, [allTokens, searchQuery, sortBy])
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in">
@@ -184,7 +211,7 @@ export default function BinanceAlpha() {
               🟡 BINANCE ALPHA
             </span>
           </div>
-          <h1 className="text-xl font-bold text-white">Alpha Token Discovery</h1>
+          <h1 className="text-xl font-bold gradient-text-gold">Alpha Token Discovery</h1>
           <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
             Binance-curated early-stage tokens · 币安精选Alpha代币
           </p>
@@ -192,13 +219,13 @@ export default function BinanceAlpha() {
         <div className="flex items-center gap-2">
           {lastFetch && (
             <span className="hidden sm:inline text-xs" style={{ color: '#6b7280' }}>
-              {Math.floor((Date.now() - lastFetch) / 1000)}s ago
+              {Math.floor((now - lastFetch) / 1000)}s ago
             </span>
           )}
           <button
             onClick={fetchAlpha}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80 disabled:opacity-50 btn-press"
             style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}
           >
             <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
@@ -227,6 +254,47 @@ export default function BinanceAlpha() {
           </div>
         </div>
       </div>
+
+      {/* Search + Sort */}
+      {allTokens.length > 0 && (
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#6b7280' }} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by name, symbol, or address..."
+              className="w-full pl-9 pr-8 py-2 rounded-lg text-sm outline-none transition-all"
+              style={{ background: '#13141e', border: '1px solid #1e2030', color: '#fff', caretColor: '#f0b90b' }}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2"
+                style={{ color: '#6b7280' }}>
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-xs flex-shrink-0">
+            <span style={{ color: '#6b7280' }}>Sort:</span>
+            {[
+              { key: 'rank', label: 'Rank' },
+              { key: 'change', label: '24h %' },
+              { key: 'volume', label: 'Volume' },
+            ].map(s => (
+              <button key={s.key} onClick={() => setSortBy(s.key)}
+                className="px-2 py-1 rounded transition-all btn-press"
+                style={{
+                  background: sortBy === s.key ? 'rgba(240,185,11,0.12)' : 'rgba(255,255,255,0.04)',
+                  color: sortBy === s.key ? '#f0b90b' : '#6b7280',
+                  border: `1px solid ${sortBy === s.key ? 'rgba(240,185,11,0.25)' : 'transparent'}`
+                }}>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Error */}
       {error && (
@@ -263,7 +331,7 @@ export default function BinanceAlpha() {
         <>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium" style={{ color: '#9ca3af' }}>
-              {tokens.length} Alpha Tokens
+              {searchQuery ? `${tokens.length} of ${allTokens.length}` : tokens.length} Alpha Tokens
             </span>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
@@ -281,14 +349,29 @@ export default function BinanceAlpha() {
         </>
       )}
 
+      {/* Empty search state */}
+      {!loading && tokens.length === 0 && allTokens.length > 0 && searchQuery && (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 animate-fade-in">
+          <div className="text-4xl">🔍</div>
+          <div className="text-sm" style={{ color: '#9ca3af' }}>
+            No tokens match "<span className="text-white">{searchQuery}</span>"
+          </div>
+          <button onClick={() => setSearchQuery('')}
+            className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80 btn-press"
+            style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}>
+            Clear Search
+          </button>
+        </div>
+      )}
+
       {/* Empty state */}
-      {!loading && tokens.length === 0 && !error && (
+      {!loading && allTokens.length === 0 && !error && (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <div className="text-4xl">🟡</div>
           <div className="text-sm" style={{ color: '#9ca3af' }}>No Alpha tokens loaded yet</div>
           <button
             onClick={fetchAlpha}
-            className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80"
+            className="text-xs px-4 py-2 rounded-lg font-medium transition-all hover:opacity-80 btn-press"
             style={{ background: 'rgba(240,185,11,0.1)', color: '#f0b90b', border: '1px solid rgba(240,185,11,0.2)' }}
           >
             Load Alpha Tokens

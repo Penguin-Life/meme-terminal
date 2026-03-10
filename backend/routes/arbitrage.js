@@ -41,7 +41,8 @@ async function fetchCexPrice(symbol) {
       timeout: 6000
     });
     return data?.price ? parseFloat(data.price) : null;
-  } catch {
+  } catch (err) {
+    logger.warn(`CEX price fetch failed for ${symbol}: ${err.message}`);
     return null;
   }
 }
@@ -62,7 +63,8 @@ async function fetchDexPrice(keyword, chainId) {
     const list = data?.data || [];
     const first = Array.isArray(list) ? list[0] : null;
     return first?.price ? parseFloat(first.price) : null;
-  } catch {
+  } catch (err) {
+    logger.warn(`DEX price fetch failed for ${keyword} on chain ${chainId}: ${err.message}`);
     return null;
   }
 }

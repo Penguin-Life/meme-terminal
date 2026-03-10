@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Settings, Server, RefreshCw, ExternalLink, Zap, Info, FlaskConical } from 'lucide-react'
+import { Settings, Server, RefreshCw, ExternalLink, Zap, Info, FlaskConical, CheckCircle, XCircle, Clock } from 'lucide-react'
 import api from '../utils/api.js'
 
-const APP_VERSION = '1.3.0'
+const APP_VERSION = '1.4.0'
 
 export default function SettingsPage() {
   const [health, setHealth] = useState(null)
@@ -15,8 +15,12 @@ export default function SettingsPage() {
       const data = await api.get('/health')
       setHealth(data)
       // Also fetch dashboard status
-      const statusData = await api.get('/status')
-      setStatus(statusData?.data || null)
+      try {
+        const statusData = await api.get('/status')
+        setStatus(statusData?.data || null)
+      } catch {
+        // Status endpoint is optional — don't fail the whole check
+      }
     } catch (e) {
       setHealth({ error: e.message })
     } finally {
@@ -27,15 +31,35 @@ export default function SettingsPage() {
   // Auto-check on mount
   useEffect(() => { checkHealth() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const isHealthy = health && !health.error
+  const statusIcon = isHealthy ? <CheckCircle size={14} style={{ color: '#00ff88' }} />
+    : health?.error ? <XCircle size={14} style={{ color: '#ff4444' }} />
+    : <Clock size={14} className="animate-spin" style={{ color: '#6b7280' }} />
+
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-white">Settings</h1>
-        <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>Configuration & system info</p>
+    <div className="p-4 md:p-6 max-w-2xl mx-auto animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 rounded text-xs font-bold"
+              style={{ background: 'rgba(59,130,246,0.12)', color: '#3b82f6', border: '1px solid rgba(59,130,246,0.25)' }}>
+              ⚙️ SETTINGS
+            </span>
+            <span className="flex items-center gap-1 text-xs" style={{ color: '#6b7280' }}>
+              {statusIcon}
+              {isHealthy ? 'All systems go' : health?.error ? 'Connection issue' : 'Checking...'}
+            </span>
+          </div>
+          <h1 className="text-xl font-bold text-white">Settings & System Info</h1>
+          <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
+            Configuration, diagnostics & data sources
+          </p>
+        </div>
       </div>
 
       {/* API Connection */}
-      <div className="rounded-xl p-5 mb-4 border" style={{ background: '#12131a', borderColor: '#1e2030' }}>
+      <div className="rounded-xl p-5 mb-4 border section-card animate-slide-up" style={{ background: '#12131a', borderColor: '#1e2030', animationDelay: '0.05s' }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Server size={16} style={{ color: '#3b82f6' }} />
@@ -110,7 +134,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Demo Mode */}
-      <div className="rounded-xl p-5 mb-4 border" style={{ background: '#12131a', borderColor: '#1e2030' }}>
+      <div className="rounded-xl p-5 mb-4 border section-card animate-slide-up" style={{ background: '#12131a', borderColor: '#1e2030', animationDelay: '0.1s' }}>
         <div className="flex items-center gap-2 mb-3">
           <FlaskConical size={16} style={{ color: '#f59e0b' }} />
           <span className="text-sm font-semibold text-white">Demo Mode</span>
@@ -137,7 +161,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Data Sources */}
-      <div className="rounded-xl p-5 mb-4 border" style={{ background: '#12131a', borderColor: '#1e2030' }}>
+      <div className="rounded-xl p-5 mb-4 border section-card animate-slide-up" style={{ background: '#12131a', borderColor: '#1e2030', animationDelay: '0.15s' }}>
         <div className="text-sm font-semibold mb-4 text-white">Data Sources</div>
         <div className="space-y-2">
           {[
@@ -145,6 +169,8 @@ export default function SettingsPage() {
             { name: 'GeckoTerminal', desc: 'DEX pools, OHLCV charts', url: 'https://geckoterminal.com', free: true },
             { name: 'Pump.fun', desc: 'Solana meme launches, bonding curve', url: 'https://pump.fun', free: true },
             { name: 'Solana RPC', desc: 'Wallet portfolio, transactions', url: 'https://solana.com', free: true },
+            { name: 'Binance Spot', desc: 'CEX prices, arbitrage scanner', url: 'https://binance.com', free: true },
+            { name: 'Binance Web3', desc: 'DEX prices, Alpha tokens', url: 'https://web3.binance.com', free: true },
           ].map(({ name, desc, url, free }) => (
             <div key={name} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: '#0a0b0f' }}>
               <div className="flex-1">
@@ -170,7 +196,7 @@ export default function SettingsPage() {
       </div>
 
       {/* About */}
-      <div className="rounded-xl p-5 border" style={{ background: '#12131a', borderColor: '#1e2030' }}>
+      <div className="rounded-xl p-5 border section-card animate-slide-up" style={{ background: '#12131a', borderColor: '#1e2030', animationDelay: '0.2s' }}>
         <div className="flex items-center gap-2 mb-3">
           <Info size={16} style={{ color: '#00ff88' }} />
           <span className="text-sm font-semibold text-white">About</span>
@@ -229,7 +255,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Keyboard Shortcuts */}
-      <div className="rounded-xl p-5 mt-4 border" style={{ background: '#12131a', borderColor: '#1e2030' }}>
+      <div className="rounded-xl p-5 mt-4 border section-card animate-slide-up" style={{ background: '#12131a', borderColor: '#1e2030', animationDelay: '0.25s' }}>
         <div className="text-sm font-semibold mb-3 text-white">Keyboard Shortcuts</div>
         <div className="space-y-2 text-xs">
           {[

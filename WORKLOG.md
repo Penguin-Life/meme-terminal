@@ -1,9 +1,9 @@
 # WORKLOG — Meme Terminal Self-Iteration
 
 ## Current State
-- Version: 1.3.0
-- Last major work: Round 1 self-iteration polish
-- Starting self-iteration cycle from Step 1
+- Version: 1.4.0
+- Last major work: Round 3 — Visual polish, edge cases, regression check
+- Self-iteration cycle: Steps 1-7 complete (Rounds 1-3)
 
 ## Round Log
 
@@ -72,10 +72,54 @@
 
 **Build Verification**: Frontend: `✓ built in 1.25s` (all chunks OK). Backend: `node --check server.js` passes.
 
-### What's Next (Round 3 suggestions)
-- Step 5: Visual polish — gradient accents, micro-interactions on buttons, loading state consistency
-- Step 6: Edge case audit — test with 0 data, 100+ items, long addresses, missing fields
-- Step 7: Accessibility — aria-labels, focus management, screen reader support
-- Step 8: Architecture — extract shared EmptyState/ErrorState components
+### Round 3 — Visual Polish, Regression Check, Edge Cases
+- **Step**: 5-7 (Visual upgrade + Review + Edge cases)
+- **Status**: ✅ COMPLETE
+- **Changes**:
+
+1. **ArbitrageScanner: Sort Controls** — Added sort toggle (% Spread / A-Z) above the table. Users can now sort arbitrage results by spread magnitude or alphabetically.
+
+2. **ArbitrageScanner: Shimmer Skeleton Upgrade** — Replaced plain `animate-pulse` blocks with structured shimmer skeletons matching the actual table column layout (6 columns with proper widths).
+
+3. **ArbitrageScanner: Row Hover + Visual Polish** — Added `row-hover` class for subtle highlight on table rows. Added gradient header text, `btn-press` micro-animation on buttons, results count + opportunity badge above table.
+
+4. **BinanceAlpha: Search & Filter** — Added search bar to filter tokens by name, symbol, or contract address. Shows "X of Y" count when filtered, with dedicated empty-search state and clear button.
+
+5. **BinanceAlpha: Sort Controls** — Added sort toggle (Rank / 24h % / Volume) for flexible token ordering.
+
+6. **BinanceAlpha: Live Timer** — Added real-time "Xs ago" timer (1s interval) matching ArbitrageScanner's pattern. Previously showed stale static value.
+
+7. **SettingsPage: UX Overhaul** — 
+   - Added header badge with live health status icon (✅/❌/⏳)
+   - All sections now use `section-card` class with hover glow effect
+   - Staggered `animate-slide-up` entrance animations (50ms delay per section)
+   - Added Binance Spot + Binance Web3 to data sources list
+   - Wrapped `/status` fetch in try/catch so it can't break health check
+   - Bumped frontend version to 1.4.0
+
+8. **CSS: New Utility Classes** — Added:
+   - `.gradient-text-green` / `.gradient-text-gold` — gradient text for page headers
+   - `.btn-press` — subtle scale-down on button click (active state)
+   - `.row-hover` — subtle background highlight for table rows
+   - `.section-card` — hover border glow + shadow for card sections
+   - `.pulse-dot` — pulsing indicator animation
+   - `.animate-slide-up` — staggered entrance animation
+   - Enhanced `.card-hover` with box-shadow on hover
+
+9. **Backend: Error Logging Fix** — Arbitrage route's `fetchCexPrice` and `fetchDexPrice` had silent `catch {}` blocks. Now logs warnings via `logger.warn()` for debugging failed price fetches.
+
+10. **Regression Check** — Verified all Round 1-2 features still work:
+    - Build passes clean: `✓ built in 1.21s`
+    - Backend syntax check: `node --check server.js` passes
+    - All error handlers properly wired (errorHandler + notFoundHandler in server.js)
+    - All routes use try/catch + next(err) pattern consistently
+    - API interceptor error normalization in frontend api.js is solid
+    - uncaughtException/unhandledRejection handlers prevent server crashes
+
+**Build Verification**: Frontend: `✓ built in 1.21s` (all chunks OK). Backend: `node --check server.js` passes.
+
+### What's Next (Round 4 suggestions)
+- Step 8: Architecture — extract shared EmptyState/ErrorState/PageHeader components to reduce duplication
 - Step 9: New features — Favorites system, notification sound toggle, PWA manifest
-- Consider: Responsive table improvements on Arbitrage page, dark/light theme toggle
+- Step 10: Accessibility — aria-labels, focus management, screen reader hints
+- Consider: Dark/light theme toggle, responsive table on mobile for Arbitrage, performance audit (lazy loading)
