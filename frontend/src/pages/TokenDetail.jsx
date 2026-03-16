@@ -4,7 +4,7 @@ import { ArrowLeft, Shield, ShieldAlert, ShieldCheck, TrendingUp, TrendingDown, 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts'
 import api from '../utils/api.js'
 import usePageTitle from '../hooks/usePageTitle.js'
-import { fmtPrice, fmtUsd, timeAgo } from '../utils/format.js'
+import { fmtPrice, fmtUsd } from '../utils/format.js'
 
 function Badge({ level }) {
   const map = {

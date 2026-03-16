@@ -161,10 +161,8 @@ export default function BinanceAlpha() {
     return () => clearInterval(interval)
   }, [fetchAlpha])
 
-  const allTokens = data?.tokens || []
-
   const tokens = useMemo(() => {
-    let filtered = allTokens
+    let filtered = data?.tokens || []
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       filtered = filtered.filter(t =>
@@ -179,7 +177,7 @@ export default function BinanceAlpha() {
       filtered = [...filtered].sort((a, b) => (b.volume24h ?? 0) - (a.volume24h ?? 0))
     }
     return filtered
-  }, [allTokens, searchQuery, sortBy])
+  }, [data?.tokens, searchQuery, sortBy])
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in">

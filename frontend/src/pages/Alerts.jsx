@@ -398,7 +398,7 @@ export default function Alerts() {
             <Plus size={14} /> Create First Alert
           </button>
           <div className="flex gap-4 mt-6 text-xs" style={{ color: '#4b5563' }}>
-            {ALERT_TYPES.slice(0, 3).map(({ icon, label, color }) => (
+            {ALERT_TYPES.slice(0, 3).map(({ icon, label }) => (
               <div key={label} className="flex items-center gap-1.5">
                 <span>{icon}</span>
                 <span>{label}</span>

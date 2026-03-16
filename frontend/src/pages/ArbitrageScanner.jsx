@@ -126,17 +126,16 @@ export default function ArbitrageScanner() {
     }
   }
 
-  const rawResults = data?.results || []
   const opportunities = data?.opportunities || 0
 
   const results = useMemo(() => {
-    const sorted = [...rawResults]
+    const sorted = [...(data?.results || [])]
     if (sortBy === 'symbol') {
       sorted.sort((a, b) => (a.keyword || a.symbol).localeCompare(b.keyword || b.symbol))
     }
     // default 'spread' is already sorted by API
     return sorted
-  }, [rawResults, sortBy])
+  }, [data?.results, sortBy])
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in">

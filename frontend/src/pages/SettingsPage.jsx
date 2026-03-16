@@ -31,7 +31,7 @@ export default function SettingsPage() {
   }
 
   // Auto-check on mount
-  useEffect(() => { checkHealth() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { checkHealth() }, [])
 
   const isHealthy = health && !health.error
   const statusIcon = isHealthy ? <CheckCircle size={14} style={{ color: '#00ff88' }} />

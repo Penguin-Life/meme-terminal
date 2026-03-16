@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ExternalLink, TrendingUp, TrendingDown, Shield, Users, Globe, Twitter, ArrowRight } from 'lucide-react'
 import ChainBadge from './ChainBadge.jsx'

@@ -90,9 +90,9 @@ export default function Signals() {
       setSignals(data.signals || [])
     } catch { setSignals([]) }
     setLoading(false)
-  }, [typeFilter, chainFilter, refreshKey])
+  }, [typeFilter, chainFilter])
 
-  useEffect(() => { fetchSignals() }, [fetchSignals])
+  useEffect(() => { fetchSignals() }, [fetchSignals, refreshKey])
 
   // Auto-refresh every 30s
   useEffect(() => {

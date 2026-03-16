@@ -23,7 +23,7 @@ function Sparkline({ data, width = 48, height = 16, color = '#00ff88' }) {
   )
 }
 
-function SectionCard({ title, emoji, icon: Icon, color, linkTo, children, loading, error, onRetry }) {
+function SectionCard({ title, emoji, color, linkTo, children, loading, error, onRetry }) {
   const nav = useNavigate()
   return (
     <div className="rounded-xl p-4 flex flex-col dash-section-card" style={{ background: '#13141e', border: '1px solid #2a2a3e', minHeight: 260 }}>

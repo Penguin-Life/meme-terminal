@@ -137,7 +137,7 @@ function App() {
 
             {/* Nav */}
             <nav className="flex flex-col gap-1 p-2 flex-1" aria-label="Main navigation">
-              {navItems.map(({ to, icon: Icon, label, emoji }) => (
+              {navItems.map(({ to, label, emoji }) => (
                 <NavLink
                   key={to}
                   to={to}
