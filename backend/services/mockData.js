@@ -298,6 +298,116 @@ const MOCK_TOKEN_SEARCH = (q) => ({
   meta: { sources: ['dexscreener', 'geckoterminal'], timestamp: new Date().toISOString(), demo: true }
 });
 
+// ─── Mock: Smart Money Signals ────────────────────────────────────────────────
+
+const MOCK_SIGNALS = {
+  success: true,
+  count: 8,
+  signals: [
+    {
+      tokenSymbol: 'BONK', tokenName: 'Bonk', contractAddress: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+      chainId: 'CT_501', signalType: 'BUY', triggerPrice: 0.00002341, currentPrice: 0.00002847,
+      maxGainPercent: 21.6, exitRate: 0.12, signalTime: Date.now() - 3600000,
+      walletAddress: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', tags: ['smart_money', 'whale'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'WIF', tokenName: 'dogwifhat', contractAddress: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+      chainId: 'CT_501', signalType: 'BUY', triggerPrice: 1.523, currentPrice: 1.842,
+      maxGainPercent: 34.8, exitRate: 0.08, signalTime: Date.now() - 7200000,
+      walletAddress: '3Kz9RwL7jD4hF5ZmVxN6q8L9sB2E1nFpXvRyTcAjWmNq', tags: ['smart_money'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'PEPE', tokenName: 'Pepe', contractAddress: '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+      chainId: '1', signalType: 'SELL', triggerPrice: 0.00001423, currentPrice: 0.00001187,
+      maxGainPercent: 45.2, exitRate: 0.67, signalTime: Date.now() - 1800000,
+      walletAddress: '0x28C6c06298d514Db089934071355E5743bf21d60', tags: ['whale', 'top_trader'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'FLOKI', tokenName: 'Floki Inu', contractAddress: '0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E',
+      chainId: '1', signalType: 'BUY', triggerPrice: 0.0001567, currentPrice: 0.0001834,
+      maxGainPercent: 17.0, exitRate: 0.05, signalTime: Date.now() - 5400000,
+      walletAddress: '0x21a31Ee1afC51d94C2eFcCAa2092aD1028285549', tags: ['smart_money'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'POPCAT', tokenName: 'Popcat', contractAddress: '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr',
+      chainId: 'CT_501', signalType: 'BUY', triggerPrice: 0.2841, currentPrice: 0.3182,
+      maxGainPercent: 12.0, exitRate: 0.15, signalTime: Date.now() - 900000,
+      walletAddress: '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1', tags: ['smart_money', 'alpha'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'MYRO', tokenName: 'Myro', contractAddress: 'HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
+      chainId: 'CT_501', signalType: 'BUY', triggerPrice: 0.03142, currentPrice: 0.04291,
+      maxGainPercent: 36.5, exitRate: 0.03, signalTime: Date.now() - 10800000,
+      walletAddress: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM', tags: ['top_trader'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'BOME', tokenName: 'Book of Meme', contractAddress: 'ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82',
+      chainId: 'CT_501', signalType: 'SELL', triggerPrice: 0.01123, currentPrice: 0.00842,
+      maxGainPercent: 28.9, exitRate: 0.45, signalTime: Date.now() - 14400000,
+      walletAddress: '4Nd1mBQtrMJVYVfKf2PJy9NZUZdTAsp7D4xWLs4gDB4T', tags: ['whale'], logoUrl: null
+    },
+    {
+      tokenSymbol: 'SLERF', tokenName: 'Slerf', contractAddress: '7BgBvyjrZX1YKz4oh9mjb8ZScatkkwb8DzFx7LoiVkM3',
+      chainId: 'CT_501', signalType: 'BUY', triggerPrice: 0.0987, currentPrice: 0.1234,
+      maxGainPercent: 25.0, exitRate: 0.10, signalTime: Date.now() - 2700000,
+      walletAddress: '6Uqc7PdBed34oXPASMiEyCLYJFVGdqSaXF2DY5FBjFhm', tags: ['smart_money', 'whale'], logoUrl: null
+    }
+  ],
+  meta: { source: 'binance-smart-money', timestamp: new Date().toISOString(), cached: false, demo: true }
+};
+
+// ─── Mock: Arbitrage Scanner ──────────────────────────────────────────────────
+
+const MOCK_ARBITRAGE = {
+  success: true,
+  count: 6,
+  opportunities: 2,
+  results: [
+    { symbol: 'BONKUSDT', keyword: 'BONK', cexPrice: 0.00002847, dexPrice: 0.00002912, spreadPercent: 2.2821, direction: 'dex_premium', opportunity: true },
+    { symbol: 'WIFUSDT', keyword: 'WIF', cexPrice: 1.842, dexPrice: 1.811, spreadPercent: -1.6830, direction: 'cex_premium', opportunity: true },
+    { symbol: 'PEPEUSDT', keyword: 'PEPE', cexPrice: 0.00001187, dexPrice: 0.00001192, spreadPercent: 0.4213, direction: 'dex_premium', opportunity: false },
+    { symbol: 'FLOKIUSDT', keyword: 'FLOKI', cexPrice: 0.0001834, dexPrice: 0.0001829, spreadPercent: -0.2727, direction: 'cex_premium', opportunity: false },
+    { symbol: 'DOGEUSDT', keyword: 'DOGE', cexPrice: 0.1423, dexPrice: 0.1431, spreadPercent: 0.5622, direction: 'dex_premium', opportunity: false },
+    { symbol: 'SHIBUSDT', keyword: 'SHIB', cexPrice: 0.00002341, dexPrice: 0.00002338, spreadPercent: -0.1282, direction: 'cex_premium', opportunity: false }
+  ],
+  meta: { cexSource: 'binance-spot', dexSource: 'binance-web3-dex', timestamp: new Date().toISOString(), demo: true }
+};
+
+// ─── Mock: Binance Alpha Tokens ───────────────────────────────────────────────
+
+const MOCK_ALPHA_LIST = {
+  success: true,
+  count: 10,
+  tokens: [
+    { symbol: 'GRIFFAIN', name: 'Griffain', contractAddress: 'GRFNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', chainId: 'CT_501', price: 0.0423, priceChange24h: 18.4, volume24h: 12400000, marketCap: 42300000, holders: 8923, rank: 1, logoUrl: null, tags: ['ai', 'defi'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'ONDO', name: 'Ondo Finance', contractAddress: '0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3', chainId: '1', price: 1.234, priceChange24h: 5.7, volume24h: 89000000, marketCap: 1890000000, holders: 45231, rank: 2, logoUrl: null, tags: ['rwa', 'defi'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'UXLINK', name: 'UXLINK', contractAddress: '0x2FE8733d4ca4A21D52B2B82e8B9667a61F91dA1e', chainId: '1', price: 0.892, priceChange24h: -3.2, volume24h: 34500000, marketCap: 267000000, holders: 12453, rank: 3, logoUrl: null, tags: ['social'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'MORPHO', name: 'Morpho', contractAddress: '0x9994E35Db50125E0DF82e4c2dde62496CE330999', chainId: '1', price: 2.341, priceChange24h: 12.1, volume24h: 67800000, marketCap: 456000000, holders: 23411, rank: 4, logoUrl: null, tags: ['defi', 'lending'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'VIRTUAL', name: 'Virtual Protocol', contractAddress: '0x44ff8620b8cA30902395A7bD3F2407e1A091BF73', chainId: '8453', price: 0.567, priceChange24h: 28.9, volume24h: 23400000, marketCap: 567000000, holders: 34521, rank: 5, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'COOKIE', name: 'Cookie DAO', contractAddress: 'CookieXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: 'CT_501', price: 0.234, priceChange24h: -8.4, volume24h: 8900000, marketCap: 78000000, holders: 5621, rank: 6, logoUrl: null, tags: ['dao', 'ai'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'SWARMS', name: 'Swarms', contractAddress: 'SwarmsXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: 'CT_501', price: 0.0891, priceChange24h: 42.3, volume24h: 5600000, marketCap: 34000000, holders: 3456, rank: 7, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'AIXBT', name: 'AixBT', contractAddress: '0xAixBTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: '8453', price: 0.156, priceChange24h: 15.7, volume24h: 12300000, marketCap: 156000000, holders: 8723, rank: 8, logoUrl: null, tags: ['ai'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'KAITO', name: 'Kaito', contractAddress: 'KaitoXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: '1', price: 1.567, priceChange24h: 7.3, volume24h: 45600000, marketCap: 234000000, holders: 15678, rank: 9, logoUrl: null, tags: ['ai', 'search'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'ANIME', name: 'Anime Token', contractAddress: '0xAnimeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: '42161', price: 0.0342, priceChange24h: -1.8, volume24h: 7800000, marketCap: 89000000, holders: 67890, rank: 10, logoUrl: null, tags: ['culture', 'nft'], isAlpha: true, source: 'binance-alpha' }
+  ],
+  meta: { rankType: 20, description: 'Binance Alpha curated tokens', source: 'binance-web3-api', timestamp: new Date().toISOString(), cached: false, demo: true }
+};
+
+const MOCK_ALPHA_TRENDING = {
+  success: true,
+  alpha: [
+    { symbol: 'GRIFFAIN', name: 'Griffain', contractAddress: 'GRFNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', chainId: 'CT_501', price: 0.0423, priceChange24h: 18.4, volume24h: 12400000, marketCap: 42300000, holders: 8923, rank: 1, logoUrl: null, tags: ['ai'], isAlpha: true, source: 'binance-alpha', category: 'alpha' },
+    { symbol: 'SWARMS', name: 'Swarms', contractAddress: 'SwarmsXXX', chainId: 'CT_501', price: 0.0891, priceChange24h: 42.3, volume24h: 5600000, marketCap: 34000000, holders: 3456, rank: 7, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha', category: 'alpha' },
+    { symbol: 'VIRTUAL', name: 'Virtual Protocol', contractAddress: '0x44ff8620b8cA30902395A7bD3F2407e1A091BF73', chainId: '8453', price: 0.567, priceChange24h: 28.9, volume24h: 23400000, marketCap: 567000000, holders: 34521, rank: 5, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha', category: 'alpha' }
+  ],
+  trending: [
+    { symbol: 'BONK', name: 'Bonk', contractAddress: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', chainId: 'CT_501', price: 0.00002847, priceChange24h: 8.74, volume24h: 287430000, marketCap: 1842000000, holders: null, rank: null, logoUrl: null, tags: [], isAlpha: false, source: 'binance-alpha', category: 'trending' },
+    { symbol: 'WIF', name: 'dogwifhat', contractAddress: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm', chainId: 'CT_501', price: 1.842, priceChange24h: 12.31, volume24h: 193000000, marketCap: 1841000000, holders: null, rank: null, logoUrl: null, tags: [], isAlpha: false, source: 'binance-alpha', category: 'trending' }
+  ],
+  total: 5,
+  meta: { sources: ['binance-alpha-rank', 'binance-trending-rank'], timestamp: new Date().toISOString(), cached: false, demo: true }
+};
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 module.exports = {
@@ -307,5 +417,9 @@ module.exports = {
   MOCK_WALLET_PORTFOLIO,
   MOCK_NEW_LISTINGS,
   MOCK_ALERT_CHECK,
-  MOCK_TOKEN_SEARCH
+  MOCK_TOKEN_SEARCH,
+  MOCK_SIGNALS,
+  MOCK_ARBITRAGE,
+  MOCK_ALPHA_LIST,
+  MOCK_ALPHA_TRENDING
 };

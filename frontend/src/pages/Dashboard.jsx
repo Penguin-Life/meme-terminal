@@ -114,7 +114,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     setErrors({ trending: null, signals: null, arb: null, alpha: null })
-    api.get('/token/trending').then(d => setTrending((d.pairs || d.data?.pairs || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, trending: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, trending: false })))
+    api.get('/token/trending').then(d => setTrending((d.results || d.pairs || d.data?.pairs || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, trending: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, trending: false })))
     api.get('/signals').then(d => setSignals((d.signals || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, signals: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, signals: false })))
     api.get('/arbitrage/scan').then(d => setArb((d.results || []).slice(0, 4))).catch(e => setErrors(p => ({ ...p, arb: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, arb: false })))
     api.get('/token/binance-alpha').then(d => setAlpha((d.tokens || []).slice(0, 5))).catch(e => setErrors(p => ({ ...p, alpha: e.message || 'Failed to load' }))).finally(() => setLoading(p => ({ ...p, alpha: false })))
@@ -178,17 +178,17 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SectionCard title="Trending" emoji="🔥" icon={Flame} color="#ff6b35" linkTo="/scanner" loading={loading.trending} error={errors.trending} onRetry={() => setLastRefresh(Date.now())}>
           {trending.length > 0 ? trending.map((t, i) => {
-            const price = parseFloat(t.priceUsd || t.price || 0)
-            const change = parseFloat(t.priceChange?.h24 || t.priceChange24h || 0)
+            const price = parseFloat(t.priceUsd || t.market?.price || t.price || 0)
+            const change = parseFloat(t.priceChange?.h24 || t.market?.priceChange?.['24h'] || t.priceChange24h || 0)
             // Generate sparkline from h6/h1/m5 price changes if available, else synthesize from 24h change
-            const h6 = parseFloat(t.priceChange?.h6 || change * 0.4)
-            const h1 = parseFloat(t.priceChange?.h1 || change * 0.15)
-            const m5 = parseFloat(t.priceChange?.m5 || change * 0.03)
+            const h6 = parseFloat(t.priceChange?.h6 || t.market?.priceChange?.['6h'] || change * 0.4)
+            const h1 = parseFloat(t.priceChange?.h1 || t.market?.priceChange?.['1h'] || change * 0.15)
+            const m5 = parseFloat(t.priceChange?.m5 || t.market?.priceChange?.['5m'] || change * 0.03)
             const base = price / (1 + change / 100) || price
             const spark = [base, base * (1 + m5 / 200), base * (1 + m5 / 100), base * (1 + h1 / 200), base * (1 + h1 / 100), base * (1 + h6 / 200), base * (1 + h6 / 100), price]
             return (
-              <TokenRow key={i} symbol={t.baseToken?.symbol || t.symbol || '?'} name={t.baseToken?.name} price={price} change={change} sparkData={spark}
-                onClick={() => { const chain = t.chainId || 'solana'; const addr = t.baseToken?.address || t.pairAddress; if (addr) nav(`/token/${chain}/${addr}`) }} />
+              <TokenRow key={i} symbol={t.baseToken?.symbol || t.token?.symbol || t.symbol || '?'} name={t.baseToken?.name || t.token?.name} price={price} change={change} sparkData={spark}
+                onClick={() => { const chain = t.chainId || t.token?.chain || 'solana'; const addr = t.baseToken?.address || t.token?.address || t.pairAddress; if (addr) nav(`/token/${chain}/${addr}`) }} />
             )
           }) : <p className="text-xs" style={{ color: '#6b7280' }}>No data available</p>}
         </SectionCard>

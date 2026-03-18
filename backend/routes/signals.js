@@ -8,6 +8,7 @@ const router = express.Router();
 const axios = require('axios');
 const cache = require('../services/cache');
 const logger = require('../utils/logger');
+const { DEMO_MODE, MOCK_SIGNALS } = require('../services/mockData');
 
 const SIGNAL_API = 'https://web3.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/web/signal/smart-money';
 const HEADERS = { 'Content-Type': 'application/json', 'Accept-Encoding': 'identity', 'clienttype': 'web', 'clientversion': '1.2.0' };
@@ -34,6 +35,10 @@ function normalizeSignal(s) {
 router.get('/', async (req, res, next) => {
   try {
     const { chainId = '', type = '', page = 1, pageSize = 20 } = req.query;
+
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_SIGNALS);
+
     const cacheKey = `signals:${chainId}:${type}:${page}`;
     const cached = cache.get(cacheKey);
     if (cached) return res.json({ ...cached, meta: { ...cached.meta, cached: true } });

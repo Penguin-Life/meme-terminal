@@ -8,6 +8,7 @@ const router = express.Router();
 const axios = require('axios');
 const cache = require('../services/cache');
 const logger = require('../utils/logger');
+const { DEMO_MODE, MOCK_ARBITRAGE } = require('../services/mockData');
 
 const BINANCE_SPOT_BASE = 'https://api.binance.com/api/v3';
 const BINANCE_WEB3_SEARCH = 'https://web3.binance.com/bapi/defi/v5/public/wallet-direct/buw/wallet/market/token/search';
@@ -92,6 +93,9 @@ function calcSpread(cexPrice, dexPrice) {
 router.get('/scan', async (req, res, next) => {
   try {
     const { symbol } = req.query;
+
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_ARBITRAGE);
 
     // Single symbol scan
     if (symbol) {

@@ -179,6 +179,8 @@ export default function BinanceAlpha() {
     return filtered
   }, [data?.tokens, searchQuery, sortBy])
 
+  const allTokens = data?.tokens || []
+
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto animate-fade-in">
       {/* Header */}

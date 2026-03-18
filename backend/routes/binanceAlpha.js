@@ -8,6 +8,7 @@ const router = express.Router();
 const axios = require('axios');
 const cache = require('../services/cache');
 const logger = require('../utils/logger');
+const { DEMO_MODE, MOCK_ALPHA_LIST, MOCK_ALPHA_TRENDING } = require('../services/mockData');
 
 const BINANCE_WEB3_BASE = 'https://web3.binance.com/bapi/defi/v1/public/wallet-direct/buw/wallet/market/token/rank/unified';
 
@@ -49,6 +50,9 @@ router.get('/', async (req, res, next) => {
   const TTL = 60; // 60 seconds
 
   try {
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_ALPHA_LIST);
+
     // Serve from cache if fresh
     const cached = cache.get(cacheKey);
     if (cached) {
@@ -112,6 +116,9 @@ router.get('/trending', async (req, res, next) => {
   const TTL = 45; // 45 seconds — trending data is time-sensitive
 
   try {
+    // Demo mode: return mock data immediately
+    if (DEMO_MODE) return res.json(MOCK_ALPHA_TRENDING);
+
     const cached = cache.get(cacheKey);
     if (cached) {
       return res.json({ ...cached, meta: { ...cached.meta, cached: true } });
