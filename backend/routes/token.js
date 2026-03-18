@@ -289,14 +289,38 @@ router.get('/:chain/:address', async (req, res, next) => {
     chain = validateChain(chain);
     address = validateAddress(address, chain);
 
-    // Demo mode: return first trending token as mock
+    // Demo mode: find matching token or use first trending, flatten for frontend
     if (DEMO_MODE) {
-      const mockToken = MOCK_TRENDING.results[0];
+      const matchedToken = MOCK_TRENDING.results.find(r => r.token?.address === address) || MOCK_TRENDING.results[0];
+      const m = matchedToken.market || {};
+      const t = matchedToken.token || {};
+      const s = matchedToken.security || {};
+      // Flatten into the format TokenDetail.jsx expects
+      const flatData = {
+        baseToken: { symbol: t.symbol, name: t.name, address: address },
+        symbol: t.symbol,
+        name: t.name,
+        chain,
+        address,
+        priceUsd: m.price,
+        price: m.price,
+        priceChange: { h24: m.priceChange?.['24h'], h6: m.priceChange?.['6h'], h1: m.priceChange?.['1h'], m5: m.priceChange?.['5m'] },
+        volume: { h24: m.volume24h },
+        volume24h: m.volume24h,
+        liquidity: { usd: m.liquidity },
+        marketCap: m.marketCap,
+        fdv: m.marketCap,
+        holders: s.topHolderPct ? Math.round(m.marketCap / 100) : null,
+        mintAuthority: s.mintAuthority,
+        freezeAuthority: s.freezeAuthority,
+        isHoneypot: s.isHoneypot,
+        topHolderPct: s.topHolderPct,
+      };
       return res.json({
         success: true,
         chain,
         address,
-        data: mockToken,
+        data: flatData,
         meta: { sources: ['demo'], timestamp: new Date().toISOString(), demo: true }
       });
     }
@@ -422,9 +446,24 @@ router.get('/:chain/:address/kline', async (req, res, next) => {
     chain = validateChain(chain);
     address = validateAddress(address, chain);
 
-    const cacheKey = `kline:${chain}:${address}:${interval}:${limit}`;
-    const cached = cache.get(cacheKey);
-    if (cached) return res.json(cached);
+    // Demo mode: generate synthetic kline data (before cache which requires external import)
+    if (DEMO_MODE) {
+      const now = Date.now();
+      const intervalMs = interval === '1h' ? 3600000 : interval === '4h' ? 14400000 : interval === '1d' ? 86400000 : 3600000;
+      const basePrice = 0.00002847;
+      const klineList = [];
+      for (let i = parseInt(limit) - 1; i >= 0; i--) {
+        const time = now - i * intervalMs;
+        const noise = (Math.random() - 0.45) * basePrice * 0.08; // slight uptrend
+        const open = basePrice + noise + (parseInt(limit) - i) * basePrice * 0.002;
+        const close = open + (Math.random() - 0.4) * basePrice * 0.04;
+        const high = Math.max(open, close) * (1 + Math.random() * 0.015);
+        const low = Math.min(open, close) * (1 - Math.random() * 0.015);
+        const volume = 50000 + Math.random() * 200000;
+        klineList.push({ time, open: +open.toFixed(10), high: +high.toFixed(10), low: +low.toFixed(10), close: +close.toFixed(10), volume: +volume.toFixed(2) });
+      }
+      return res.json({ success: true, chain, address, interval, klineList, meta: { source: 'demo', timestamp: new Date().toISOString(), demo: true } });
+    }
 
     // Try Binance Web3 K-line API
     const axios = require('axios');

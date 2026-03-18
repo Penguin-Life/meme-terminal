@@ -15,20 +15,32 @@ const VALID_CHAINS = ['solana', 'eth', 'bsc', 'base', 'arbitrum', 'polygon'];
 
 router.post('/token', async (req, res, next) => {
   try {
-    const { query, chain = 'solana' } = req.body;
+    const { query, chain = 'solana', address } = req.body;
+
+    // Demo mode: return mock analysis with audit data for TokenDetail
+    // (accept address field from TokenDetail page which sends {chain, address})
+    if (DEMO_MODE) {
+      const sec = MOCK_TOKEN_ANALYSIS.data.report.security || {};
+      return res.json({
+        success: true,
+        data: {
+          report: { ...MOCK_TOKEN_ANALYSIS.data.report, query: query ? query.trim() : (address || ''), chain },
+          // Flat audit fields for TokenDetail page compatibility
+          overallRisk: sec.isHoneypot ? 'CRITICAL' : sec.topHolderPct > 20 ? 'MEDIUM' : 'LOW',
+          tokenInfo: {
+            mintAuthority: sec.mintAuthority,
+            freezeAuthority: sec.freezeAuthority,
+            topHolderPercent: sec.topHolderPct,
+          },
+          scamDetection: { isHoneypot: sec.isHoneypot || false },
+          verdict: MOCK_TOKEN_ANALYSIS.data.report.aiSummary,
+        },
+        meta: { source: 'demo', timestamp: new Date().toISOString(), demo: true }
+      });
+    }
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       throw createError('Request body must include "query" (token symbol, name, or address)', 400, 'BAD_REQUEST');
-    }
-
-    // Demo mode: return mock analysis
-    if (DEMO_MODE) {
-      return res.json({
-        ...MOCK_TOKEN_ANALYSIS,
-        data: {
-          report: { ...MOCK_TOKEN_ANALYSIS.data.report, query: query.trim(), chain }
-        }
-      });
     }
 
     if (chain && !VALID_CHAINS.includes(chain) && chain !== 'all') {
