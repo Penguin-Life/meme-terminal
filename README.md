@@ -256,6 +256,11 @@ graph TB
 </p>
 
 <p align="center">
+  <img src="docs/screenshots/token-detail.png" alt="Token Detail" width="800">
+  <br><em>Token detail — K-line chart, security audit, smart money signals, one-click trade</em>
+</p>
+
+<p align="center">
   <img src="docs/screenshots/settings.png" alt="Settings" width="800">
   <br><em>Settings & API health dashboard with Demo Mode support</em>
 </p>
