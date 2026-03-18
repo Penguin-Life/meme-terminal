@@ -1,6 +1,6 @@
 {
   "name": "meme-terminal-backend",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Meme Terminal backend API server — aggregates DexScreener, Pump.fun, GeckoTerminal data",
   "main": "server.js",
   "scripts": {

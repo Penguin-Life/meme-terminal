@@ -221,13 +221,28 @@ graph TB
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/scanner.png" alt="Token Scanner" width="800">
-  <br><em>Real-time token scanner with trending detection</em>
+  <img src="docs/screenshots/dashboard.png" alt="Dashboard" width="800">
+  <br><em>AI-powered intelligence dashboard — trending, signals, arbitrage & alpha at a glance</em>
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/alerts.png" alt="Alert Engine" width="800">
-  <br><em>Custom alert engine with multi-condition rules</em>
+  <img src="docs/screenshots/scanner.png" alt="Token Scanner" width="800">
+  <br><em>Real-time token scanner with trending detection across all major chains</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/signals.png" alt="Smart Money Signals" width="800">
+  <br><em>On-chain smart money signal detection — BUY/SELL alerts with max gain tracking</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/alpha.png" alt="Binance Alpha" width="800">
+  <br><em>Binance Alpha token discovery — curated early-stage tokens before mainstream listing</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/arbitrage.png" alt="CEX-DEX Arbitrage" width="800">
+  <br><em>CEX-DEX arbitrage scanner — spot price gaps between Binance and on-chain DEX</em>
 </p>
 
 <p align="center">
@@ -236,11 +251,14 @@ graph TB
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/settings.png" alt="Settings" width="800">
-  <br><em>Settings & API health dashboard</em>
+  <img src="docs/screenshots/alerts.png" alt="Alert Engine" width="800">
+  <br><em>Custom alert engine with price, whale, and new listing triggers</em>
 </p>
 
-> 📷 Add your own screenshots — see [`docs/screenshots/README.md`](docs/screenshots/README.md)
+<p align="center">
+  <img src="docs/screenshots/settings.png" alt="Settings" width="800">
+  <br><em>Settings & API health dashboard with Demo Mode support</em>
+</p>
 
 ---
 
@@ -468,6 +486,13 @@ Meme Terminal ships with **13 skills** total — 6 custom + 7 Binance:
 - ⚡ WebSocket real-time price stream (Binance WS → SSE)
 - 🧪 Jest unit tests (9 cases)
 - 📱 Mobile responsive bottom tab navigation
+
+### v1.6.0 — Shipped ✅
+- 🎭 **Complete Demo Mode** — all 7 pages display realistic mock data with `DEMO_MODE=true`
+- 🟡 **Binance Alpha page fixed** — resolved crash from undefined `allTokens` variable
+- 📊 **Dashboard data compatibility** — supports both live API and mock data formats
+- 📸 **8 page screenshots** added to `docs/screenshots/` for GitHub README
+- 🔧 **Realistic demo data** — signals, arbitrage, alpha, wallets, alerts all show professional content
 
 ### v1.5.2 — Shipped ✅
 - 📊 **Dashboard Sparklines** — Inline SVG micro-charts for trending tokens and Binance Alpha (zero deps)

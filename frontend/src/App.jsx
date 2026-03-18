@@ -5,7 +5,7 @@ import { ToastProvider } from './components/Toast.jsx'
 import CommandPalette from './components/CommandPalette.jsx'
 import api from './utils/api.js'
 
-const APP_VERSION = '1.5.2'
+const APP_VERSION = '1.6.0'
 
 // Lazy-load pages for better initial bundle performance
 const Scanner = lazy(() => import('./pages/Scanner.jsx'))

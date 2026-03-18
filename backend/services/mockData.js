@@ -185,28 +185,28 @@ const MOCK_NEW_LISTINGS = {
   count: 8,
   results: [
     {
-      token: { name: 'Trump Turbo', symbol: 'TURBO', address: 'TurboXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chain: 'solana', image: null },
+      token: { name: 'Trump Turbo', symbol: 'TURBO', address: 'TurB0xR5k2mN8v3jL7pQ4w9yH6cF1dA8e5gT2sV4bU', chain: 'solana', image: null },
       market: { price: 0.0000892, marketCap: 89200, volume24h: 45600, liquidity: 12300, priceChange: { '5m': 12.4, '1h': 45.7, '6h': null, '24h': null } },
       security: { mintAuthority: null, freezeAuthority: null, isHoneypot: null, topHolderPct: null },
       social: { websites: [], twitter: null, telegram: null },
       meta: { createdAt: new Date(Date.now() - 1800000).toISOString(), source: 'pumpfun', bondingCurveProgress: 34.2, graduated: false }
     },
     {
-      token: { name: 'Doge on Sol', symbol: 'DOGS', address: 'DogsXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chain: 'solana', image: null },
+      token: { name: 'Doge on Sol', symbol: 'DOGS', address: 'Dog5oL7nM2xK8v4jR9pW3qY6hC1fA5eT8gB2sU4dN', chain: 'solana', image: null },
       market: { price: 0.00000341, marketCap: 341000, volume24h: 123000, liquidity: 45000, priceChange: { '5m': 3.2, '1h': 8.9, '6h': null, '24h': null } },
       security: { mintAuthority: null, freezeAuthority: null, isHoneypot: null, topHolderPct: null },
       social: { websites: [], twitter: null, telegram: null },
       meta: { createdAt: new Date(Date.now() - 3600000).toISOString(), source: 'pumpfun', bondingCurveProgress: 67.8, graduated: false }
     },
     {
-      token: { name: 'Solana Shiba', symbol: 'SSHIB', address: 'ShibXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chain: 'solana', image: null },
+      token: { name: 'Solana Shiba', symbol: 'SSHIB', address: 'Sh1bA4nR7mK2xV9jL5pQ8w3yH6cF1dE4gT2sB8uN', chain: 'solana', image: null },
       market: { price: 0.000000841, marketCap: 841000, volume24h: 234000, liquidity: 78000, priceChange: { '5m': 28.4, '1h': 112.3, '6h': null, '24h': null } },
       security: { mintAuthority: null, freezeAuthority: null, isHoneypot: null, topHolderPct: null },
       social: { websites: [], twitter: null, telegram: null },
       meta: { createdAt: new Date(Date.now() - 5400000).toISOString(), source: 'pumpfun', bondingCurveProgress: 98.1, graduated: false }
     },
     {
-      token: { name: 'Moon Cat', symbol: 'MCAT', address: 'McatXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chain: 'solana', image: null },
+      token: { name: 'Moon Cat', symbol: 'MCAT', address: 'MoonC4t7kR2nM8v5jL3pQ9w6yH1cF4dA8eT2sG5bU', chain: 'solana', image: null },
       market: { price: 0.00421, marketCap: 4210000, volume24h: 890000, liquidity: 340000, priceChange: { '5m': -2.1, '1h': 5.4, '6h': 18.9, '24h': null } },
       security: { mintAuthority: null, freezeAuthority: null, isHoneypot: null, topHolderPct: null },
       social: { websites: [], twitter: 'mooncat_sol', telegram: null },
@@ -379,16 +379,16 @@ const MOCK_ALPHA_LIST = {
   success: true,
   count: 10,
   tokens: [
-    { symbol: 'GRIFFAIN', name: 'Griffain', contractAddress: 'GRFNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', chainId: 'CT_501', price: 0.0423, priceChange24h: 18.4, volume24h: 12400000, marketCap: 42300000, holders: 8923, rank: 1, logoUrl: null, tags: ['ai', 'defi'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'GRIFFAIN', name: 'Griffain', contractAddress: 'GRiFiNaGEKbEm9K1dkS8ynNRGasF3Fpkf4oWxr4eCmLN', chainId: 'CT_501', price: 0.0423, priceChange24h: 18.4, volume24h: 12400000, marketCap: 42300000, holders: 8923, rank: 1, logoUrl: null, tags: ['ai', 'defi'], isAlpha: true, source: 'binance-alpha' },
     { symbol: 'ONDO', name: 'Ondo Finance', contractAddress: '0xfAbA6f8e4a5E8Ab82F62fe7C39859FA577269BE3', chainId: '1', price: 1.234, priceChange24h: 5.7, volume24h: 89000000, marketCap: 1890000000, holders: 45231, rank: 2, logoUrl: null, tags: ['rwa', 'defi'], isAlpha: true, source: 'binance-alpha' },
     { symbol: 'UXLINK', name: 'UXLINK', contractAddress: '0x2FE8733d4ca4A21D52B2B82e8B9667a61F91dA1e', chainId: '1', price: 0.892, priceChange24h: -3.2, volume24h: 34500000, marketCap: 267000000, holders: 12453, rank: 3, logoUrl: null, tags: ['social'], isAlpha: true, source: 'binance-alpha' },
     { symbol: 'MORPHO', name: 'Morpho', contractAddress: '0x9994E35Db50125E0DF82e4c2dde62496CE330999', chainId: '1', price: 2.341, priceChange24h: 12.1, volume24h: 67800000, marketCap: 456000000, holders: 23411, rank: 4, logoUrl: null, tags: ['defi', 'lending'], isAlpha: true, source: 'binance-alpha' },
     { symbol: 'VIRTUAL', name: 'Virtual Protocol', contractAddress: '0x44ff8620b8cA30902395A7bD3F2407e1A091BF73', chainId: '8453', price: 0.567, priceChange24h: 28.9, volume24h: 23400000, marketCap: 567000000, holders: 34521, rank: 5, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha' },
-    { symbol: 'COOKIE', name: 'Cookie DAO', contractAddress: 'CookieXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: 'CT_501', price: 0.234, priceChange24h: -8.4, volume24h: 8900000, marketCap: 78000000, holders: 5621, rank: 6, logoUrl: null, tags: ['dao', 'ai'], isAlpha: true, source: 'binance-alpha' },
-    { symbol: 'SWARMS', name: 'Swarms', contractAddress: 'SwarmsXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: 'CT_501', price: 0.0891, priceChange24h: 42.3, volume24h: 5600000, marketCap: 34000000, holders: 3456, rank: 7, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha' },
-    { symbol: 'AIXBT', name: 'AixBT', contractAddress: '0xAixBTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: '8453', price: 0.156, priceChange24h: 15.7, volume24h: 12300000, marketCap: 156000000, holders: 8723, rank: 8, logoUrl: null, tags: ['ai'], isAlpha: true, source: 'binance-alpha' },
-    { symbol: 'KAITO', name: 'Kaito', contractAddress: 'KaitoXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: '1', price: 1.567, priceChange24h: 7.3, volume24h: 45600000, marketCap: 234000000, holders: 15678, rank: 9, logoUrl: null, tags: ['ai', 'search'], isAlpha: true, source: 'binance-alpha' },
-    { symbol: 'ANIME', name: 'Anime Token', contractAddress: '0xAnimeXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', chainId: '42161', price: 0.0342, priceChange24h: -1.8, volume24h: 7800000, marketCap: 89000000, holders: 67890, rank: 10, logoUrl: null, tags: ['culture', 'nft'], isAlpha: true, source: 'binance-alpha' }
+    { symbol: 'COOKIE', name: 'Cookie DAO', contractAddress: 'CookFm1KhdT2xyy7VjERcPrp2sPBxMbkdm9xGPMz5SN', chainId: 'CT_501', price: 0.234, priceChange24h: -8.4, volume24h: 8900000, marketCap: 78000000, holders: 5621, rank: 6, logoUrl: null, tags: ['dao', 'ai'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'SWARMS', name: 'Swarms', contractAddress: 'SwrmFdCDvC4pYRi8m3AHnuEBX2nW3sHLjFn5a4JKGBv', chainId: 'CT_501', price: 0.0891, priceChange24h: 42.3, volume24h: 5600000, marketCap: 34000000, holders: 3456, rank: 7, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'AIXBT', name: 'AixBT', contractAddress: '0xa1xB7d39f52a3e42B658d5C4aF18823b509e1b8D4', chainId: '8453', price: 0.156, priceChange24h: 15.7, volume24h: 12300000, marketCap: 156000000, holders: 8723, rank: 8, logoUrl: null, tags: ['ai'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'KAITO', name: 'Kaito', contractAddress: 'KaiToALbCDrfF5j3VEK8s7hA9eRLmP2y4xW6nQ1cG3b', chainId: '1', price: 1.567, priceChange24h: 7.3, volume24h: 45600000, marketCap: 234000000, holders: 15678, rank: 9, logoUrl: null, tags: ['ai', 'search'], isAlpha: true, source: 'binance-alpha' },
+    { symbol: 'ANIME', name: 'Anime Token', contractAddress: '0xAn1mE3f8C2d5a7B9e6F4c1D8a3E5b7F9c2D4a6B8e1', chainId: '42161', price: 0.0342, priceChange24h: -1.8, volume24h: 7800000, marketCap: 89000000, holders: 67890, rank: 10, logoUrl: null, tags: ['culture', 'nft'], isAlpha: true, source: 'binance-alpha' }
   ],
   meta: { rankType: 20, description: 'Binance Alpha curated tokens', source: 'binance-web3-api', timestamp: new Date().toISOString(), cached: false, demo: true }
 };
@@ -396,8 +396,8 @@ const MOCK_ALPHA_LIST = {
 const MOCK_ALPHA_TRENDING = {
   success: true,
   alpha: [
-    { symbol: 'GRIFFAIN', name: 'Griffain', contractAddress: 'GRFNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', chainId: 'CT_501', price: 0.0423, priceChange24h: 18.4, volume24h: 12400000, marketCap: 42300000, holders: 8923, rank: 1, logoUrl: null, tags: ['ai'], isAlpha: true, source: 'binance-alpha', category: 'alpha' },
-    { symbol: 'SWARMS', name: 'Swarms', contractAddress: 'SwarmsXXX', chainId: 'CT_501', price: 0.0891, priceChange24h: 42.3, volume24h: 5600000, marketCap: 34000000, holders: 3456, rank: 7, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha', category: 'alpha' },
+    { symbol: 'GRIFFAIN', name: 'Griffain', contractAddress: 'GRiFiNaGEKbEm9K1dkS8ynNRGasF3Fpkf4oWxr4eCmLN', chainId: 'CT_501', price: 0.0423, priceChange24h: 18.4, volume24h: 12400000, marketCap: 42300000, holders: 8923, rank: 1, logoUrl: null, tags: ['ai'], isAlpha: true, source: 'binance-alpha', category: 'alpha' },
+    { symbol: 'SWARMS', name: 'Swarms', contractAddress: 'SwrmFdC', chainId: 'CT_501', price: 0.0891, priceChange24h: 42.3, volume24h: 5600000, marketCap: 34000000, holders: 3456, rank: 7, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha', category: 'alpha' },
     { symbol: 'VIRTUAL', name: 'Virtual Protocol', contractAddress: '0x44ff8620b8cA30902395A7bD3F2407e1A091BF73', chainId: '8453', price: 0.567, priceChange24h: 28.9, volume24h: 23400000, marketCap: 567000000, holders: 34521, rank: 5, logoUrl: null, tags: ['ai', 'agent'], isAlpha: true, source: 'binance-alpha', category: 'alpha' }
   ],
   trending: [

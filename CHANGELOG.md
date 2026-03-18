@@ -3,6 +3,21 @@
 All notable changes to Meme Terminal are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+
+## [1.6.0] — 2026-03-18
+
+### Added
+- **Complete Demo Mode** — all 7 pages now display realistic mock data when `DEMO_MODE=true`
+  - Smart Money Signals: 8 mock signals (BUY/SELL) with tags, trigger prices, and max gain %
+  - CEX-DEX Arbitrage: 6 pairs with spread calculations and opportunity flags
+  - Binance Alpha: 10 curated tokens with rank, price, volume, market cap data
+- Demo-ready watchlist with 5 professionally named wallets across 3 chains
+- Demo-ready alerts with 5 realistic alert configurations including trigger history
+
+### Fixed
+- **BinanceAlpha.jsx crash** — `allTokens` was undefined, causing blank page render
+- **Dashboard trending** — now correctly reads nested `token.symbol` / `market.price` from mock data format
+- Replaced placeholder contract addresses with realistic-looking ones across all mock data
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---

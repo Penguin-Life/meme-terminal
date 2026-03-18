@@ -1,6 +1,6 @@
 {
   "name": "meme-terminal",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "AI-Powered Memecoin Trading Terminal \u2014 workspace root",
   "private": true,
   "scripts": {
