@@ -357,27 +357,66 @@ npm run build
 
 Frontend runs at **http://localhost:5173**
 
-### OpenClaw Skills
+### 🤖 OpenClaw Integration (AI Natural Language Layer)
 
-Install all 6 custom skills:
+Meme Terminal works as a standalone dashboard, but becomes an **AI-powered trading assistant** when connected to OpenClaw. Your OpenClaw agent can then answer questions like "帮我看看 BONK 能不能买" by orchestrating multiple Binance Skills automatically.
+
+#### Step 1: Install Skills
 
 ```bash
-cp -r skills/dexscreener ~/openclaw/skills/
-cp -r skills/pump-fun ~/openclaw/skills/
-cp -r skills/gecko-terminal ~/openclaw/skills/
-cp -r skills/smart-wallet ~/openclaw/skills/
-cp -r skills/meme-radar ~/openclaw/skills/
-cp -r skills/meme-terminal ~/openclaw/skills/
+# One-liner: install all 6 custom skills into OpenClaw
+for skill in skills/*/; do cp -r "$skill" ~/openclaw/skills/; done
 ```
 
-Then reload OpenClaw and try in Telegram:
-```
-查 BONK
-新的 pump.fun 热门项目
-帮我追踪钱包 5YNmS...
+Or install individually:
+```bash
+cp -r skills/meme-terminal ~/openclaw/skills/   # Core: connects OpenClaw to backend API
+cp -r skills/meme-radar ~/openclaw/skills/       # Meta-skill: orchestrates all skills
+cp -r skills/dexscreener ~/openclaw/skills/      # DexScreener data
+cp -r skills/pump-fun ~/openclaw/skills/         # Pump.fun new launches
+cp -r skills/gecko-terminal ~/openclaw/skills/   # GeckoTerminal pools
+cp -r skills/smart-wallet ~/openclaw/skills/     # Wallet tracking
 ```
 
-See [docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md) for complete usage guide.
+#### Step 2: Make sure backend is running
+
+```bash
+cd backend && npm start
+# Backend must be on http://localhost:3902 for skills to work
+```
+
+#### Step 3: Reload OpenClaw & start chatting
+
+No restart needed — OpenClaw picks up new skills automatically. Open Telegram and try:
+
+| You say | What happens |
+|---------|-------------|
+| `查一下 BONK` | Token search → price, volume, chart |
+| `这个地址安全吗？ 0xABC...` | Security audit → honeypot/rug-pull check |
+| `现在什么 meme 最热` | Trending + Pump.fun launches + smart money |
+| `帮我追踪这个钱包 5YNm...` | Add to watchlist, get holdings |
+| `深度分析 PEPE` | Full pipeline: 5 Skills → 🟢GO/🟡WATCH/🔴AVOID |
+| `设置 BONK 涨到 0.00005 提醒我` | Create price alert → Telegram push |
+
+#### How Skills Orchestration Works
+
+```
+User: "帮我看看 BONK 能不能买"
+            ↓
+    OpenClaw understands intent
+            ↓
+    ┌── Query Token Info    → price, volume, K-line
+    ├── Query Token Audit   → security score, honeypot check
+    ├── Crypto Market Rank  → trending rank, social hype
+    ├── Trading Signal      → smart money buy/sell activity
+    └── Binance Spot        → CEX reference price, spread
+            ↓
+    Combined analysis → 🟢 GO / 🟡 WATCH / 🔴 AVOID
+```
+
+> **7 Binance Skills + 6 Custom Skills = 13 Skills total**, all orchestrated by OpenClaw in one natural language query.
+
+See [docs/SKILLS-GUIDE.md](docs/SKILLS-GUIDE.md) for the complete skills reference and [docs/BINANCE-SKILLS.md](docs/BINANCE-SKILLS.md) for Binance API details.
 
 ---
 
